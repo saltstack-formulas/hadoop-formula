@@ -1,0 +1,10 @@
+java_home: /usr/lib/java
+hadoop:
+  - version: 1.2.1
+  - users:
+    - hadoop: 6000
+    - hdfs: 6001
+    - mapred: 6002
+    - yarn: 6003
+  - config: /etc/hadoop/conf
+  

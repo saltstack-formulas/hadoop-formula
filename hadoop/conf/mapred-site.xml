@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+{% set jobtracker_host = salt['mine.get']('roles:hadoop_master', 'network.interfaces', 'grain').keys()|first() -%}
+
+<configuration>
+
+    <property>
+        <name>mapred.job.tracker</name>
+        <value>hdfs://{{ jobtracker_host }}:{{ pillar['jobtracker_port'] }}</value>
+    </property>
+
+    <property>
+        <name>mapred.local.dir</name>
+        <value>{{ pillar.get('mapred_local_directories')|join(',') }}</value>
+        <final>true</final>
+    </property>
+
+{% if pillar.get('hadoopconf-mapred-site') %}
+{% for name, dict in pillar.get('hadoopconf-mapred-site').items() %}
+    <property>
+        <name>{{ name }}</name>
+        {% for key, value in dict.iteritems() %}<{{ key }}>{{ value }}</{{key}}>{% endfor %}
+    </property>
+{% endfor -%}
+{% endif -%}
+
+</configuration>
