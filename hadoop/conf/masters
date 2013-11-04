@@ -1,1 +1,0 @@
-{{ salt['mine.get']('roles:hadoop_master', 'network.interfaces', 'grain').keys()|first() }}

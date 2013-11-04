@@ -6,5 +6,12 @@ hadoop:
     - hdfs: 6001
     - mapred: 6002
     - yarn: 6003
-  - config: /etc/hadoop/conf
-  
+  - config:
+    - directory: /etc/hadoop/conf
+    - core-site:
+      io.native.lib.available:
+        value: true
+      io.file.buffer.size:
+        value: 65536
+      fs.trash.interval:
+        value: 60

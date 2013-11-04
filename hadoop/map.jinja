@@ -1,0 +1,16 @@
+{% set map = salt['grains.filter_by']({
+    'Debian': {
+      'namenode_service_script': '/etc/init/hadoop-namenode.conf',
+      'secondarynamenode_service_script': '/etc/init/hadoop-secondary-namenode.conf',
+      'datanode_service_script': '/etc/init/hadoop-datanode.conf',
+      'service_script_source': 'salt://hadoop/files/hadoop.upstart.jinja',
+      'service_script_mode': '644',
+    },
+    'RedHat': {
+      'namenode_service_script': '/etc/init.d/hadoop-namenode',
+      'secondarynamenode_service_script': '/etc/init.d/hadoop-secondarynamenode',
+      'datanode_service_script': '/etc/init.d/hadoop-datanode',
+      'service_script_source': 'salt://hadoop/files/hadoop.init.d.jinja',
+      'service_script_mode': '755',
+    },
+}, merge=salt['pillar.get']('hadoop:lookup')) %}

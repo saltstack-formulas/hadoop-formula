@@ -23,7 +23,7 @@ hadoop:
 
 {% set hadoop_alt_home  = '/usr/lib/hadoop' %}
 {% set real_home = '/usr/lib/' + version_name %}
-{% set alt_config   = hadoop.get('config', '/etc/hadoop/conf') %}
+{% set alt_config   = salt['pillar.get']('hadoop:config:directory', '/etc/hadoop/conf') %}
 {% set real_config = alt_config + '-' + version %}
 {% set real_config_dist = alt_config + '.dist' %}
 
@@ -70,7 +70,7 @@ unpack-hadoop-dist:
     - user: root
     - group: root
     - context:
-      hadoop_config: {{ real_config }}
+      hadoop_config: {{ alt_config }}
 
 {% if (major == '1') %}
 {% set real_config_src = real_home + '/conf' %}
