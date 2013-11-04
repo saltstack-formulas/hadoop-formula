@@ -187,7 +187,8 @@ hadoop-secondarynamenode:
     - running
     - enable: True
 
-{%- elif 'hadoop_slave' in salt['grains.get']('roles', []) %}
+{% endif %}
+{%- if 'hadoop_slave' in salt['grains.get']('roles', []) %}
 
 {{ map.datanode_service_script }}:
   file.managed:
