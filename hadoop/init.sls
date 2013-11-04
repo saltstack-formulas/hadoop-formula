@@ -21,7 +21,7 @@ hadoop:
 {% set hadoop_tgz = version_name + '.tar.gz' %}
 {% set hadoop_tgz_path  = '/tmp/' + hadoop_tgz %}
 
-{% set hadoop_alt_home  = '/usr/lib/hadoop' %}
+{% set hadoop_alt_home  = salt['pillar.get']('hadoop:prefix', '/usr/lib/hadoop') %}
 {% set real_home = '/usr/lib/' + version_name %}
 {% set alt_config   = salt['pillar.get']('hadoop:config:directory', '/etc/hadoop/conf') %}
 {% set real_config = alt_config + '-' + version %}
