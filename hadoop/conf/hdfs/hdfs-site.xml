@@ -56,11 +56,32 @@
         <final>true</final>
     </property>
 
-{% for name, cdict in salt['pillar.get']('hadoop:config:hdfs-site', {}).items() %}
+{%- set t = salt['pillar.get']('hadoop:config:hdfs-site', None) %}
+{%- if t %}
+{%- for name, cdict in t.items() %}
     <property>
         <name>{{ name }}</name>
         {% for key, value in cdict.items() %}<{{ key }}>{{ value }}</{{key}}>{% endfor %}
     </property>
-{% endfor -%}
+{% endfor %}
+
+{%- else %}
+    <property>
+        <name>dfs.replication</name>
+        <value>1</value>
+    </property>
+    <property>
+        <name>dfs.permission</name>
+        <value>false</value>
+    </property>
+    <property>
+        <name>dfs.datanode.synconclose</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>dfs.durable.sync</name>
+        <value>true</value>
+    </property>
+{%- endif %}
 
 </configuration>
