@@ -75,7 +75,7 @@ ssh_dss_{{ username }}:
 
 {{ userhome }}/.ssh/config:
   file.managed:
-    - source: salt://misc/ssh_config
+    - source: salt://hadoop/conf/ssh/ssh_config
     - user: {{ username }}
     - group: {{ username }}
     - mode: 644
