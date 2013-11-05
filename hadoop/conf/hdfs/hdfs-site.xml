@@ -42,7 +42,7 @@
 {%- else %}
         <name>dfs.datanode.http-address</name>
 {% endif %}
-        <value>{{ namenode_host }}:{{ salt['pillar.get']('hadoop:config:namenode_http_port', '50070') }}</value>
+        <value>{{ namenode_host }}:{{ salt['pillar.get']('hdfs:config:namenode_http_port', '50070') }}</value>
         <final>true</final>
     </property>
 
@@ -52,11 +52,11 @@
 {%- else %}
         <name>dfs.secondary.datanode.http-address</name>
 {% endif %}
-        <value>{{ namenode_host }}:{{ salt['pillar.get']('hadoop:config:secondarynamenode_http_port', '50090') }}</value>
+        <value>{{ namenode_host }}:{{ salt['pillar.get']('hdfs:config:secondarynamenode_http_port', '50090') }}</value>
         <final>true</final>
     </property>
 
-{%- set t = salt['pillar.get']('hadoop:config:hdfs-site', None) %}
+{%- set t = salt['pillar.get']('hdfs:config:hdfs-site', None) %}
 {%- if t %}
 {%- for name, cdict in t.items() %}
     <property>
