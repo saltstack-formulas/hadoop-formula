@@ -1,28 +1,34 @@
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 
-{% set jobtracker_host = salt['mine.get']('roles:hadoop_master', 'network.interfaces', 'grain').keys()|first() -%}
-
 <configuration>
 
     <property>
         <name>mapred.job.tracker</name>
-        <value>hdfs://{{ jobtracker_host }}:{{ pillar['jobtracker_port'] }}</value>
+        <value>hdfs://{{ jobtracker_host }}:{{ jobtracker_port }}</value>
     </property>
 
     <property>
         <name>mapred.local.dir</name>
-        <value>{{ pillar.get('mapred_local_directories')|join(',') }}</value>
+        <value>
+{%- for d in mapred_disks -%}
+{%- if loop.last -%}
+{{ d }}/mapred
+{%- else -%}
+{{ d }}/mapred,
+{%- endif -%}
+{%- endfor -%}</value>
         <final>true</final>
     </property>
 
-{% if pillar.get('hadoopconf-mapred-site') %}
-{% for name, dict in pillar.get('hadoopconf-mapred-site').items() %}
+{%- set cfg = salt['pillar.get']('mapred:config:mapred-site', None) %}
+{%- if cfg %}
+{%- for name, dict in cfg.items() %}
     <property>
         <name>{{ name }}</name>
         {% for key, value in dict.iteritems() %}<{{ key }}>{{ value }}</{{key}}>{% endfor %}
     </property>
-{% endfor -%}
-{% endif -%}
+{% endfor %}
+{% endif %}
 
 </configuration>
