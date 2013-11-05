@@ -27,14 +27,12 @@ hadoop:
 {% set real_config = alt_config + '-' + version %}
 {% set real_config_dist = alt_config + '.dist' %}
 
-{% if hadoop['source'] is defined %}
 {{ hadoop_tgz_path }}:
   file.managed:
+{%- if hadoop['source'] is defined %}
     - source: {{ hadoop.get('source') }}
     - source_hash: {{ hadoop.get('source_hash', '') }}
-{% else %}
-{{ hadoop_tgz_path }}:
-  file.managed:
+{%- else %}
     - source: salt://hadoop/files/{{ hadoop_tgz }}
 {% endif %}
 
