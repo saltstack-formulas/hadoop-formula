@@ -176,20 +176,9 @@ format-namenode:
     - group: root
     - mode: {{ map.service_script_mode }}
     - template: jinja
-
-hadoop-namenode:
-  service:
-    - running
-    - enable: True
-
-hadoop-secondarynamenode:
-  service:
-    - running
-    - enable: True
-
 {% endif %}
-{%- if 'hadoop_slave' in salt['grains.get']('roles', []) %}
 
+{%- if 'hadoop_slave' in salt['grains.get']('roles', []) %}
 {{ map.datanode_service_script }}:
   file.managed:
     - source: {{ map.service_script_source }}
@@ -197,11 +186,18 @@ hadoop-secondarynamenode:
     - group: root
     - mode: {{ map.service_script_mode }}
     - template: jinja
+{% endif %}
 
-hadoop-datanode:
+hdfs-services:
   service:
     - running
     - enable: True
-
+    - names:
+{%- if 'hadoop_master' in salt['grains.get']('roles', []) %}
+      - hadoop-secondarynamenode
+      - hadoop-namenode
+{% endif %}
+{%- if 'hadoop_slave' in salt['grains.get']('roles', []) %}
+      - hadoop-datanode
 {% endif %}
 
