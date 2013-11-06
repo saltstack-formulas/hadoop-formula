@@ -124,7 +124,7 @@ make-tempdir:
     - name: {{ dfs_cmd }} -mkdir /tmp
     - unless: {{ dfs_cmd }} -stat /tmp
     - require:
-      - service: hadoop-datanode
+      - service: hdfs-services
 
 set-tempdir:
   cmd.wait:
