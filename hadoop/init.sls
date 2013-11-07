@@ -27,6 +27,16 @@ hadoop:
 {% set real_config = alt_config + '-' + version %}
 {% set real_config_dist = alt_config + '.dist' %}
 
+vm.swappiness:
+  sysctl:
+    - present
+    - value: 10
+
+vm.overcommit_memory:
+  sysctl:
+    - present
+    - value: 0
+
 {{ hadoop_tgz_path }}:
   file.managed:
 {%- if hadoop['source'] is defined %}
