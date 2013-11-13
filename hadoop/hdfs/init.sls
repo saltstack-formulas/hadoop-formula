@@ -1,4 +1,5 @@
 include:
+  - ec2
   - sun-java
   - hadoop
 
