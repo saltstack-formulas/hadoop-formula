@@ -1,0 +1,17 @@
+
+description "Hadoop {{ hadoop_svc }}"
+
+start on runlevel [2345]
+stop on [!12345] 
+
+respawn
+respawn limit 2 5
+
+task
+
+console log
+
+script
+    exec {{ hadoop_home }}/bin/hadoop-daemon.sh start {{ hadoop_svc }}
+end script
+

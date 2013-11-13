@@ -1,9 +1,11 @@
 include:
+  - sun-java
   - hadoop
 
 {% from "hadoop/map.jinja" import map with context %}
 
-{%- set hadoop = pillar.get('hadoop', {}) %}
+{%- set hadoop  = pillar.get('hadoop', {}) %}
+{%- set prefix  = hadoop.get('prefix', '/usr/lib/hadoop') %}
 {%- set version = hadoop.get('version', '1.2.1') %}
 {%- set major   = version.split('.')|first() %}
 {% set alt_config   = salt['pillar.get']('hadoop:config:directory', '/etc/hadoop/conf') %}
@@ -168,6 +170,9 @@ format-namenode:
     - group: root
     - mode: {{ map.service_script_mode }}
     - template: jinja
+    - context:
+      hadoop_svc: namenode
+      hadoop_home: prefix
 
 {{ map.secondarynamenode_service_script }}:
   file.managed:
@@ -176,6 +181,9 @@ format-namenode:
     - group: root
     - mode: {{ map.service_script_mode }}
     - template: jinja
+    - context:
+      hadoop_svc: secondarynamenode
+      hadoop_home: prefix
 {% endif %}
 
 {%- if 'hadoop_slave' in salt['grains.get']('roles', []) %}
@@ -186,6 +194,9 @@ format-namenode:
     - group: root
     - mode: {{ map.service_script_mode }}
     - template: jinja
+    - context:
+      hadoop_svc: datanode
+      hadoop_home: prefix
 {% endif %}
 
 hdfs-services:

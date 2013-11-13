@@ -1,5 +1,4 @@
 include:
-  - hadoop
   - hadoop.hdfs
 
 {% from "hadoop/map.jinja" import map with context %}
@@ -143,6 +142,9 @@ set-tempdir:
     - group: root
     - mode: {{ map.service_script_mode }}
     - template: jinja
+    - context:
+      hadoop_svc: jobtracker
+      hadoop_home: hadoop_prefix
 
 hadoop-jobtracker:
   service:
@@ -159,6 +161,9 @@ hadoop-jobtracker:
     - group: root
     - mode: {{ map.service_script_mode }}
     - template: jinja
+    - context:
+      hadoop_svc: tasktracker
+      hadoop_home: hadoop_prefix
 
 hadoop-tasktracker:
   service:
