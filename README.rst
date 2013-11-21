@@ -39,6 +39,11 @@ Which services end up running on a given host will again depend on the role(s) a
 - hadoop_master will run the jobtracker process
 - hadoop_slave will run a tasktracker process
 
+``hadoop.snappy``
+----------------
+
+Install snappy and snappy-devel system packages, adds a jar and shared lib compiled off of https://code.google.com/p/hadoop-snappy and also puts symlinks to the snappy libs in place, thus providing compression with snappy to the ecosystem.
+
 ``hadoop.yarn``
 --------------
 

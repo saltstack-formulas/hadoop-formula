@@ -1,16 +1,23 @@
 include:
   - hadoop
 
+{%- if grains['os_family'] in ['Debian', 'RedHat'] %}
+snappy-libs:
+  pkg.installed:
+    - order: 1
+    - names:
+{%- if grains['os_family'] == 'RedHat' %}
+      - snappy
+      - snappy-devel
+{%- else %}
+      - libsnappy1
+      - libsnappy-dev
+{%- endif %}
+{%- endif %}
+
 /tmp/hadoop-snappy-0.0.1.tgz:
   file.managed:
     - source: salt://hadoop/libs/hadoop-snappy-0.0.1.tgz
-
-# TODO: ubuntu names
-snappy-libs:
-  pkg.installed:
-    - names:
-      - snappy
-      - snappy-devel
 
 install-hadoop-snappy:
   cmd.run:
