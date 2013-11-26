@@ -47,6 +47,9 @@ else
   YARN_USER=hadoop
 fi
 
+[ -f /etc/profile.d/java.sh ] && . /etc/profile.d/java.sh
+[ -f /etc/profile.d/hadoop.sh ] && . /etc/profile.d/hadoop.sh
+
 prog=${0/*\/hadoop-/}
 case ${prog} in
     datanode )      
@@ -60,6 +63,7 @@ case ${prog} in
     nodemanager )
         DAEMON="NodeManager"
         DAEMON_USER=$YARN_USER
+        DAEMON_SCRIPT="${HADOOP_PREFIX}/sbin/yarn-daemon.sh"
         ;;
     namenode )
         DAEMON="NameNode"
@@ -76,6 +80,7 @@ case ${prog} in
     resourcemanager )
         DAEMON="ResourceManager"
         DAEMON_USER=$YARN_USER
+        DAEMON_SCRIPT="${HADOOP_PREFIX}/sbin/yarn-daemon.sh"
         ;;
     * )
         echo "No such node type; stopping"
@@ -83,16 +88,16 @@ case ${prog} in
         ;;
 esac
 
-[ -f /etc/profile.d/java.sh ] && . /etc/profile.d/java.sh
-[ -f /etc/profile.d/hadoop.sh ] && . /etc/profile.d/hadoop.sh
-
-if [ -x ${HADOOP_PREFIX}/bin/hadoop-daemon.sh ]; then
-  DAEMON_SCRIPT=${HADOOP_PREFIX}/bin/hadoop-daemon.sh
-elif [ -x ${HADOOP_PREFIX}/sbin/hadoop-daemon.sh ]; then
-  DAEMON_SCRIPT=${HADOOP_PREFIX}/sbin/hadoop-daemon.sh
-else
-  echo "Cannot find daemon script in either $HADOOP_PREFIX/bin nor $HADOOP_PREFIX/sbin"
-  exit 3
+if [ "" == "${DAEMON_SCRIPT}" ]
+then
+  if [ -x ${HADOOP_PREFIX}/bin/hadoop-daemon.sh ]; then
+    DAEMON_SCRIPT=${HADOOP_PREFIX}/bin/hadoop-daemon.sh
+  elif [ -x ${HADOOP_PREFIX}/sbin/hadoop-daemon.sh ]; then
+    DAEMON_SCRIPT=${HADOOP_PREFIX}/sbin/hadoop-daemon.sh
+  else
+    echo "Cannot find daemon script in either $HADOOP_PREFIX/bin nor $HADOOP_PREFIX/sbin"
+    exit 3
+  fi
 fi
 
 start () {
