@@ -1,6 +1,8 @@
 include:
   - hadoop
 
+{%- from 'hadoop/settings.sls' import hadoop with context %}
+
 {%- if grains['os_family'] in ['Debian', 'RedHat'] %}
 snappy-libs:
   pkg.installed:
@@ -15,6 +17,10 @@ snappy-libs:
 {%- endif %}
 {%- endif %}
 
+# TODO: this is a bug - won't work at first execution because the libs are not yet installed
+{%- set snappies = salt['cmd.run_stdout']('cd /usr/lib64 && ls -1 libsnappy*') %}
+
+{%- if hadoop['major_version'] == '1' %}
 /tmp/hadoop-snappy-0.0.1.tgz:
   file.managed:
     - source: salt://hadoop/libs/hadoop-snappy-0.0.1.tgz
@@ -29,9 +35,17 @@ install-hadoop-snappy:
       - alternatives.install: hadoop-home-link
       - pkg.installed: snappy-libs
 
-{%- set snappies = salt['cmd.run_stdout']('cd /usr/lib64 && ls -1 libsnappy*') %}
 {%- for lib in snappies.split() %}
 /usr/lib/hadoop/lib/native/Linux-amd64-64/{{ lib }}:
   file.symlink:
     - target: /usr/lib64/{{ lib }}
 {%- endfor %}
+{%- else %}
+
+{%- for lib in snappies.split() %}
+/usr/lib/hadoop/lib/native/{{ lib }}:
+  file.symlink:
+    - target: /usr/lib64/{{ lib }}
+{%- endfor %}
+
+{% endif %}

@@ -1,4 +1,5 @@
-{%- set hadoop = pillar.get('hadoop', {}) %}
+{%- from 'hadoop/settings.sls' import hadoop with context %}
+# TODO: no users implemented in settings yet
 {%- set hadoop_users = hadoop.get('users', {}) %}
 
 hadoop:
@@ -15,18 +16,6 @@ hadoop:
     - require:
       - group: hadoop
 
-{% set version = hadoop.get('version', '1.2.1') %}
-{% set major   = version.split('.')|first() %}
-{% set version_name = 'hadoop-' + version %}
-{% set hadoop_tgz = version_name + '.tar.gz' %}
-{% set hadoop_tgz_path  = '/tmp/' + hadoop_tgz %}
-
-{% set hadoop_alt_home  = salt['pillar.get']('hadoop:prefix', '/usr/lib/hadoop') %}
-{% set real_home = '/usr/lib/' + version_name %}
-{% set alt_config   = salt['pillar.get']('hadoop:config:directory', '/etc/hadoop/conf') %}
-{% set real_config = alt_config + '-' + version %}
-{% set real_config_dist = alt_config + '.dist' %}
-
 vm.swappiness:
   sysctl:
     - present
@@ -37,31 +26,27 @@ vm.overcommit_memory:
     - present
     - value: 0
 
-{{ hadoop_tgz_path }}:
+{{ hadoop['tarball_path'] }}:
   file.managed:
-{%- if hadoop['source'] is defined %}
-    - source: {{ hadoop.get('source') }}
-    - source_hash: {{ hadoop.get('source_hash', '') }}
-{%- else %}
-    - source: salt://hadoop/files/{{ hadoop_tgz }}
-{% endif %}
+    - source: {{ hadoop.get('source_url') }}
+    - source_hash: {{ hadoop.get('source_hash') }}
 
 unpack-hadoop-dist:
   cmd.run:
-    - name: tar xzf {{ hadoop_tgz_path }}
+    - name: tar xzf {{ hadoop['tarball_path'] }}
     - cwd: /usr/lib
-    - unless: test -d {{ real_home }}/lib
+    - unless: test -d {{ hadoop['real_home'] }}/lib
     - require:
-      - file.managed: {{ hadoop_tgz_path }}
+      - file.managed: {{ hadoop['tarball_path'] }}
   alternatives.install:
     - name: hadoop-home-link
-    - link: {{ hadoop_alt_home }}
-    - path: {{ real_home }}
+    - link: {{ hadoop['alt_home'] }}
+    - path: {{ hadoop['real_home'] }}
     - priority: 30
     - require:
       - cmd.run: unpack-hadoop-dist
   file.directory:
-    - name: {{ real_home }}
+    - name: {{ hadoop['real_home'] }}
     - user: root
     - group: root
     - recurse:
@@ -78,12 +63,12 @@ unpack-hadoop-dist:
     - user: root
     - group: root
     - context:
-      hadoop_config: {{ alt_config }}
+      hadoop_config: {{ hadoop['alt_config'] }}
 
-{% if (major == '1') %}
-{% set real_config_src = real_home + '/conf' %}
+{% if (hadoop['major_version'] == '1') %}
+{% set real_config_src = hadoop['real_home'] + '/conf' %}
 {% else %}
-{% set real_config_src = real_home + '/etc/hadoop' %}
+{% set real_config_src = hadoop['real_home'] + '/etc/hadoop' %}
 {% endif %}
 
 /etc/hadoop:
@@ -94,42 +79,42 @@ unpack-hadoop-dist:
 
 move-hadoop-dist-conf:
   file.directory:
-    - name: {{ real_config }}
+    - name: {{ hadoop['real_config'] }}
     - user: root
     - group: root
   cmd.run:
-    - name: mv  {{ real_config_src }} {{ real_config_dist }}
+    - name: mv  {{ real_config_src }} {{ hadoop['real_config_dist'] }}
     - unless: test -L {{ real_config_src }}
     - onlyif: test -d {{ real_config_src }}
     - require:
-      - file.directory: {{ real_home }}
+      - file.directory: {{ hadoop['real_home'] }}
       - file.directory: /etc/hadoop
 
 {{ real_config_src }}:
   file.symlink:
-    - target: {{ alt_config }}
+    - target: {{ hadoop['alt_config'] }}
     - require:
       - cmd: move-hadoop-dist-conf
 
 hadoop-conf-link:
   alternatives.install:
-    - link: {{ alt_config }}
-    - path: {{ real_config }}
+    - link: {{ hadoop['alt_config'] }}
+    - path: {{ hadoop['real_config'] }}
     - priority: 30
     - require:
-      - file.directory: {{ real_config }}
+      - file.directory: {{ hadoop['real_config'] }}
 
-{{ real_config }}/log4j.properties:
+{{ hadoop['real_config'] }}/log4j.properties:
   file.copy:
-    - source: {{ real_config_dist }}/log4j.properties
+    - source: {{ hadoop['real_config_dist'] }}/log4j.properties
     - user: root
     - group: root
     - mode: 644
     - require:
-      - file: {{ real_config }}
+      - file: {{ hadoop['real_config'] }}
       - alternatives.install: hadoop-conf-link
 
-{{ real_config }}/hadoop-env.sh:
+{{ hadoop['real_config'] }}/hadoop-env.sh:
   file.managed:
     - source: salt://hadoop/conf/hadoop-env.sh
     - template: jinja
@@ -138,5 +123,5 @@ hadoop-conf-link:
     - group: root
     - context:
       java_home: {{ salt['pillar.get']('java_home', '/usr/lib/java') }}
-      hadoop_home: {{ hadoop_alt_home }}
-      hadoop_config: {{ alt_config }}
+      hadoop_home: {{ hadoop['alt_home'] }}
+      hadoop_config: {{ hadoop['alt_config'] }}
