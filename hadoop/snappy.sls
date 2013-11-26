@@ -40,12 +40,5 @@ install-hadoop-snappy:
   file.symlink:
     - target: /usr/lib64/{{ lib }}
 {%- endfor %}
-{%- else %}
-
-{%- for lib in snappies.split() %}
-/usr/lib/hadoop/lib/native/{{ lib }}:
-  file.symlink:
-    - target: /usr/lib64/{{ lib }}
-{%- endfor %}
 
 {% endif %}

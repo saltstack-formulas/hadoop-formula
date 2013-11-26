@@ -27,8 +27,8 @@ Installs the server configuration and starts the hadoop master server.
 Which services hadoop ends up running on a given host will depend on the text list files in the
 configuration directory and - in turn - on the roles defined via salt grains:
 
-- hadoop_master will run the namenode and secondarynamenode processes
-- hadoop_slave will run a datanode process
+- hadoop_master will run the hadoop-namenode and hadoop-secondarynamenode services
+- hadoop_slave will run the hadoop-datanode service
 
 ``hadoop.mapred``
 --------------
@@ -36,8 +36,8 @@ configuration directory and - in turn - on the roles defined via salt grains:
 Installs the mapreduce daemon scripts and configuration, adds directories.
 Which services end up running on a given host will again depend on the role(s) assigned via grains:
 
-- hadoop_master will run the jobtracker process
-- hadoop_slave will run a tasktracker process
+- hadoop_master will run the hadoop-jobtracker service
+- hadoop_slave will run the hadoop-tasktracker service
 
 ``hadoop.snappy``
 ----------------
@@ -47,4 +47,9 @@ Install snappy and snappy-devel system packages, adds a jar and shared lib compi
 ``hadoop.yarn``
 --------------
 
-To be implemented
+Installs the yarn daemon scripts and configuration (if a hadoop 2.2+ version was installed), adds directories.
+Which services end up running on a given host will again depend on the role(s) assigned via grains:
+
+- hadoop_master will run the hadoop-resourcemanager service
+- hadoop_slave will run the hadoop-nodemanager service
+
