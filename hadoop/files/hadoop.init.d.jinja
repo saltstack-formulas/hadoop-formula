@@ -1,5 +1,5 @@
 #!/bin/bash
-# chkconfig: 2345 20 80
+# chkconfig: 2345 96 6
 # description: hadoop component init script
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
@@ -50,7 +50,13 @@ fi
 [ -f /etc/profile.d/java.sh ] && . /etc/profile.d/java.sh
 [ -f /etc/profile.d/hadoop.sh ] && . /etc/profile.d/hadoop.sh
 
-prog=${0/*\/hadoop-/}
+script_name=$0
+while [ -L $script_name ]
+do
+  script_name=$(readlink $script_name)
+done
+prog=${script_name/*\/hadoop-/}
+
 case ${prog} in
     datanode )      
         DAEMON="DataNode"
@@ -83,7 +89,7 @@ case ${prog} in
         DAEMON_SCRIPT="${HADOOP_PREFIX}/sbin/yarn-daemon.sh"
         ;;
     * )
-        echo "No such node type; stopping"
+        logger "No such hadoop node type (${prog}); stopping startup for ${script_name}"
         exit 1
         ;;
 esac
