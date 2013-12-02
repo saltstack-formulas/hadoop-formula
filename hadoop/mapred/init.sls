@@ -52,7 +52,9 @@ set-tempdir:
       - cmd: make-tempdir
     - names:
       - {{ hadoop['dfs_cmd'] }} -chmod 777 /tmp
-      # - {{ hadoop['dfs_cmd'] }} -chmod +t /tmp
+{%- if hadoop.major_version == '2' %}
+      - {{ hadoop['dfs_cmd'] }} -chmod +t /tmp
+{% endif %}
 {% endif %}
 
 {%- if hadoop['major_version'] == '1' %}
@@ -67,7 +69,8 @@ set-tempdir:
     - template: jinja
     - context:
       hadoop_svc: jobtracker
-      hadoop_home: hadoop_prefix
+      hadoop_major: {{ hadoop.major_version }}
+      hadoop_home: {{ hadoop.alt_home }}
 
 hadoop-jobtracker:
   service:
@@ -86,7 +89,8 @@ hadoop-jobtracker:
     - template: jinja
     - context:
       hadoop_svc: tasktracker
-      hadoop_home: hadoop_prefix
+      hadoop_major: {{ hadoop.major_version }}
+      hadoop_home: {{ hadoop.alt_home }}
 
 hadoop-tasktracker:
   service:

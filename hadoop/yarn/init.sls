@@ -68,7 +68,8 @@ include:
     - template: jinja
     - context:
       hadoop_svc: resourcemanager
-      hadoop_home: hadoop_prefix
+      hadoop_major: {{ hadoop.major_version }}
+      hadoop_home: {{ hadoop.alt_home }}
 
 hadoop-resourcemanager:
   service:
@@ -87,7 +88,8 @@ hadoop-resourcemanager:
     - template: jinja
     - context:
       hadoop_svc: nodemanager
-      hadoop_home: hadoop_prefix
+      hadoop_major: {{ hadoop.major_version }}
+      hadoop_home: {{ hadoop.alt_home }}
 
 hadoop-nodemanager:
   service:

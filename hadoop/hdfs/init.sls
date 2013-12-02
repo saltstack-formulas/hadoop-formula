@@ -98,7 +98,8 @@ format-namenode:
     - template: jinja
     - context:
       hadoop_svc: namenode
-      hadoop_home: prefix
+      hadoop_major: {{ hadoop.major_version }}
+      hadoop_home: {{ hadoop.alt_home }}
 
 {{ map.secondarynamenode_service_script }}:
   file.managed:
@@ -109,7 +110,8 @@ format-namenode:
     - template: jinja
     - context:
       hadoop_svc: secondarynamenode
-      hadoop_home: prefix
+      hadoop_major: {{ hadoop.major_version }}
+      hadoop_home: {{ hadoop.alt_home }}
 {% endif %}
 
 {%- if 'hadoop_slave' in salt['grains.get']('roles', []) %}
@@ -122,7 +124,8 @@ format-namenode:
     - template: jinja
     - context:
       hadoop_svc: datanode
-      hadoop_home: prefix
+      hadoop_major: {{ hadoop.major_version }}
+      hadoop_home: {{ hadoop.alt_home }}
 {% endif %}
 
 hdfs-services:

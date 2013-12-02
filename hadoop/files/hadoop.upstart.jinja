@@ -12,6 +12,10 @@ task
 console log
 
 script
+{%- if hadoop_major == '1' %}
     exec {{ hadoop_home }}/bin/hadoop-daemon.sh start {{ hadoop_svc }}
+{%- else %}
+    exec {{ hadoop_home }}/sbin/hadoop-daemon.sh start {{ hadoop_svc }}
+{% endif %}
 end script
 
