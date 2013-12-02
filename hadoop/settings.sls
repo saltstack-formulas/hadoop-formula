@@ -6,20 +6,17 @@
 
 {%- set versions = { 'apache-1.2.1' : { 'version'       : '1.2.1',
                                         'version_name'  : 'hadoop-1.2.1',
-                                        'tarball'       : 'hadoop-1.2.1-bin.tar.gz',
-                                        'source_url'    : 'http://www.us.apache.org/dist/hadoop/common/hadoop-1.2.1/hadoop-1.2.1-bin.tar.gz',
+                                        'source_url'    : salt['grains.get']('hadoop_source', 'http://www.us.apache.org/dist/hadoop/common/hadoop-1.2.1/hadoop-1.2.1-bin.tar.gz'),
                                         'major_version' : '1'
                                       },
                      'apache-2.2.0' : { 'version'       : '2.2.0',
                                         'version_name'  : 'hadoop-2.2.0',
-                                        'tarball'       : 'hadoop-2.2.0.tar.gz',
-                                        'source_url'    : 'http://www.us.apache.org/dist/hadoop/common/hadoop-2.2.0/hadoop-2.2.0.tar.gz',
+                                        'source_url'    : salt['grains.get']('hadoop_source', 'http://www.us.apache.org/dist/hadoop/common/hadoop-2.2.0/hadoop-2.2.0.tar.gz'),
                                         'major_version' : '2'
                                       },
                      'hdp-2.2.0'    : { 'version'       : '2.2.0.2.0.6.0-76',
                                         'version_name'  : 'hadoop-2.2.0.2.0.6.0-76',
-                                        'tarball'       : 'hadoop-2.2.0.2.0.6.0-76.tar.gz',
-                                        'source_url'    : 'http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.0.6.0/tars/hadoop-2.2.0.2.0.6.0-76.tar.gz',
+                                        'source_url'    : salt['grains.get']('hadoop_source', 'http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.0.6.0/tars/hadoop-2.2.0.2.0.6.0-76.tar.gz'),
                                         'major_version' : '2'
                                       }
                    }%}
@@ -50,7 +47,6 @@
                           'alt_config'       : alt_config,
                           'real_config'      : real_config,
                           'real_config_dist' : real_config_dist,
-                          'tarball_path'     : salt['pillar.get']('downloads_path', '/tmp') + '/' +version_info['tarball'],
                           'namenode_host'    : namenode_host,
                           'dfs_cmd'          : dfs_cmd
                       }) %}
