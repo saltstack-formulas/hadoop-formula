@@ -26,27 +26,22 @@ vm.overcommit_memory:
     - present
     - value: 0
 
-{{ hadoop['tarball_path'] }}:
-  file.managed:
-    - source: {{ hadoop.get('source_url') }}
-    - source_hash: {{ hadoop.get('source_hash') }}
-
 unpack-hadoop-dist:
   cmd.run:
-    - name: tar xzf {{ hadoop['tarball_path'] }}
+    - name: curl '{{ hadoop.source_url }}' | tar xz
     - cwd: /usr/lib
     - unless: test -d {{ hadoop['real_home'] }}/lib
-    - require:
-      - file.managed: {{ hadoop['tarball_path'] }}
+
+hadoop-home-link:
   alternatives.install:
-    - name: hadoop-home-link
     - link: {{ hadoop['alt_home'] }}
     - path: {{ hadoop['real_home'] }}
     - priority: 30
     - require:
       - cmd.run: unpack-hadoop-dist
+
+{{ hadoop['real_home'] }}:
   file.directory:
-    - name: {{ hadoop['real_home'] }}
     - user: root
     - group: root
     - recurse:
