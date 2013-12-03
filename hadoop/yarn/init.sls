@@ -1,7 +1,6 @@
 include:
   - hadoop.hdfs
 
-{%- from "hadoop/map.jinja" import map with context %}
 {%- from "hadoop/settings.sls" import hadoop with context %}
 {%- from "hadoop/user_macro.sls" import hadoop_user with context %}
 # TODO: no users implemented in settings yet
@@ -59,15 +58,20 @@ include:
 
 {%- if 'hadoop_master' in salt['grains.get']('roles', []) %}
 
-{{ map.resourcemanager_service_script }}:
+/etc/init.d/hadoop-resourcemanager:
   file.managed:
-    - source: {{ map.service_script_source }}
+{%- if grains.os == 'Ubuntu' %}
+    - source: salt://hadoop/files/hadoop.init.d.ubuntu.jinja
+{%- else %}
+    - source: salt://hadoop/files/hadoop.init.d.jinja
+{%- endif %}
     - user: root
     - group: root
-    - mode: {{ map.service_script_mode }}
+    - mode: '755'
     - template: jinja
     - context:
       hadoop_svc: resourcemanager
+      hadoop_user: yarn
       hadoop_major: {{ hadoop.major_version }}
       hadoop_home: {{ hadoop.alt_home }}
 
@@ -79,15 +83,20 @@ hadoop-resourcemanager:
 
 {%- if 'hadoop_slave' in salt['grains.get']('roles', []) %}
 
-{{ map.nodemanager_service_script }}:
+/etc/init.d/hadoop-nodemanager:
   file.managed:
-    - source: {{ map.service_script_source }}
+{%- if grains.os == 'Ubuntu' %}
+    - source: salt://hadoop/files/hadoop.init.d.ubuntu.jinja
+{%- else %}
+    - source: salt://hadoop/files/hadoop.init.d.jinja
+{%- endif %}
     - user: root
     - group: root
-    - mode: {{ map.service_script_mode }}
+    - mode: '755'
     - template: jinja
     - context:
       hadoop_svc: nodemanager
+      hadoop_user: yarn
       hadoop_major: {{ hadoop.major_version }}
       hadoop_home: {{ hadoop.alt_home }}
 

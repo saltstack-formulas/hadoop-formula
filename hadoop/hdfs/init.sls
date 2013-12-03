@@ -3,7 +3,6 @@ include:
   - sun-java
   - hadoop
 
-{%- from 'hadoop/map.jinja' import map with context %}
 {%- from 'hadoop/settings.sls' import hadoop with context %}
 {%- from 'hadoop/user_macro.sls' import hadoop_user with context %}
 # TODO: no users implemented in settings yet
@@ -89,41 +88,56 @@ format-namenode:
     - user: hdfs
     - unless: test -d {{ test_folder }}
 
-{{ map.namenode_service_script }}:
+/etc/init.d/hadoop-namenode:
   file.managed:
-    - source: {{ map.service_script_source }}
+{%- if grains.os == 'Ubuntu' %}
+    - source: salt://hadoop/files/hadoop.init.d.ubuntu.jinja
+{%- else %}
+    - source: salt://hadoop/files/hadoop.init.d.jinja
+{%- endif %}
     - user: root
     - group: root
-    - mode: {{ map.service_script_mode }}
+    - mode: '755'
     - template: jinja
     - context:
       hadoop_svc: namenode
+      hadoop_user: hdfs
       hadoop_major: {{ hadoop.major_version }}
       hadoop_home: {{ hadoop.alt_home }}
 
-{{ map.secondarynamenode_service_script }}:
+/etc/init.d/hadoop-secondarynamenode:
   file.managed:
-    - source: {{ map.service_script_source }}
+{%- if grains.os == 'Ubuntu' %}
+    - source: salt://hadoop/files/hadoop.init.d.ubuntu.jinja
+{%- else %}
+    - source: salt://hadoop/files/hadoop.init.d.jinja
+{%- endif %}
     - user: root
     - group: root
-    - mode: {{ map.service_script_mode }}
+    - mode: '755'
     - template: jinja
     - context:
       hadoop_svc: secondarynamenode
+      hadoop_user: hdfs
       hadoop_major: {{ hadoop.major_version }}
       hadoop_home: {{ hadoop.alt_home }}
 {% endif %}
 
 {%- if 'hadoop_slave' in salt['grains.get']('roles', []) %}
-{{ map.datanode_service_script }}:
+/etc/init.d/hadoop-datanode:
   file.managed:
-    - source: {{ map.service_script_source }}
+{%- if grains.os == 'Ubuntu' %}
+    - source: salt://hadoop/files/hadoop.init.d.ubuntu.jinja
+{%- else %}
+    - source: salt://hadoop/files/hadoop.init.d.jinja
+{%- endif %}
     - user: root
     - group: root
-    - mode: {{ map.service_script_mode }}
+    - mode: '755'
     - template: jinja
     - context:
       hadoop_svc: datanode
+      hadoop_user: hdfs
       hadoop_major: {{ hadoop.major_version }}
       hadoop_home: {{ hadoop.alt_home }}
 {% endif %}

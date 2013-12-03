@@ -120,3 +120,17 @@ hadoop-conf-link:
       java_home: {{ salt['pillar.get']('java_home', '/usr/lib/java') }}
       hadoop_home: {{ hadoop['alt_home'] }}
       hadoop_config: {{ hadoop['alt_config'] }}
+
+{%- if grains.os == 'Ubuntu' %}
+/etc/default/hadoop:
+  file.managed:
+    - source: salt://hadoop/files/hadoop.jinja
+    - mode: '644'
+    - template: jinja
+    - user: root
+    - group: root
+    - context:
+      java_home: {{ salt['pillar.get']('java_home', '/usr/lib/java') }}
+      hadoop_home: {{ hadoop['alt_home'] }}
+      hadoop_config: {{ hadoop['alt_config'] }}
+{%- endif %}
