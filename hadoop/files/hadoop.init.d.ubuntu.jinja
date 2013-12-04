@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# Starts a Hadoop {{ hadoop_svc }}
+# Starts a Hadoop {{ hadoop_major }} {{ hadoop_svc }}
 #
 # chkconfig: 2345 85 15
 # description: Hadoop {{ hadoop_svc }}
@@ -53,10 +53,10 @@ RETVAL=0
 SLEEP_TIME=5
 PROC_NAME="java"
 
-{%- if hadoop_major == '1' %}
-{%- set bindir='bin'
+{%- if hadoop_major == 1 %}
+{%- set bindir='bin' %}
 {%- else %}
-{%- set bindir='sbin'
+{%- set bindir='sbin' %}
 {%- endif %}
 
 {%- if hadoop_user == 'yarn' %}
