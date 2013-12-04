@@ -53,11 +53,17 @@ RETVAL=0
 SLEEP_TIME=5
 PROC_NAME="java"
 
+{%- if hadoop_major == '1' %}
+{%- set bindir='bin'
+{%- else %}
+{%- set bindir='sbin'
+{%- endif %}
+
 {%- if hadoop_user == 'yarn' %}
-EXEC_PATH="{{ hadoop_home }}/sbin/yarn-daemon.sh"
+EXEC_PATH="{{ hadoop_home }}/{{ bindir }}/yarn-daemon.sh"
 PIDFILE="/var/run/hadoop/yarn-{{ hadoop_user }}-{{ hadoop_svc }}.pid"
 {%- else %}
-EXEC_PATH="{{ hadoop_home }}/sbin/hadoop-daemon.sh"
+EXEC_PATH="{{ hadoop_home }}/{{ bindir }}/hadoop-daemon.sh"
 PIDFILE="/var/run/hadoop/hadoop-{{ hadoop_user }}-{{ hadoop_svc }}.pid"
 {%- endif %}
 DAEMON="hadoop-{{ hadoop_user }}-{{ hadoop_svc }}"
