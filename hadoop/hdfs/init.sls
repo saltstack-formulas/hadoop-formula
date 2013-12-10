@@ -7,6 +7,7 @@ include:
 {%- from 'hadoop/user_macro.sls' import hadoop_user with context %}
 # TODO: no users implemented in settings yet
 {%- set hadoop_users = hadoop.get('users', {}) %}
+{%- set all_roles    = salt['grains.get']('roles', []) %}
 
 {%- set username = 'hdfs' %}
 {% set uid = hadoop_users.get(username, '6001') %}
@@ -20,7 +21,7 @@ include:
     - user: root
     - group: root
     - makedirs: True
-{% if 'hadoop_master' in salt['grains.get']('roles', []) %}
+{% if 'hadoop_master' in all_roles %}
 {{ disk }}/hdfs/nn:
   file.directory:
     - user: {{ username }}
@@ -33,7 +34,7 @@ include:
     - makedirs: True
 {% endif %}
 
-{% if 'hadoop_slave' in salt['grains.get']('roles', []) %}
+{% if 'hadoop_slave' in all_roles %}
 
 {{ disk }}/hdfs/dn:
   file.directory:
@@ -75,7 +76,7 @@ include:
     - source: salt://hadoop/conf/hdfs/slaves
     - template: jinja
 
-{%- if 'hadoop_master' in salt['grains.get']('roles', []) %}
+{%- if 'hadoop_master' in all_roles %}
 {%- set test_folder = hdfs_disks|first() + '/hdfs/nn/current' %}
 
 format-namenode:
@@ -123,7 +124,7 @@ format-namenode:
       hadoop_home: {{ hadoop.alt_home }}
 {% endif %}
 
-{%- if 'hadoop_slave' in salt['grains.get']('roles', []) %}
+{%- if 'hadoop_slave' in all_roles %}
 /etc/init.d/hadoop-datanode:
   file.managed:
 {%- if grains.os == 'Ubuntu' %}
@@ -142,15 +143,19 @@ format-namenode:
       hadoop_home: {{ hadoop.alt_home }}
 {% endif %}
 
+{%- if 'hadoop_master' in all_roles or 'hadoop_slave' in all_roles %}
+
 hdfs-services:
   service:
     - running
     - enable: True
     - names:
-{%- if 'hadoop_master' in salt['grains.get']('roles', []) %}
+{%- if 'hadoop_master' in all_roles %}
       - hadoop-secondarynamenode
       - hadoop-namenode
 {% endif %}
-{%- if 'hadoop_slave' in salt['grains.get']('roles', []) %}
+{%- if 'hadoop_slave' in all_roles %}
       - hadoop-datanode
+{% endif %}
+
 {% endif %}
