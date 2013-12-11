@@ -3,12 +3,14 @@
         {
             "port": 26006,
             "host": "localhost",
+            "alias": "${source_alias}",
             "queries": [
                 {
                     "outputWriters": [
                         {
                             "@class": "com.googlecode.jmxtrans.model.output.GraphiteWriter",
                             "settings": {
+                                "rootPrefix": "hadoop/tasktrackers",
                                 "port": "${graphite_port}",
                                 "host": "${graphite_host}"
                             }

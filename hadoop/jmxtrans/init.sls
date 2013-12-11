@@ -11,20 +11,24 @@ include:
 {{jsondir}}/datanode.json:
   file.managed:
     - source: salt://hadoop/jmxtrans/datanode.json
+    - template: jinja
 
 {{jsondir}}/tasktracker.json:
   file.managed:
     - source: salt://hadoop/jmxtrans/tasktracker.json
+    - template: jinja
 {%- endif %}
 
 {%- if 'hadoop_master' in all_roles %}
 {{jsondir}}/namenode.json:
   file.managed:
     - source: salt://hadoop/jmxtrans/namenode.json
+    - template: jinja
 
 {{jsondir}}/jobtracker.json:
   file.managed:
     - source: salt://hadoop/jmxtrans/jobtracker.json
+    - template: jinja
 {%- endif %}
 
 #{%- if 'hadoop_master' in all_roles or 'hadoop_slave' in all_roles %}
