@@ -1,0 +1,34 @@
+{
+    "servers": [
+        {
+            "port": 26006,
+            "host": "localhost",
+            "queries": [
+                {
+                    "outputWriters": [
+                        {
+                            "@class": "com.googlecode.jmxtrans.model.output.GraphiteWriter",
+                            "settings": {
+                                "port": "${graphite_port}",
+                                "host": "${graphite_host}"
+                            }
+                        }
+                    ],
+                    "obj": "Hadoop:service=TaskTracker,name=RpcActivityForPort*",
+                    "resultAlias": "TaskTrackerRpcActivity",
+                    "attr": [
+                        "NumOpenConnections",
+                        "ReceivedBytes",
+                        "SentBytes",
+                        "RpcProcessingTime_avg_time",
+                        "RpcProcessingTime_num_ops",
+                        "RpcQueueTime_avg_time",
+                        "RpcQueueTime_num_ops",
+                        "callQueueLen"
+                    ]
+                }
+            ],
+            "numQueryThreads": 2
+        }
+    ]
+}
