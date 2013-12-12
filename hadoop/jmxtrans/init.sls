@@ -1,10 +1,11 @@
 # this would mean we now have /etc/jmxtrans/json
+{%- set all_roles    = salt['grains.get']('roles', []) %}
+{%- if 'monitor' in all_roles %}
 
 include:
   - jmxtrans
 
 {%- set jsondir = '/etc/jmxtrans/json' %}
-{%- set all_roles    = salt['grains.get']('roles', []) %}
 
 # TODO: add yarn support
 {%- if 'hadoop_slave' in all_roles %}
@@ -31,19 +32,21 @@ include:
     - template: jinja
 {%- endif %}
 
-#{%- if 'hadoop_master' in all_roles or 'hadoop_slave' in all_roles %}
+{%- if 'hadoop_master' in all_roles or 'hadoop_slave' in all_roles %}
+restart-jmxtrans-for-hadoop:
+  module.wait:
+    - name: service.restart
+    - m_name: jmxtrans
+    - watch:
+{%- if 'hadoop_master' in all_roles %}
+      - file: {{jsondir}}/namenode.json
+      - file: {{jsondir}}/jobtracker.json
+{%- endif %}
+{%- if 'hadoop_slave' in all_roles %}
+      - file: {{jsondir}}/datanode.json
+      - file: {{jsondir}}/tasktracker.json
+{%- endif %}
 
-#reload-jmxtrans:
-#  cmd.wait:
-#    - name: service jmxtrans restart
-#    - watch:
-#{%- if 'hadoop_slave' in all_roles %}
-#      - file: {{jsondir}}/datanode.json
-#      - file: {{jsondir}}/tasktracker.json
-#{%- endif %}
-#{%- if 'hadoop_master' in all_roles %}
-#      - file: {{jsondir}}/namenode.json
-#      - file: {{jsondir}}/jobtracker.json
-#{%- endif %}
+{%- endif %}
 
-#{%- endif %}
+{%- endif %}
