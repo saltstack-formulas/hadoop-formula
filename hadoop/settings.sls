@@ -18,6 +18,11 @@
                                         'version_name'  : 'hadoop-2.2.0.2.0.6.0-76',
                                         'source_url'    : salt['grains.get']('hadoop_source', 'http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.0.6.0/tars/hadoop-2.2.0.2.0.6.0-76.tar.gz'),
                                         'major_version' : '2'
+                                      },
+                     'hdp-1.3.0'    : { 'version'       : '1.2.0.1.3.3.0-58',
+                                        'version_name'  : 'hadoop-1.2.0.1.3.3.0-58',
+                                        'source_url'    : salt['grains.get']('hadoop_source', 'http://public-repo-1.hortonworks.com/HDP/centos6/1.x/updates/1.3.3.0/tars/hadoop-1.2.0.1.3.3.0-58.tar.gz'),
+                                        'major_version' : '1'
                                       }
                    }%}
 
