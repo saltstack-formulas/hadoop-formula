@@ -1,6 +1,4 @@
 include:
-  - ec2
-  - sun-java
   - hadoop
 
 {%- from 'hadoop/settings.sls' import hadoop with context %}

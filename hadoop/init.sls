@@ -1,3 +1,9 @@
+include:
+  - hostsfile.hostname
+  - hostsfile
+  - ntp.server
+  - sun-java
+
 {%- from 'hadoop/settings.sls' import hadoop with context %}
 # TODO: no users implemented in settings yet
 {%- set hadoop_users = hadoop.get('users', {}) %}
