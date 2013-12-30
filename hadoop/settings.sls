@@ -1,7 +1,7 @@
 {%- set versions = {} %}
 {%- set hadoop_pillar = pillar.get('hadoop', {}) %}
 
-{%- set default_version = salt['pillar.get']('hadoop_version', 'apache-1.2.1') %}
+{%- set default_dist_id = salt['pillar.get']('hadoop_version', 'apache-1.2.1') %}
 {%- set dist_id = salt['grains.get']('hadoop_version', default_dist_id) %}
 
 {%- set versions = { 'apache-1.2.1' : { 'version'       : '1.2.1',
