@@ -74,7 +74,7 @@ hadoop-home-link:
 
 /etc/hadoop:
   file.directory:
-    - owner: root
+    - user: root
     - group: root
     - mode: 755
 
