@@ -43,7 +43,8 @@
 {%- endif %}
 
 {%- set hadoop = {} %}
-{%- do hadoop.update( {   'version'          : version_info['version'],
+{%- do hadoop.update( {   'dist_id'          : dist_id,
+                          'version'          : version_info['version'],
                           'version_name'     : version_info['version_name'],
                           'source_url'       : version_info['source_url'],
                           'major_version'    : version_info['major_version'],
