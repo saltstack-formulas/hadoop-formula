@@ -1,0 +1,118 @@
+{
+    "servers": [
+        {
+            "port": 26006,
+            "host": "localhost",
+            "alias": "${source_alias}",
+            "queries": [
+                {
+                    "outputWriters": [
+                        {
+                            "@class": "com.googlecode.jmxtrans.model.output.GraphiteWriter",
+                            "settings": {
+                                "rootPrefix": "hadoop/tasktrackers",
+                                "port": "${graphite_port}",
+                                "host": "${graphite_host}"
+                            }
+                        }
+                    ],
+                    "obj": "Hadoop:service=TaskTracker,name=RpcActivityForPort*",
+                    "resultAlias": "TaskTrackerRpcActivity",
+                    "attr": [
+                        "NumOpenConnections",
+                        "ReceivedBytes",
+                        "SentBytes",
+                        "RpcProcessingTime_avg_time",
+                        "RpcProcessingTime_num_ops",
+                        "RpcQueueTime_avg_time",
+                        "RpcQueueTime_num_ops",
+                        "callQueueLen"
+                    ]
+                },
+                {
+                    "outputWriters": [
+                        {
+                            "@class": "com.googlecode.jmxtrans.model.output.GraphiteWriter",
+                            "settings": {
+                                "rootPrefix": "hadoop/tasktrackers",
+                                "port": "${graphite_port}",
+                                "host": "${graphite_host}"
+                            }
+                        }
+                    ],
+                    "obj": "Hadoop:service=TaskTracker,name=TaskTrackerMetrics",
+                    "resultAlias": "TaskTrackerMetrics",
+                    "attr": [
+                        "maps_running",
+                        "reduces_running",
+                        "tasks_completed"
+                    ]
+                },
+                {
+                    "outputWriters": [
+                        {
+                            "@class": "com.googlecode.jmxtrans.model.output.GraphiteWriter",
+                            "settings": {
+                                "rootPrefix": "hadoop/tasktrackers",
+                                "port": "${graphite_port}",
+                                "host": "${graphite_host}"
+                            }
+                        }
+                    ],
+                    "obj": "java.lang:type=OperatingSystem",
+                    "resultAlias": "Process",
+                    "attr": [
+                      "OpenFileDescriptorCount",
+                      "ProcessCpuLoad"
+                    ]
+                },
+                {
+                    "outputWriters": [
+                        {
+                            "@class": "com.googlecode.jmxtrans.model.output.GraphiteWriter",
+                            "settings": {
+                                "rootPrefix": "hadoop/tasktrackers",
+                                "port": "${graphite_port}",
+                                "host": "${graphite_host}"
+                            }
+                        }
+                    ],
+                    "obj": "java.lang:type=ClassLoading",
+                    "resultAlias": "Classloading",
+                    "attr": [ "LoadedClassCount"]
+                },
+                {
+                    "outputWriters": [
+                        {
+                            "@class": "com.googlecode.jmxtrans.model.output.GraphiteWriter",
+                            "settings": {
+                                "rootPrefix": "hadoop/tasktrackers",
+                                "port": "${graphite_port}",
+                                "host": "${graphite_host}"
+                            }
+                        }
+                    ],
+                    "obj" : "java.lang:type=Memory",
+                    "attr" : [ "HeapMemoryUsage", "NonHeapMemoryUsage" ],
+                    "resultAlias": "Memory"
+                },
+                {
+                    "outputWriters": [
+                        {
+                            "@class": "com.googlecode.jmxtrans.model.output.GraphiteWriter",
+                            "settings": {
+                                "rootPrefix": "hadoop/tasktrackers",
+                                "port": "${graphite_port}",
+                                "host": "${graphite_host}"
+                            }
+                        }
+                    ],
+                    "obj" : "java.lang:type=Threading",
+                    "attr" : [ "ThreadCount" ],
+                    "resultAlias": "Threading"
+                }
+            ],
+            "numQueryThreads": 2
+        }
+    ]
+}

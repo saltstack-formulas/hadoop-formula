@@ -1,0 +1,115 @@
+{
+    "servers": [
+        {
+            "port": 26005,
+            "host": "localhost",
+            "alias": "${source_alias}",
+            "queries": [
+                {
+                    "outputWriters": [
+                        {
+                            "@class": "com.googlecode.jmxtrans.model.output.GraphiteWriter",
+                            "settings": {
+                                "rootPrefix": "hadoop/jobtrackers",
+                                "port": "${graphite_port}",
+                                "host": "${graphite_host}"
+                            }
+                        }
+                    ],
+                    "obj": "Hadoop:service=JobTracker,name=JobTrackerInfo",
+                    "resultAlias": "JobTrackerInfo",
+                    "attr": [
+                          "ThreadCount"
+                    ]
+                },
+                {
+                    "outputWriters": [
+                        {
+                            "@class": "com.googlecode.jmxtrans.model.output.GraphiteWriter",
+                            "settings": {
+                                "port": "${graphite_port}",
+                                "host": "${graphite_host}"
+                            }
+                        }
+                    ],
+                    "obj": "Hadoop:service=JobTracker,name=RpcActivityForPort*",
+                    "resultAlias": "JobTrackerRpcActivity",
+                    "attr": [
+                        "NumOpenConnections",
+                        "ReceivedBytes",
+                        "SentBytes",
+                        "RpcProcessingTime_avg_time",
+                        "RpcProcessingTime_num_ops",
+                        "RpcQueueTime_avg_time",
+                        "RpcQueueTime_num_ops",
+                        "callQueueLen"
+                    ]
+                },
+                {
+                    "outputWriters": [
+                        {
+                            "@class": "com.googlecode.jmxtrans.model.output.GraphiteWriter",
+                            "settings": {
+                                "rootPrefix": "hadoop/jobtrackers",
+                                "port": "${graphite_port}",
+                                "host": "${graphite_host}"
+                            }
+                        }
+                    ],
+                    "obj": "java.lang:type=OperatingSystem",
+                    "resultAlias": "Process",
+                    "attr": [
+                      "OpenFileDescriptorCount",
+                      "ProcessCpuLoad"
+                    ]
+                },
+                {
+                    "outputWriters": [
+                        {
+                            "@class": "com.googlecode.jmxtrans.model.output.GraphiteWriter",
+                            "settings": {
+                                "rootPrefix": "hadoop/jobtrackers",
+                                "port": "${graphite_port}",
+                                "host": "${graphite_host}"
+                            }
+                        }
+                    ],
+                    "obj": "java.lang:type=ClassLoading",
+                    "resultAlias": "Classloading",
+                    "attr": [ "LoadedClassCount"]
+                },
+                {
+                    "outputWriters": [
+                        {
+                            "@class": "com.googlecode.jmxtrans.model.output.GraphiteWriter",
+                            "settings": {
+                                "rootPrefix": "hadoop/jobtrackers",
+                                "port": "${graphite_port}",
+                                "host": "${graphite_host}"
+                            }
+                        }
+                    ],
+                    "obj" : "java.lang:type=Memory",
+                    "attr" : [ "HeapMemoryUsage", "NonHeapMemoryUsage" ],
+                    "resultAlias": "Memory"
+                },
+                {
+                    "outputWriters": [
+                        {
+                            "@class": "com.googlecode.jmxtrans.model.output.GraphiteWriter",
+                            "settings": {
+                                "rootPrefix": "hadoop/jobtrackers",
+                                "port": "${graphite_port}",
+                                "host": "${graphite_host}"
+                            }
+                        }
+                    ],
+                    "obj" : "java.lang:type=Threading",
+                    "attr" : [ "ThreadCount" ],
+                    "resultAlias": "Threading"
+                }
+            ],
+            "numQueryThreads": 2
+        }
+    ]
+}
