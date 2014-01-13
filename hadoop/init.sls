@@ -56,6 +56,35 @@ hadoop-home-link:
     - require:
       - cmd.run: unpack-hadoop-dist
 
+{%- if hadoop.cdhmr1 %}
+
+{{ hadoop.alt_home }}/share/hadoop/mapreduce:
+  file.symlink:
+    - target: {{ hadoop.alt_home }}/share/hadoop/mapreduce1
+    - force: True
+
+rename-bin:
+  cmd.run:
+    - name: mv {{ hadoop.alt_home }}/bin {{ hadoop.alt_home }}/bin-mapreduce2
+    - unless: test -L {{ hadoop.alt_home }}/bin
+
+rename-config:
+  cmd.run:
+    - name: mv {{ hadoop.alt_home }}/etc/hadoop {{ hadoop.alt_home }}/etc/hadoop-mapreduce2
+    - unless: test -L {{ hadoop.alt_home }}/etc/hadoop
+
+{{ hadoop.alt_home }}/bin:
+  file.symlink:
+    - target: {{ hadoop.alt_home }}/bin-mapreduce1
+    - force: True
+
+{{ hadoop.alt_home }}/etc/hadoop:
+  file.symlink:
+    - target: {{ hadoop.alt_home }}/etc/hadoop-mapreduce1
+    - force: True
+
+{% endif %}
+
 /etc/profile.d/hadoop.sh:
   file.managed:
     - source: salt://hadoop/files/hadoop.sh.jinja
@@ -66,7 +95,7 @@ hadoop-home-link:
     - context:
       hadoop_config: {{ hadoop['alt_config'] }}
 
-{% if (hadoop['major_version'] == '1') %}
+{% if (hadoop['major_version'] == '1') and not hadoop.cdhmr1 %}
 {% set real_config_src = hadoop['real_home'] + '/conf' %}
 {% else %}
 {% set real_config_src = hadoop['real_home'] + '/etc/hadoop' %}
@@ -84,8 +113,8 @@ move-hadoop-dist-conf:
     - user: root
     - group: root
   cmd.run:
-    - name: mv  {{ real_config_src }} {{ hadoop['real_config_dist'] }}
-    - unless: test -L {{ real_config_src }}
+    - name: mv  {{ real_config_src }} {{ hadoop.real_config_dist }}
+    - unless: test -d {{ hadoop.real_config_dist }}
     - onlyif: test -d {{ real_config_src }}
     - require:
       - file.directory: {{ hadoop['real_home'] }}

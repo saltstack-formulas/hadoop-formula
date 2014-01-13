@@ -18,12 +18,12 @@ Available states
 ``hadoop``
 -------
 
-Downloads the hadoop tarball from the master (must exist as hadoop-<version>.tar.gz), installs the package. Creates the hadoop group for all other components to share.
+Downloads the hadoop tarball from the hadoop:source_url, installs the package, creates the hadoop group for all other components to share.
 
 ``hadoop.hdfs``
 --------------
 
-Installs the server configuration and starts the hadoop master server.
+Installs the hdfs service configuration and starts the hdfs services.
 Which services hadoop ends up running on a given host will depend on the text list files in the
 configuration directory and - in turn - on the roles defined via salt grains:
 
@@ -33,7 +33,7 @@ configuration directory and - in turn - on the roles defined via salt grains:
 ``hadoop.mapred``
 --------------
 
-Installs the mapreduce daemon scripts and configuration, adds directories.
+Installs the mapreduce service scripts and configuration, adds directories.
 Which services end up running on a given host will again depend on the role(s) assigned via grains:
 
 - hadoop_master will run the hadoop-jobtracker service
