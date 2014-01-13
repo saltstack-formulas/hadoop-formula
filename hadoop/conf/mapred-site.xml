@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+
+    <property>
+        <name>mapred.job.tracker</name>
+        <value>hdfs://{{ jobtracker_host }}:{{ jobtracker_port }}</value>
+    </property>
+
+    <property>
+        <name>mapred.local.dir</name>
+        <value>
+{%- for d in mapred_disks -%}
+{%- if loop.last -%}
+{{ d }}/mapred
+{%- else -%}
+{{ d }}/mapred,
+{%- endif -%}
+{%- endfor -%}</value>
+        <final>true</final>
+    </property>
+
+{%- set cfg = salt['pillar.get']('mapred:config:mapred-site', None) %}
+{%- if cfg %}
+{%- for name, dict in cfg.items() %}
+    <property>
+        <name>{{ name }}</name>
+        {% for key, value in dict.iteritems() %}<{{ key }}>{{ value }}</{{key}}>{% endfor %}
+    </property>
+{% endfor %}
+{% endif %}
+
+</configuration>

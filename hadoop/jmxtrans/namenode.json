@@ -1,0 +1,188 @@
+{
+    "servers": [
+        {
+            "port": 26001,
+            "host": "localhost",
+            "alias": "${source_alias}",
+            "queries": [
+                {
+                    "outputWriters": [
+                        {
+                            "@class": "com.googlecode.jmxtrans.model.output.GraphiteWriter",
+                            "settings": {
+                                "rootPrefix": "hadoop/namenodes",
+                                "port": "${graphite_port}",
+                                "host": "${graphite_host}"
+                            }
+                        }
+                    ],
+                    "obj": "Hadoop:service=NameNode,name=FSNamesystemState",
+                    "resultAlias": "NameNodeFSNamesystemState",
+                    "attr": [
+                          "CapacityTotal",
+                          "CapacityUsed",
+                          "CapacityRemaining",
+                          "TotalLoad",
+                          "BlocksTotal",
+                          "FilesTotal",
+                          "PendingReplicationBlocks",
+                          "UnderReplicatedBlocks",
+                          "ScheduledReplicationBlocks"
+                    ]
+                },
+                {
+                    "outputWriters": [
+                        {
+                            "@class": "com.googlecode.jmxtrans.model.output.GraphiteWriter",
+                            "settings": {
+                                "rootPrefix": "hadoop/namenodes",
+                                "port": "${graphite_port}",
+                                "host": "${graphite_host}"
+                            }
+                        }
+                    ],
+                    "obj": "Hadoop:service=NameNode,name=NameNode",
+                    "resultAlias": "NameNodeActivity",
+                    "attr": [
+                          "AddBlockOps",
+                          "fsImageLoadTime",
+                          "FilesRenamed",
+                          "Syncs_num_ops",
+                          "Syncs_avg_time",
+                          "JournalTransactionsBatchedInSync",
+                          "FileInfoOps",
+                          "CreateFileOps",
+                          "GetListingOps",
+                          "Transactions_num_ops",
+                          "Transactions_avg_time",
+                          "GetBlockLocations",
+                          "FilesInGetListingOps",
+                          "SafemodeTime",
+                          "FilesCreated",
+                          "FilesAppended",
+                          "DeleteFileOps",
+                          "blockReport_num_ops",
+                          "blockReport_avg_time"
+                    ]
+                },
+                {
+                    "outputWriters": [
+                        {
+                            "@class": "com.googlecode.jmxtrans.model.output.GraphiteWriter",
+                            "settings": {
+                                "rootPrefix": "hadoop/namenodes",
+                                "port": "${graphite_port}",
+                                "host": "${graphite_host}"
+                            }
+                        }
+                    ],
+                    "obj": "Hadoop:service=NameNode,name=NameNodeInfo",
+                    "resultAlias": "NameNodeInfo",
+                    "attr": [
+                          "Threads",
+                          "Used",
+                          "Total",
+                          "Free",
+                          "NonDfsUsedSpace",
+                          "PercentUsed",
+                          "PercentRemaining",
+                          "TotalBlocks",
+                          "TotalFiles"
+                    ]
+                },
+                {
+                    "outputWriters": [
+                        {
+                            "@class": "com.googlecode.jmxtrans.model.output.GraphiteWriter",
+                            "settings": {
+                                "rootPrefix": "hadoop/namenodes",
+                                "port": "${graphite_port}",
+                                "host": "${graphite_host}"
+                            }
+                        }
+                    ],
+                    "obj": "Hadoop:service=NameNode,name=RpcActivityForPort*",
+                    "resultAlias": "NameNodeRpcActivity",
+                    "attr": [
+                          "rpcAuthorizationSuccesses",
+                          "rpcAuthorizationFailures",
+                          "SentBytes",
+                          "ReceivedBytes",
+                          "NumOpenConnections",
+                          "callQueueLen",
+                          "rpcAuthenticationSuccesses",
+                          "rpcAuthenticationFailures",
+                          "RpcQueueTime_num_ops",
+                          "RpcQueueTime_avg_time",
+                          "RpcProcessingTime_num_ops",
+                          "RpcProcessingTime_avg_time"
+                    ]
+                },
+                {
+                    "outputWriters": [
+                        {
+                            "@class": "com.googlecode.jmxtrans.model.output.GraphiteWriter",
+                            "settings": {
+                                "rootPrefix": "hadoop/namenodes",
+                                "port": "${graphite_port}",
+                                "host": "${graphite_host}"
+                            }
+                        }
+                    ],
+                    "obj": "java.lang:type=OperatingSystem",
+                    "resultAlias": "Process",
+                    "attr": [
+                      "OpenFileDescriptorCount",
+                      "ProcessCpuLoad"
+                    ]
+                },
+                {
+                    "outputWriters": [
+                        {
+                            "@class": "com.googlecode.jmxtrans.model.output.GraphiteWriter",
+                            "settings": {
+                                "rootPrefix": "hadoop/namenodes",
+                                "port": "${graphite_port}",
+                                "host": "${graphite_host}"
+                            }
+                        }
+                    ],
+                    "obj": "java.lang:type=ClassLoading",
+                    "resultAlias": "Classloading",
+                    "attr": [ "LoadedClassCount"]
+                },
+                {
+                    "outputWriters": [
+                        {
+                            "@class": "com.googlecode.jmxtrans.model.output.GraphiteWriter",
+                            "settings": {
+                                "rootPrefix": "hadoop/namenodes",
+                                "port": "${graphite_port}",
+                                "host": "${graphite_host}"
+                            }
+                        }
+                    ],
+                    "obj" : "java.lang:type=Memory",
+                    "attr" : [ "HeapMemoryUsage", "NonHeapMemoryUsage" ],
+                    "resultAlias": "Memory"
+                },
+                {
+                    "outputWriters": [
+                        {
+                            "@class": "com.googlecode.jmxtrans.model.output.GraphiteWriter",
+                            "settings": {
+                                "rootPrefix": "hadoop/namenodes",
+                                "port": "${graphite_port}",
+                                "host": "${graphite_host}"
+                            }
+                        }
+                    ],
+                    "obj" : "java.lang:type=Threading",
+                    "attr" : [ "ThreadCount" ],
+                    "resultAlias": "Threading"
+                }
+            ],
+            "numQueryThreads": 2
+        }
+    ]
+}
