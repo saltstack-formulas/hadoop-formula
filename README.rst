@@ -14,6 +14,12 @@ Available states
 .. contents::
     :local:
 
+Formula Dependencies
+--------------------
+
+* hostsfile
+* sun-java
+
 ``hadoop``
 -------
 
@@ -51,4 +57,14 @@ Which services end up running on a given host will again depend on the role(s) a
 
 - hadoop_master will run the hadoop-resourcemanager service
 - hadoop_slave will run the hadoop-nodemanager service
+
+Configuration
+-------------
+
+As mentioned above, all installation and configuration is assinged via roles. 
+For the namenode address to be dynamically configured it is necessary to setup salt mine like below::
+
+    mine_functions:
+      network.interfaces: []
+      grains.items: []
 
