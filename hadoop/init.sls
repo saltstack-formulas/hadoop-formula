@@ -3,6 +3,7 @@ include:
   - hostsfile
   - ntp.server
   - sun-java
+  - sun-java.env
 
 {%- from 'hadoop/settings.sls' import hadoop with context %}
 # TODO: no users implemented in settings yet
