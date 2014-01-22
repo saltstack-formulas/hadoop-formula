@@ -58,8 +58,8 @@ Which services end up running on a given host will again depend on the role(s) a
 - hadoop_master will run the hadoop-resourcemanager service
 - hadoop_slave will run the hadoop-nodemanager service
 
-Configuration
--------------
+Salt Minion Configuration
+-------------------------
 
 As mentioned above, all installation and configuration is assinged via roles. 
 For the namenode address to be dynamically configured it is necessary to setup salt mine like below::
@@ -67,4 +67,45 @@ For the namenode address to be dynamically configured it is necessary to setup s
     mine_functions:
       network.interfaces: []
       grains.items: []
+
+Hadoop configuration
+--------------------
+
+The hadoop formula exposes the general (cluster-independent) part of the main configuration files (core-site.xml, hdfs-site.sml, mapred-site.xml) 
+as pillar keys.
+
+Example:
+::
+
+    hadoop:
+      config:
+        tmp_dir: /var/lib/hadoop/tmp
+        directory: /etc/hadoop/conf
+        core-site:
+          io.native.lib.available:
+            value: true
+          io.file.buffer.size:
+            value: 65536
+          fs.trash.interval:
+            value: 60
+
+Where the core-site part will appear in core-site.xml as:
+::
+
+    <property>
+        <name>io.native.lib.available</name>
+        <value>True</value>
+    </property>
+
+    <property>
+        <name>fs.trash.interval</name>
+        <value>60</value>
+    </property>
+
+    <property>
+        <name>io.file.buffer.size</name>
+        <value>65536</value>
+    </property>
+
+Please note that host- and cluster-specific values are not exposed (think: fs.default.name)
 
