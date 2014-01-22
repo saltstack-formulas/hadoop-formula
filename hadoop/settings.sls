@@ -1,7 +1,12 @@
 {% set p  = salt['pillar.get']('hadoop', {}) %}
 {% set pc = p.get('config', {}) %}
+{% set p_hdfs  = salt['pillar.get']('hdfs', {}) %}
+{% set pc_hdfs = p_hdfs.get('config', {}) %}
+
 {% set g  = salt['grains.get']('hadoop', {}) %}
 {% set gc = g.get('config', {}) %}
+{% set g_hdfs  = salt['grains.get']('hdfs', {}) %}
+{% set gc_hdfs = g_hdfs.get('config', {}) %}
 
 {%- set versions = {} %}
 
@@ -44,12 +49,29 @@
 {%- set version_info     = versions.get(dist_id, versions['apache-1.2.1']) %}
 {%- set alt_home         = salt['pillar.get']('hadoop:prefix', '/usr/lib/hadoop') %}
 {%- set real_home        = '/usr/lib/' + version_info['version_name'] %}
-{%- set alt_config       = salt['pillar.get']('hadoop:config:directory', '/etc/hadoop/conf') %}
+{%- set alt_config       = gc.get('directory', pc.get('directory', '/etc/hadoop/conf')) %}
+{%- set hdfs_repl_override = gc_hdfs.get('replication', pc_hdfs.get('replication', 'x')) %}
+
 {%- set real_config      = alt_config + '-' + version_info['version'] %}
 {%- set real_config_dist = alt_config + '.dist' %}
 
 # TODO: https://github.com/accumulo/hadoop-formula/issues/1 'Replace direct mine.get calls'
-{% set namenode_host = salt['mine.get']('roles:hadoop_master', 'network.interfaces', 'grain').keys()|first() -%}
+{%- set namenode_host  = salt['mine.get']('roles:hadoop_master', 'network.interfaces', 'grain').keys()|first() %}
+{%- set datanode_count = salt['mine.get']('roles:hadoop_slave', 'network.ip_addrs', 'grain').keys()|count() %}
+
+{%- if hdfs_repl_override == 'x' %}
+{%- if datanode_count >= 3 %}
+{%- set replicas = '3' %}
+{%- elif datanode_count == 2 %}
+{%- set replicas = '2' %}
+{%- else %}
+{%- set replicas = '1' %}
+{%- endif %}
+{%- endif %}
+
+{%- if hdfs_repl_override != 'x' %}
+{%- set replicas = hdfs_repl_override %}
+{%- endif %}
 
 {%- if version_info['major_version'] == '1' %}
 {%- set dfs_cmd = alt_home + '/bin/hadoop dfs' %}
@@ -70,5 +92,7 @@
                           'real_config'      : real_config,
                           'real_config_dist' : real_config_dist,
                           'namenode_host'    : namenode_host,
-                          'dfs_cmd'          : dfs_cmd
+                          'dfs_cmd'          : dfs_cmd,
+                          'datanode_count'   : datanode_count,
+                          'hdfs_replicas'    : replicas
                       }) %}

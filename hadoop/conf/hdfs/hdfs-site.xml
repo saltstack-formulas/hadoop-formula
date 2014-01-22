@@ -56,6 +56,11 @@
         <final>true</final>
     </property>
 
+    <property>
+        <name>dfs.replication</name>
+        <value>{{ hdfs_replicas }}</value>
+    </property>
+
 {%- set t = salt['pillar.get']('hdfs:config:hdfs-site', None) %}
 {%- if t %}
 {%- for name, cdict in t.items() %}
@@ -66,10 +71,6 @@
 {% endfor %}
 
 {%- else %}
-    <property>
-        <name>dfs.replication</name>
-        <value>1</value>
-    </property>
     <property>
         <name>dfs.permission</name>
         <value>false</value>

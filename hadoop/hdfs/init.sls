@@ -61,6 +61,7 @@ include:
       hadoop: {{ hadoop }}
       namenode_host: {{ hadoop['namenode_host'] }}
       major: {{ hadoop['major_version'] }}
+      hdfs_replicas: {{ hadoop.hdfs_replicas }}
 
 {{ hadoop['alt_config'] }}/masters:
   file.managed:
