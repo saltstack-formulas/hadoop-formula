@@ -62,8 +62,29 @@ Salt Minion Configuration
 -------------------------
 
 As mentioned above, all installation and configuration is assinged via roles. 
-For the namenode address to be dynamically configured it is necessary to setup salt mine like below::
+Mounted disks (or just directories) can be configured for use with hdfs and mapreduce via grains.
 
+Example /etc/salt/grains for a datanode:
+::
+
+    hdfs_data_disks:
+      - /data1
+      - /data2
+      - /data3
+      - /data4
+
+    mapred_data_disks:
+      - /data1
+      - /data2
+      - /data3
+      - /data4
+
+    roles:
+      - hadoop_slave
+      - accumulo_slave
+
+For the namenode address to be dynamically configured it is necessary to setup salt mine like below::
+::
     mine_functions:
       network.interfaces: []
       grains.items: []
