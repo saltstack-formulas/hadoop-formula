@@ -88,6 +88,11 @@ case ${prog} in
         DAEMON_USER=$YARN_USER
         DAEMON_SCRIPT="${HADOOP_PREFIX}/sbin/yarn-daemon.sh"
         ;;
+    historyserver )
+        DAEMON="MR-HistoryServer"
+        DAEMON_USER=$MAPRED_USER
+        DAEMON_SCRIPT="${HADOOP_PREFIX}/sbin/mr-jobhistory-daemon.sh"
+        ;;
     * )
         logger "No such hadoop node type (${prog}); stopping startup for ${script_name}"
         exit 1

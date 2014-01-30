@@ -4,11 +4,6 @@
 <configuration>
 
     <property>
-        <name>mapred.job.tracker</name>
-        <value>hdfs://{{ jobtracker_host }}:{{ jobtracker_port }}</value>
-    </property>
-
-    <property>
         <name>mapred.local.dir</name>
         <value>
 {%- for d in mapred_disks -%}
@@ -21,14 +16,11 @@
         <final>true</final>
     </property>
 
-{%- set cfg = salt['pillar.get']('mapred:config:mapred-site', None) %}
-{%- if cfg %}
-{%- for name, dict in cfg.items() %}
+{%- for name, vdict in mapred_dict.items() %}
     <property>
         <name>{{ name }}</name>
-        {% for key, value in dict.iteritems() %}<{{ key }}>{{ value }}</{{key}}>{% endfor %}
+        {% for key, value in vdict.iteritems() %}<{{ key }}>{{ value }}</{{key}}>{% endfor %}
     </property>
 {% endfor %}
-{% endif %}
 
 </configuration>
