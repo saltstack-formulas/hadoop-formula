@@ -24,9 +24,11 @@ export YARN_USER=yarn
 export HADOOP_LOG_DIR={{ logs }}
 export HDFS_LOG_DIR={{ logs }}
 export MAPRED_LOG_DIR={{ logs }}
+export HADOOP_MAPRED_LOG_DIR={{ logs }}
 export YARN_LOG_DIR={{ logs }}
 
 export HADOOP_PID_DIR={{ pids }}
 export HDFS_PID_DIR={{ pids }}
 export MAPRED_PID_DIR={{ pids }}
+export HADOOP_MAPRED_PID_DIR={{ pids }}
 export YARN_PID_DIR={{ pids }}
