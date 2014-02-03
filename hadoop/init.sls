@@ -12,6 +12,8 @@ include:
 hadoop:
   group.present:
     - gid: {{ hadoop_users.get('hadoop', '6000') }}
+
+create-common-folders:
   file.directory:
     - user: root
     - group: hadoop

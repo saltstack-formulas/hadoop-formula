@@ -47,6 +47,7 @@ include:
   file.managed:
     - source: salt://hadoop/conf/hdfs/core-site.xml
     - template: jinja
+    - mode: 644
     - context:
       hdfs_disks: {{ hdfs_disks }}
       hadoop: {{ hadoop }}
@@ -56,6 +57,7 @@ include:
   file.managed:
     - source: salt://hadoop/conf/hdfs/hdfs-site.xml
     - template: jinja
+    - mode: 644
     - context:
       hdfs_disks: {{ hdfs_disks }}
       hadoop: {{ hadoop }}
@@ -67,12 +69,14 @@ include:
   file.managed:
     - source: salt://hadoop/conf/hdfs/masters
     - template: jinja
+    - mode: 644
     - context:
       namenode_host: {{ hadoop['namenode_host'] }}
 
 {{ hadoop['alt_config'] }}/slaves:
   file.managed:
     - source: salt://hadoop/conf/hdfs/slaves
+    - mode: 644
     - template: jinja
 
 {%- if 'hadoop_master' in all_roles %}
