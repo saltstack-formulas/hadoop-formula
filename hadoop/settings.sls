@@ -50,6 +50,7 @@
 {%- set alt_home         = salt['pillar.get']('hadoop:prefix', '/usr/lib/hadoop') %}
 {%- set real_home        = '/usr/lib/' + version_info['version_name'] %}
 {%- set alt_config       = gc.get('directory', pc.get('directory', '/etc/hadoop/conf')) %}
+{%- set namenode_port    = gc.get('namenode_port', pc.get('namenode_port', '8020')) %}
 {%- set hdfs_repl_override = gc_hdfs.get('replication', pc_hdfs.get('replication', 'x')) %}
 
 {%- set real_config      = alt_config + '-' + version_info['version'] %}
@@ -58,6 +59,10 @@
 # TODO: https://github.com/accumulo/hadoop-formula/issues/1 'Replace direct mine.get calls'
 {%- set namenode_host  = salt['mine.get']('roles:hadoop_master', 'network.interfaces', 'grain').keys()|first() %}
 {%- set datanode_count = salt['mine.get']('roles:hadoop_slave', 'network.ip_addrs', 'grain').keys()|count() %}
+
+{%- set local_disks     = gc.get('hdfs_data_disks', pc.get('hdfs_data_disks', ['/data'])) %}
+{%- set tmp_root        = local_disks|first() %}
+{%- set tmp_dir         = tmp_root + '/tmp' %}
 
 {%- if hdfs_repl_override == 'x' %}
 {%- if datanode_count >= 3 %}
@@ -92,7 +97,10 @@
                           'real_config'      : real_config,
                           'real_config_dist' : real_config_dist,
                           'namenode_host'    : namenode_host,
+                          'namenode_port'    : namenode_port,
                           'dfs_cmd'          : dfs_cmd,
                           'datanode_count'   : datanode_count,
-                          'hdfs_replicas'    : replicas
+                          'hdfs_replicas'    : replicas,
+                          'tmp_dir'          : tmp_dir,
+                          'local_disks'      : local_disks,
                       }) %}

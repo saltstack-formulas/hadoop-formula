@@ -7,6 +7,16 @@ include:
 {%- from 'hadoop/user_macro.sls' import hadoop_user with context %}
 {%- from 'hadoop/hdfs_mkdir_macro.sls' import hdfs_mkdir with context %}
 
+{%- if hadoop.major_version|string() == '1' %}
+{% do mapred_site_dict.update({
+'mapred.job.tracker': { 'value': mapred.jobtracker_host + ':' + mapred.jobtracker_port|string },
+'mapred.job.tracker.http.address': { 'value': mapred.jobtracker_host + ':' + mapred.jobtracker_http_port|string } }) %}
+{% else %}
+{% do mapred_site_dict.update({
+'mapreduce.job.tracker': { 'value': mapred.jobtracker_host + ':' + mapred.jobtracker_port|string },
+'mapreduce.job.tracker.http.address': { 'value': mapred.jobtracker_host + ':' + mapred.jobtracker_http_port|string } }) %}
+{%- endif %}
+
 # TODO: for what is ends up doing this state is way too complex
 # TODO: no users implemented in settings yet
 {%- set hadoop_users = hadoop.get('users', {}) %}
@@ -31,10 +41,10 @@ include:
     - mode: 644
     - context:
       mapred_disks:
-{%- for mrdisk in mapred.local_disks %}
+{%- for mr_disk in mapred.local_disks %}
         - {{ mr_disk }}
 {%- endfor %}
-      major: {{ hadoop['major_version'] }}
+      major: {{ hadoop.major_version }}
       mapred_dict:
 {%- for k, v in mapred_site_dict.items() %}
         {{ k }}:

@@ -11,7 +11,8 @@ include:
 {% set uid = hadoop_users.get(username, '6001') %}
 {{ hadoop_user(username, uid) }}
 # every node can advertise any JBOD drives to the framework by setting salt grains
-{%- set hdfs_disks = salt['grains.get']('hdfs_data_disks', ['/data']) %}
+{%- set hdfs_disks = hadoop.local_disks %}
+{%- set test_folder = hdfs_disks|first() + '/hdfs/nn/current' %}
 
 {% for disk in hdfs_disks %}
 {{ disk }}/hdfs:
@@ -32,6 +33,13 @@ include:
     - makedirs: True
 {% endif %}
 
+{{ hadoop.tmp_dir }}:
+  file.directory:
+    - user: {{ username }}
+    - group: hadoop
+    - makedirs: True
+    - mode: 775
+
 {% if 'hadoop_slave' in all_roles %}
 
 {{ disk }}/hdfs/dn:
@@ -51,7 +59,9 @@ include:
     - context:
       hdfs_disks: {{ hdfs_disks }}
       hadoop: {{ hadoop }}
-      namenode_host: {{ hadoop['namenode_host'] }}
+      namenode_host: {{ hadoop.namenode_host }}
+      namenode_port: {{ hadoop.namenode_port }}
+      hadoop_tmp_dir: {{ hadoop.tmp_dir }}
 
 {{ hadoop['alt_config'] }}/hdfs-site.xml:
   file.managed:
@@ -80,7 +90,6 @@ include:
     - template: jinja
 
 {%- if 'hadoop_master' in all_roles %}
-{%- set test_folder = hdfs_disks|first() + '/hdfs/nn/current' %}
 
 format-namenode:
   cmd.run:

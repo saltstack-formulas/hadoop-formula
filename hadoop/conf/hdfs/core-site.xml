@@ -2,19 +2,15 @@
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 
 <configuration>
-    <property>
-        <name>io.native.lib.available</name>
-        <value>true</value>
-    </property>
-     
+
     <property>
         <name>fs.default.name</name>
-        <value>hdfs://{{ namenode_host }}:{{ salt['pillar.get']('hadoop:config:namenode_port', '8020') }}</value>
+        <value>hdfs://{{ namenode_host }}:{{ namenode_port }}</value>
     </property>
      
     <property>
         <name>hadoop.tmp.dir</name>
-        <value>{{ salt['pillar.get']('hadoop:config:tmp_dir', '/tmp') }}</value>
+        <value>{{ hadoop_tmp_dir }}</value>
     </property>
 
 {%- for name, dict in salt['pillar.get']('hadoop:config:core-site', {}).items() %}
