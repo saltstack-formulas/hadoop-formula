@@ -13,6 +13,7 @@
 {%- set history_done_dir = history_dir + '/done' %}
 
 {% set jobtracker_host = salt['mine.get']('roles:hadoop_master', 'network.interfaces', 'grain').keys()|first() -%}
+{% set local_disks = gc.get('mapred_data_disks', pc.get('mapred_data_disks', ['/data'])) %}
 
 # make the settings in mapred-site.xml consistent
 {%- do mapred_site_dict.update({ 'mapreduce.job.tracker': { 'value': jobtracker_host + ':' + jobtracker_port|string },
@@ -29,5 +30,6 @@
                        'jobhistory_webapp_port'        : jobhistory_webapp_port,
                        'history_dir'                   : history_dir,
                        'history_intermediate_done_dir' : history_intermediate_done_dir,
-                       'history_done_dir'              : history_done_dir
+                       'history_done_dir'              : history_done_dir,
+                       'local_disks'                   : local_disks,
                     }) %}

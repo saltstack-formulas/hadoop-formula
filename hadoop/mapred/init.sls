@@ -11,24 +11,16 @@ include:
 # TODO: no users implemented in settings yet
 {%- set hadoop_users = hadoop.get('users', {}) %}
 
-{% set mapred_disks = salt['pillar.get']('mapred_data_disks', ['/data']) %}
 {% set username = 'mapred' %}
 {% set uid = hadoop_users.get(username, '6002') %}
 {{ hadoop_user(username, uid) }}
 
-/tmp/gaga:
-  file.managed:
-    - contents: |
-{%- for a,d in mapred_site_dict.items() %}
-      {{ a }} : {{ d.value }}
-{%- endfor %}
-
-
-{% for disk in mapred_disks %}
+{% for disk in mapred.local_disks %}
 {{ disk }}/mapred:
   file.directory:
     - user: {{ username }}
-    - group: root
+    - group: hadoop
+    - mode: 775
     - makedirs: True
 {% endfor %}
 
@@ -36,8 +28,12 @@ include:
   file.managed:
     - source: salt://hadoop/conf/mapred-site.xml
     - template: jinja
+    - mode: 644
     - context:
-      mapred_disks: {{ mapred_disks }}
+      mapred_disks:
+{%- for mrdisk in mapred.local_disks %}
+        - {{ mr_disk }}
+{%- endfor %}
       major: {{ hadoop['major_version'] }}
       mapred_dict:
 {%- for k, v in mapred_site_dict.items() %}
