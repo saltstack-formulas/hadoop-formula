@@ -58,9 +58,10 @@
 
 # TODO: https://github.com/accumulo/hadoop-formula/issues/1 'Replace direct mine.get calls'
 {%- set namenode_host  = salt['mine.get']('roles:hadoop_master', 'network.interfaces', 'grain').keys()|first() %}
+{%- set datanode_hosts = salt['mine.get']('roles:hadoop_slave', 'network.interfaces', 'grain').keys() %}
 {%- set datanode_count = salt['mine.get']('roles:hadoop_slave', 'network.ip_addrs', 'grain').keys()|count() %}
 
-{%- set local_disks     = gc.get('hdfs_data_disks', pc.get('hdfs_data_disks', ['/data'])) %}
+{%- set local_disks     = salt['grains.get']('hdfs_data_disks', ['/data']) %}
 {%- set tmp_root        = local_disks|first() %}
 {%- set tmp_dir         = tmp_root + '/tmp' %}
 
@@ -97,6 +98,7 @@
                           'real_config'      : real_config,
                           'real_config_dist' : real_config_dist,
                           'namenode_host'    : namenode_host,
+                          'datanode_hosts'   : datanode_hosts,
                           'namenode_port'    : namenode_port,
                           'dfs_cmd'          : dfs_cmd,
                           'datanode_count'   : datanode_count,
