@@ -69,4 +69,19 @@
 {{ hdfs.config_hdfs_site }}
 {%- endif %}
 
+    <property>
+        <name>dfs.permission</name>
+        <value>false</value>
+    </property>
+
+    <property>
+        <name>dfs.durable.sync</name>
+        <value>true</value>
+    </property>
+
+    <property>
+        <name>dfs.datanode.synconclose</name>
+        <value>true</value>
+    </property>
+
 </configuration>
