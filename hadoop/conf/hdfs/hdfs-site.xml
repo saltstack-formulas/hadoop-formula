@@ -1,4 +1,11 @@
-{%- from 'hadoop/settings.sls' import hadoop with context %}
+<!DOCTYPE configuration [
+        <!ELEMENT configuration (property)*>
+        <!ELEMENT property (name|value|final)*>
+        <!ELEMENT name (#PCDATA)>
+        <!ELEMENT value (#PCDATA)>
+        <!ELEMENT final (#PCDATA)>
+        ]>
+        {%- from 'hadoop/settings.sls' import hadoop with context %}
 {%- from 'hadoop/hdfs/settings.sls' import hdfs with context %}
 {%- set major = hadoop.major_version|string() -%}
 <?xml version="1.0" encoding="UTF-8"?>
@@ -6,7 +13,7 @@
 
 <configuration>
     <property>
-{%- if major == 1 %}
+{%- if major == '1' %}
         <name>dfs.name.dir</name>
 {%- else %}
         <name>dfs.namenode.name.dir</name>
@@ -23,7 +30,7 @@
     </property>
 
     <property>
-{%- if major == 1 %}
+{%- if major == '1' %}
         <name>dfs.data.dir</name>
 {%- else %}
         <name>dfs.datanode.data.dir</name>
