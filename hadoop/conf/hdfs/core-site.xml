@@ -1,5 +1,6 @@
 {%- from 'hadoop/settings.sls' import hadoop with context %}
 {%- from 'hadoop/hdfs/settings.sls' import hdfs with context %}
+{%- set dyn_cfg = hadoop.get('config_core_site', {}) %}
 {%- set major = hadoop.major_version|string() -%}
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
@@ -36,9 +37,13 @@
     </property>
 -->
 
-{%- if hadoop.config_core_site != '' %}
-    <!-- added configuration -->
-{{ hadoop.config_core_site }}
-{%- endif %}
+{%- for name, subdict in dyn_cfg.items() %}
+    <property>
+        <name>{{ name }}</name>
+{%- for k,v in subdict.items() %}
+        <{{k}}>{{ v }}</{{k}}>
+{%- endfor %}
+    </property>
 
+{%- endfor %}
 </configuration>

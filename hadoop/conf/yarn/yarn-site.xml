@@ -2,6 +2,7 @@
 {%- from 'hadoop/hdfs/settings.sls' import hdfs with context %}
 {%- from 'hadoop/mapred/settings.sls' import mapred with context %}
 {%- from 'hadoop/yarn/settings.sls' import yarn with context %}
+{%- set dyn_cfg = yar.get('config_yarn_site', {}) %}
 {%- set major = hadoop.major_version|string() -%}<?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 
@@ -35,21 +36,6 @@
         <name>yarn.log.server.url</name>
         <value>http://{{ mapred.jobtracker_host }}:{{ mapred.jobhistory_webapp_port }}/jobhistory/logs/</value>
         <description>URL for job history server</description>
-    </property>
-
-    <property>
-        <name>yarn.nodemanager.aux-services</name>
-        <value>mapreduce_shuffle</value>
-    </property>
-     
-    <property>
-        <name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
-        <value>org.apache.hadoop.mapred.ShuffleHandler</value>
-    </property>
-
-    <property>
-        <name>yarn.resourcemanager.scheduler.class</name>
-        <value>org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler</value>
     </property>
 
     <property>
@@ -88,4 +74,13 @@
 {%- endfor -%}</value>
     </property>
 
+{%- for name, subdict in dyn_cfg.items() %}
+    <property>
+        <name>{{ name }}</name>
+{%- for k,v in subdict.items() %}
+        <{{k}}>{{ v }}</{{k}}>
+{%- endfor %}
+    </property>
+
+{%- endfor %}
 </configuration>

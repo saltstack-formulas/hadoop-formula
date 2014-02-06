@@ -1,5 +1,6 @@
 {%- from 'hadoop/settings.sls' import hadoop with context %}
 {%- from 'hadoop/hdfs/settings.sls' import hdfs with context %}
+{%- set dyn_cfg = hdfs.get('config_hdfs_site', {}) %}
 {%- set major = hadoop.major_version|string() -%}
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
@@ -64,24 +65,13 @@
         <value>{{ hdfs.replicas }}</value>
     </property>
 
-{%- if hdfs.config_hdfs_site != '' %}
-    <!-- added configuration -->
-{{ hdfs.config_hdfs_site }}
-{%- endif %}
-
+{%- for name, subdict in dyn_cfg.items() %}
     <property>
-        <name>dfs.permission</name>
-        <value>false</value>
+        <name>{{ name }}</name>
+{%- for k,v in subdict.items() %}
+        <{{k}}>{{ v }}</{{k}}>
+{%- endfor %}
     </property>
 
-    <property>
-        <name>dfs.durable.sync</name>
-        <value>true</value>
-    </property>
-
-    <property>
-        <name>dfs.datanode.synconclose</name>
-        <value>true</value>
-    </property>
-
+{%- endfor %}
 </configuration>

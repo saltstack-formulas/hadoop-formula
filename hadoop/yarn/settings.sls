@@ -11,7 +11,7 @@
 
 {%- set resourcemanager_host        = salt['mine.get']('roles:hadoop_master', 'network.interfaces', 'grain').keys()|first() -%}
 {%- set local_disks                 = salt['grains.get']('yarn_data_disks', ['/yarn_data']) %}
-{%- set config_yarn_site          = gc.get('yarn-site-xml', pc.get('yarn-site-xml', "")) %}
+{%- set config_yarn_site            = gc.get('yarn-site', pc.get('yarn-site', {})) %}
 
 {%- set yarn = {} %}
 {%- do yarn.update({ 'resourcetracker_port'        : resourcetracker_port,

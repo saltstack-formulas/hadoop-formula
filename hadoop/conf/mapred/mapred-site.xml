@@ -1,6 +1,7 @@
 {%- from 'hadoop/settings.sls' import hadoop with context %}
 {%- from 'hadoop/hdfs/settings.sls' import hdfs with context %}
 {%- from 'hadoop/mapred/settings.sls' import mapred with context %}
+{%- set dyn_cfg = mapred.get('config_mapred_site', {}) %}
 {%- set major = hadoop.major_version|string() -%}
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
@@ -64,9 +65,13 @@
     </property>
 {%- endif %}
 
-{%- if mapred.config_mapred_site != '' %}
-    <!-- added configuration -->
-{{ mapred.config_mapred_site }}
-{%- endif %}
+{%- for name, subdict in dyn_cfg.items() %}
+    <property>
+        <name>{{ name }}</name>
+{%- for k,v in subdict.items() %}
+        <{{k}}>{{ v }}</{{k}}>
+{%- endfor %}
+    </property>
 
+{%- endfor %}
 </configuration>

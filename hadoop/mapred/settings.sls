@@ -13,7 +13,7 @@
 
 {%- set jobtracker_host = salt['mine.get']('roles:hadoop_master', 'network.interfaces', 'grain').keys()|first() -%}
 {%- set local_disks     = salt['grains.get']('mapred_data_disks', ['/data']) %}
-{%- set config_mapred_site = gc.get('mapred-site-xml', pc.get('mapred-site-xml', "")) %}
+{%- set config_mapred_site = gc.get('mapred-site', pc.get('mapred-site', {})) %}
 
 {%- set mapred = {} %}
 {%- do mapred.update({ 'jobtracker_port'               : jobtracker_port|string(),

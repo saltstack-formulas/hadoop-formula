@@ -31,7 +31,7 @@
 {%- set replicas = hdfs_repl_override %}
 {%- endif %}
 
-{%- set config_hdfs_site = gc.get('hdfs-site-xml', pc.get('hdfs-site-xml', "")) %}
+{%- set config_hdfs_site = gc.get('hdfs-site', pc.get('hdfs-site', {})) %}
 
 {%- set hdfs = {} %}
 {%- do hdfs.update({ 'local_disks'                 : local_disks,
