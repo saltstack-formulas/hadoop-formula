@@ -1,15 +1,9 @@
 {% set p  = salt['pillar.get']('hadoop', {}) %}
 {% set pc = p.get('config', {}) %}
-{% set p_hdfs  = salt['pillar.get']('hdfs', {}) %}
-{% set pc_hdfs = p_hdfs.get('config', {}) %}
-
 {% set g  = salt['grains.get']('hadoop', {}) %}
 {% set gc = g.get('config', {}) %}
-{% set g_hdfs  = salt['grains.get']('hdfs', {}) %}
-{% set gc_hdfs = g_hdfs.get('config', {}) %}
 
 {%- set versions = {} %}
-
 {%- set default_dist_id = 'apache-1.2.1' %}
 {%- set dist_id = g.get('version', p.get('version', default_dist_id)) %}
 
@@ -50,40 +44,17 @@
 {%- set alt_home         = salt['pillar.get']('hadoop:prefix', '/usr/lib/hadoop') %}
 {%- set real_home        = '/usr/lib/' + version_info['version_name'] %}
 {%- set alt_config       = gc.get('directory', pc.get('directory', '/etc/hadoop/conf')) %}
-{%- set namenode_port    = gc.get('namenode_port', pc.get('namenode_port', '8020')) %}
-{%- set hdfs_repl_override = gc_hdfs.get('replication', pc_hdfs.get('replication', 'x')) %}
-
 {%- set real_config      = alt_config + '-' + version_info['version'] %}
 {%- set real_config_dist = alt_config + '.dist' %}
-
-# TODO: https://github.com/accumulo/hadoop-formula/issues/1 'Replace direct mine.get calls'
-{%- set namenode_host  = salt['mine.get']('roles:hadoop_master', 'network.interfaces', 'grain').keys()|first() %}
-{%- set datanode_hosts = salt['mine.get']('roles:hadoop_slave', 'network.interfaces', 'grain').keys() %}
-{%- set datanode_count = salt['mine.get']('roles:hadoop_slave', 'network.ip_addrs', 'grain').keys()|count() %}
-
-{%- set local_disks     = salt['grains.get']('hdfs_data_disks', ['/data']) %}
-{%- set tmp_root        = local_disks|first() %}
-{%- set tmp_dir         = tmp_root + '/tmp' %}
-
-{%- if hdfs_repl_override == 'x' %}
-{%- if datanode_count >= 3 %}
-{%- set replicas = '3' %}
-{%- elif datanode_count == 2 %}
-{%- set replicas = '2' %}
-{%- else %}
-{%- set replicas = '1' %}
-{%- endif %}
-{%- endif %}
-
-{%- if hdfs_repl_override != 'x' %}
-{%- set replicas = hdfs_repl_override %}
-{%- endif %}
 
 {%- if version_info['major_version'] == '1' %}
 {%- set dfs_cmd = alt_home + '/bin/hadoop dfs' %}
 {%- else %}
 {%- set dfs_cmd = alt_home + '/bin/hdfs dfs' %}
 {%- endif %}
+
+{%- set java_home        = salt['pillar.get']('java_home', '/usr/lib/java') %}
+{%- set config_core_site = gc.get('core-site-xml', pc.get('core-site-xml', "")) %}
 
 {%- set hadoop = {} %}
 {%- do hadoop.update( {   'dist_id'          : dist_id,
@@ -97,12 +68,7 @@
                           'alt_config'       : alt_config,
                           'real_config'      : real_config,
                           'real_config_dist' : real_config_dist,
-                          'namenode_host'    : namenode_host,
-                          'datanode_hosts'   : datanode_hosts,
-                          'namenode_port'    : namenode_port,
                           'dfs_cmd'          : dfs_cmd,
-                          'datanode_count'   : datanode_count,
-                          'hdfs_replicas'    : replicas,
-                          'tmp_dir'          : tmp_dir,
-                          'local_disks'      : local_disks,
+                          'java_home'        : java_home,
+                          'config_core_site' : config_core_site,
                       }) %}

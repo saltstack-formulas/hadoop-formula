@@ -1,23 +1,44 @@
+{%- from 'hadoop/settings.sls' import hadoop with context %}
+{%- from 'hadoop/hdfs/settings.sls' import hdfs with context %}
+{%- set major = hadoop.major_version|string() -%}
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 
 <configuration>
+{%- if major == '1' %}
+    <property>
+        <name>fs.checkpoint.dir</name>
+        <value>
+{%- for d in hdfs.local_disks -%}
+{%- if loop.last -%}
+{{ d }}/hdfs/snn
+{%- else -%}
+{{ d }}/hdfs/snn,
+{%- endif -%}
+{%- endfor -%}</value>
+        <final>true</final>
+    </property>
+{%- endif %}
 
     <property>
+{%- if major == '1' %}
         <name>fs.default.name</name>
-        <value>hdfs://{{ namenode_host }}:{{ namenode_port }}</value>
+{%- else %}
+        <name>fs.defaultFS</name>
+{%- endif %}
+        <value>hdfs://{{ hdfs.namenode_host }}:{{ hdfs.namenode_port }}</value>
     </property>
      
+<!--
     <property>
         <name>hadoop.tmp.dir</name>
-        <value>{{ hadoop_tmp_dir }}</value>
+        <value>{{ hdfs.tmp_dir }}</value>
     </property>
+-->
 
-{%- for name, dict in salt['pillar.get']('hadoop:config:core-site', {}).items() %}
-    <property>
-        <name>{{ name }}</name>
-        {% for key, value in dict.items() %}<{{ key }}>{{ value }}</{{key}}>{% endfor %}
-    </property>
-{% endfor %}
+{%- if hadoop.config_core_site != '' %}
+    <!-- added configuration -->
+{{ hadoop.config_core_site }}
+{%- endif %}
 
 </configuration>

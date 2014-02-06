@@ -2,23 +2,18 @@ include:
   - hadoop.mapred
 
 {%- from "hadoop/settings.sls" import hadoop with context %}
+{%- from "hadoop/yarn/settings.sls" import yarn with context %}
 {%- from "hadoop/user_macro.sls" import hadoop_user with context %}
 # TODO: no users implemented in settings yet
 {%- set hadoop_users = hadoop.get('users', {}) %}
-{%- set yarn = pillar.get('yarn', {}) %}
 
 {%- if hadoop['major_version'] == '2' %}
-
-{% set yarn_disks = salt['pillar.get']('mapred_data_disks', ['/data']) %}
 
 {% set username = 'yarn' %}
 {% set uid = hadoop_users.get(username, '6003') %}
 {{ hadoop_user(username, uid) }}
 
-{% set resourcemanager_host = salt['mine.get']('roles:hadoop_master', 'network.interfaces', 'grain').keys()|first() -%}
-{% set resourcemanager_port = salt['pillar.get']('mapred:config:resourcemanager_port', '8032') %}
-
-{% for disk in yarn_disks %}
+{% for disk in yarn.local_disks %}
 {{ disk }}/yarn:
   file.directory:
     - user: root
@@ -38,15 +33,22 @@ include:
       - file: {{ disk }}/yarn
 {% endfor %}
 
-{{ hadoop['alt_config'] }}/yarn-site.xml:
+{{ hadoop.alt_config }}/yarn-site.xml:
   file.managed:
-    - source: salt://hadoop/conf/yarn-site.xml
+    - source: salt://hadoop/conf/yarn/yarn-site.xml
+    - mode: 644
+    - user: root
     - template: jinja
-    - context:
-      yarn_disks: {{ yarn_disks }}
-      resourcemanager_host: {{ resourcemanager_host }}
 
-{{ hadoop['alt_config'] }}/capacity-scheduler.xml:
+{{ hadoop.alt_config }}/container-executor.cfg:
+  file.managed:
+    - source: salt://hadoop/conf/yarn/container-executor.cfg
+    - mode: 644
+    - user: root
+    - group: root
+    - template: jinja
+
+{{ hadoop.alt_config }}/capacity-scheduler.xml:
   file.copy:
     - source: {{ hadoop['real_config_dist'] }}/capacity-scheduler.xml
     - user: root

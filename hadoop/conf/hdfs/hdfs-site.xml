@@ -1,3 +1,6 @@
+{%- from 'hadoop/settings.sls' import hadoop with context %}
+{%- from 'hadoop/hdfs/settings.sls' import hdfs with context %}
+{%- set major = hadoop.major_version|string() -%}
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 
@@ -7,9 +10,9 @@
         <name>dfs.name.dir</name>
 {%- else %}
         <name>dfs.namenode.name.dir</name>
-{% endif %}
+{%- endif %}
         <value>
-{%- for d in hdfs_disks -%}
+{%- for d in hdfs.local_disks -%}
 {%- if loop.last -%}
 {{ d }}/hdfs/nn
 {%- else -%}
@@ -24,9 +27,9 @@
         <name>dfs.data.dir</name>
 {%- else %}
         <name>dfs.datanode.data.dir</name>
-{% endif %}
+{%- endif %}
         <value>
-{%- for d in hdfs_disks -%}
+{%- for d in hdfs.local_disks -%}
 {%- if loop.last -%}
 {{ d }}/hdfs/dn
 {%- else -%}
@@ -37,52 +40,33 @@
     </property>
 
     <property>
-{%- if major == 1 %}
+{%- if major == '1' %}
         <name>dfs.http-address</name>
 {%- else %}
         <name>dfs.datanode.http-address</name>
-{% endif %}
-        <value>{{ namenode_host }}:{{ salt['pillar.get']('hdfs:config:namenode_http_port', '50070') }}</value>
+{%- endif %}
+        <value>{{ hdfs.namenode_host }}:{{ hdfs.namenode_http_port }}</value>
         <final>true</final>
     </property>
 
     <property>
-{%- if major == 1 %}
+{%- if major == '1' %}
         <name>dfs.secondary.http-address</name>
 {%- else %}
         <name>dfs.secondary.datanode.http-address</name>
-{% endif %}
-        <value>{{ namenode_host }}:{{ salt['pillar.get']('hdfs:config:secondarynamenode_http_port', '50090') }}</value>
+{%- endif %}
+        <value>{{ hdfs.namenode_host }}:{{ hdfs.secondarynamenode_http_port }}</value>
         <final>true</final>
     </property>
 
     <property>
         <name>dfs.replication</name>
-        <value>{{ hdfs_replicas }}</value>
+        <value>{{ hdfs.replicas }}</value>
     </property>
 
-{%- set t = salt['pillar.get']('hdfs:config:hdfs-site', None) %}
-{%- if t %}
-{%- for name, cdict in t.items() %}
-    <property>
-        <name>{{ name }}</name>
-        {% for key, value in cdict.items() %}<{{ key }}>{{ value }}</{{key}}>{% endfor %}
-    </property>
-{% endfor %}
-
-{%- else %}
-    <property>
-        <name>dfs.permission</name>
-        <value>false</value>
-    </property>
-    <property>
-        <name>dfs.datanode.synconclose</name>
-        <value>true</value>
-    </property>
-    <property>
-        <name>dfs.durable.sync</name>
-        <value>true</value>
-    </property>
+{%- if hdfs.config_hdfs_site != '' %}
+    <!-- added configuration -->
+{{ hdfs.config_hdfs_site }}
 {%- endif %}
 
 </configuration>

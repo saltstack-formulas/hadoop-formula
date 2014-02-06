@@ -25,7 +25,7 @@ hdfs:
     # the number of hdfs replicas is normally auto-configured for you by the hadoop-formula
     # according to the number of available datanodes
     # replication: 1
-  hdfs-site:
+  hdfs-site-xml: |
     dfs.permission:
       value: false
     dfs.durable.sync:
@@ -40,9 +40,7 @@ mapred:
     jobhistory_port: 10020
     jobhistory_webapp_port: 19888
     history_dir: /mr-history
-    mapred-site:
-      mapreduce.framework.name:
-        value: yarn
+    mapred-site-xml: |
       mapred.map.memory.mb:
         value: 1536
       mapred.map.java.opts:
@@ -57,3 +55,8 @@ mapred:
         value: 100
       mapred.reduce.shuffle.parallelcopies:
         value: 50
+
+yarn:
+  config:
+...
+BIG TODO - this is currently under construction!

@@ -155,9 +155,9 @@ hadoop-conf-link:
     - user: root
     - group: root
     - context:
-      java_home: {{ salt['pillar.get']('java_home', '/usr/lib/java') }}
-      hadoop_home: {{ hadoop['alt_home'] }}
-      hadoop_config: {{ hadoop['alt_config'] }}
+      java_home: {{ hadoop.java_home }}
+      hadoop_home: {{ hadoop.alt_home }}
+      hadoop_config: {{ hadoop.alt_config }}
 
 {%- if grains.os == 'Ubuntu' %}
 /etc/default/hadoop:
@@ -168,7 +168,7 @@ hadoop-conf-link:
     - user: root
     - group: root
     - context:
-      java_home: {{ salt['pillar.get']('java_home', '/usr/lib/java') }}
-      hadoop_home: {{ hadoop['alt_home'] }}
-      hadoop_config: {{ hadoop['alt_config'] }}
+      java_home: {{ hadoop.java_home }}
+      hadoop_home: {{ hadoop.alt_home }}
+      hadoop_config: {{ hadoop.alt_config }}
 {%- endif %}

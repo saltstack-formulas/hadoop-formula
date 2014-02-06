@@ -1,1 +1,0 @@
-{{ salt['mine.get']('roles:hadoop_slave', 'network.interfaces', 'grain').keys()|sort()|join('\n') }}

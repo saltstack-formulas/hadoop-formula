@@ -2,16 +2,18 @@ include:
   - hadoop
 
 {%- from 'hadoop/settings.sls' import hadoop with context %}
+{%- from 'hadoop/hdfs/settings.sls' import hdfs with context %}
 {%- from 'hadoop/user_macro.sls' import hadoop_user with context %}
 # TODO: no users implemented in settings yet
 {%- set hadoop_users = hadoop.get('users', {}) %}
 {%- set all_roles    = salt['grains.get']('roles', []) %}
-
 {%- set username = 'hdfs' %}
-{% set uid = hadoop_users.get(username, '6001') %}
+{%- set uid = hadoop_users.get(username, '6001') %}
+
 {{ hadoop_user(username, uid) }}
-# every node can advertise any JBOD drives to the framework by setting salt grains
-{%- set hdfs_disks = hadoop.local_disks %}
+
+# every node can advertise any JBOD drives to the framework by setting the hdfs_data_disk grain
+{%- set hdfs_disks = hdfs.local_disks %}
 {%- set test_folder = hdfs_disks|first() + '/hdfs/nn/current' %}
 
 {% for disk in hdfs_disks %}
@@ -33,12 +35,14 @@ include:
     - makedirs: True
 {% endif %}
 
-{{ hadoop.tmp_dir }}:
+{%- if hdfs.tmp_dir != '/tmp' %}
+{{ hdfs.tmp_dir }}:
   file.directory:
     - user: {{ username }}
     - group: hadoop
     - makedirs: True
-    - mode: 775
+    - mode: '1775'
+{% endif %}
 
 {% if 'hadoop_slave' in all_roles %}
 
@@ -51,52 +55,39 @@ include:
 
 {% endfor %}
 
-{{ hadoop['alt_config'] }}/core-site.xml:
+{{ hadoop.alt_config }}/core-site.xml:
   file.managed:
     - source: salt://hadoop/conf/hdfs/core-site.xml
     - template: jinja
     - mode: 644
-    - context:
-      hdfs_disks: {{ hdfs_disks }}
-      hadoop: {{ hadoop }}
-      namenode_host: {{ hadoop.namenode_host }}
-      namenode_port: {{ hadoop.namenode_port }}
-      hadoop_tmp_dir: {{ hadoop.tmp_dir }}
 
-{{ hadoop['alt_config'] }}/hdfs-site.xml:
+{{ hadoop.alt_config }}/hdfs-site.xml:
   file.managed:
     - source: salt://hadoop/conf/hdfs/hdfs-site.xml
     - template: jinja
     - mode: 644
-    - context:
-      hdfs_disks: {{ hdfs_disks }}
-      hadoop: {{ hadoop }}
-      namenode_host: {{ hadoop['namenode_host'] }}
-      major: {{ hadoop['major_version'] }}
-      hdfs_replicas: {{ hadoop.hdfs_replicas }}
 
-{{ hadoop['alt_config'] }}/masters:
+{{ hadoop.alt_config }}/masters:
   file.managed:
-    - source: salt://hadoop/conf/hdfs/masters
-    - template: jinja
     - mode: 644
-    - context:
-      namenode_host: {{ hadoop['namenode_host'] }}
+    - contents: {{ hdfs.namenode_host }}
 
-{{ hadoop['alt_config'] }}/slaves:
+{{ hadoop.alt_config }}/slaves:
   file.managed:
-    - source: salt://hadoop/conf/hdfs/slaves
     - mode: 644
-    - template: jinja
+    - contents: |
+{%- for slave in hdfs.datanode_hosts %}
+        {{ slave }}
+{%- endfor %}
 
 {%- if 'hadoop_master' in all_roles %}
 
 format-namenode:
   cmd.run:
-{%- if hadoop['major_version'] == '1' %}
-    - name: {{ hadoop['alt_home'] }}/bin/hadoop namenode -format -force
+{%- if hadoop.major_version|string() == '1' %}
+    - name: {{ hadoop.alt_home }}/bin/hadoop namenode -format -force
 {%- else %}
-    - name: {{ hadoop['alt_home'] }}/bin/hdfs namenode -format
+    - name: {{ hadoop.alt_home }}/bin/hdfs namenode -format
 {% endif %}
     - user: hdfs
     - unless: test -d {{ test_folder }}

@@ -7,28 +7,23 @@
 {%- set jobtracker_http_port  = gc.get('jobtracker_http_port', pc.get('jobtracker_http_port', '50030')) %}
 {%- set jobhistory_port  = gc.get('jobhistory_port', pc.get('jobhistory_port', '10020')) %}
 {%- set jobhistory_webapp_port  = gc.get('jobhistory_webapp_port', pc.get('jobhistory_webapp_port', '19888')) %}
-{%- set mapred_site_dict = gc.get('mapred-site', pc.get('mapred-site', {})) %}
 {%- set history_dir      = gc.get('history_dir', pc.get('history_dir', '/mr-history')) %}
 {%- set history_intermediate_done_dir = history_dir + '/tmp' %}
 {%- set history_done_dir = history_dir + '/done' %}
 
 {%- set jobtracker_host = salt['mine.get']('roles:hadoop_master', 'network.interfaces', 'grain').keys()|first() -%}
 {%- set local_disks     = salt['grains.get']('mapred_data_disks', ['/data']) %}
-
-# make the settings in mapred-site.xml consistent
-{%- do mapred_site_dict.update({ 'mapreduce.jobhistory.intermediate-done-dir': { 'value': history_intermediate_done_dir },
-                                 'mapreduce.jobhistory.done-dir': { 'value': history_done_dir },
-                                 'mapreduce.jobhistory.address': { 'value': jobtracker_host + ':' + jobhistory_port|string },
-                                 'mapreduce.jobhistory.webapp.address' : {'value': jobtracker_host + ':' + jobhistory_webapp_port|string } }) %}
+{%- set config_mapred_site = gc.get('mapred-site-xml', pc.get('mapred-site-xml', "")) %}
 
 {%- set mapred = {} %}
-{%- do mapred.update({ 'jobtracker_port'               : jobtracker_port,
+{%- do mapred.update({ 'jobtracker_port'               : jobtracker_port|string(),
+                       'jobtracker_http_port'          : jobtracker_http_port|string(),
+                       'jobhistory_port'               : jobhistory_port|string(),
+                       'jobhistory_webapp_port'        : jobhistory_webapp_port|string(),
                        'jobtracker_host'               : jobtracker_host,
-                       'jobtracker_http_port'          : jobtracker_http_port,
-                       'jobhistory_port'               : jobhistory_port,
-                       'jobhistory_webapp_port'        : jobhistory_webapp_port,
                        'history_dir'                   : history_dir,
                        'history_intermediate_done_dir' : history_intermediate_done_dir,
                        'history_done_dir'              : history_done_dir,
                        'local_disks'                   : local_disks,
+                       'config_mapred_site'            : config_mapred_site,
                     }) %}
