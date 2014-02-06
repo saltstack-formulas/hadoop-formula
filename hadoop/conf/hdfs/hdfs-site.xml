@@ -1,11 +1,4 @@
-<!DOCTYPE configuration [
-        <!ELEMENT configuration (property)*>
-        <!ELEMENT property (name|value|final)*>
-        <!ELEMENT name (#PCDATA)>
-        <!ELEMENT value (#PCDATA)>
-        <!ELEMENT final (#PCDATA)>
-        ]>
-        {%- from 'hadoop/settings.sls' import hadoop with context %}
+{%- from 'hadoop/settings.sls' import hadoop with context %}
 {%- from 'hadoop/hdfs/settings.sls' import hdfs with context %}
 {%- set major = hadoop.major_version|string() -%}
 <?xml version="1.0" encoding="UTF-8"?>
