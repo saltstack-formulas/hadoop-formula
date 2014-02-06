@@ -2,7 +2,7 @@
 {%- from 'hadoop/hdfs/settings.sls' import hdfs with context %}
 {%- from 'hadoop/mapred/settings.sls' import mapred with context %}
 {%- from 'hadoop/yarn/settings.sls' import yarn with context %}
-{%- set dyn_cfg = yar.get('config_yarn_site', {}) %}
+{%- set dyn_cfg = yarn.get('config_yarn_site', {}) %}
 {%- set major = hadoop.major_version|string() -%}<?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 
