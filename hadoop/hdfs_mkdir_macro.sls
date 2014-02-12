@@ -5,8 +5,6 @@ make{{ localname }}-dir:
     - user: hdfs
     - name: {{ cmd }} -mkdir {{ name }}
     - unless: {{ cmd }} -stat {{ name }}
-    - require:
-      - service: hdfs-services
 
 chown{{ localname }}-dir:
   cmd.run:
