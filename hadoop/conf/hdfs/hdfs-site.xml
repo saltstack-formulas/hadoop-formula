@@ -40,6 +40,21 @@
         <final>true</final>
     </property>
 
+{%- if major == '2' %}
+    <property>
+        <name>dfs.namenode.checkpoint.dir</name>
+        <value>
+{%- for d in hdfs.local_disks -%}
+{%- if loop.last -%}
+{{ d }}/hdfs/snn
+{%- else -%}
+{{ d }}/hdfs/snn,
+{%- endif -%}
+{%- endfor -%}</value>
+        <final>true</final>
+    </property>
+{%- endif %}
+
     <property>
 {%- if major == '1' %}
         <name>dfs.http-address</name>
