@@ -12,6 +12,7 @@
 {%- set secondarynamenode_http_port  = gc.get('secondarynamenode_http_port', pc.get('secondarynamenode_http_port', '50090')) %}
 {%- set local_disks      = salt['grains.get']('hdfs_data_disks', ['/data']) %}
 {%- set repl_override    = gc.get('replication', pc.get('replication', 'x')) %}
+{%- set load  = salt['grains.get']('hdfs_load', salt['pillar.get']('hdfs_load', {})) %}
 
 # Todo: this might be a candidate for pillars/grains
 # {%- set tmp_root        = local_disks|first() %}
@@ -44,4 +45,5 @@
                      'datanode_count'              : datanode_count,
                      'config_hdfs_site'            : config_hdfs_site,
                      'tmp_dir'                     : tmp_dir,
+                     'load'                        : load,
                    }) %}
