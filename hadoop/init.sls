@@ -11,11 +11,17 @@ create-common-folders:
     - group: hadoop
     - mode: 775
     - names:
-      - /var/log/hadoop
+      - {{ hadoop.log_root }}
       - /var/run/hadoop
       - /var/lib/hadoop
     - require:
       - group: hadoop
+
+{%- if hadoop.log_root != hadoop.default_log_root %}
+/var/log/hadoop:
+  file.symlink:
+    - target: {{ hadoop.log_root }}
+{%- endif %}
 
 vm.swappiness:
   sysctl:
