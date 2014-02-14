@@ -72,4 +72,15 @@ ssh_dss_{{ username }}:
   file.append:
     - text:
       - export PATH=$PATH:/usr/lib/hadoop/bin:/usr/lib/hadoop/sbin
+
+/etc/security/limits.d/99-{{username}}.conf:
+  file.managed:
+    - mode: 644
+    - user: root
+    - contents: |
+        {{username}} soft nofile 65536
+        {{username}} hard nofile 65536
+        {{username}} soft nproc 8092
+        {{username}} hard nproc 8092
+
 {%- endmacro %}
