@@ -4,7 +4,7 @@
 {% set gc = g.get('config', {}) %}
 
 {%- set versions = {} %}
-{%- set default_dist_id = 'apache-1.2.1' %}
+{%- set default_dist_id = 'apache-2.2.0' %}
 {%- set dist_id = g.get('version', p.get('version', default_dist_id)) %}
 
 {%- set versions = { 'apache-1.2.1' : { 'version'       : '1.2.1',
