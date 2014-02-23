@@ -14,12 +14,6 @@ Available states
 .. contents::
     :local:
 
-Formula Dependencies
---------------------
-
-* hostsfile
-* sun-java
-
 ``hadoop``
 -------
 
@@ -57,6 +51,12 @@ Which services end up running on a given host will again depend on the role(s) a
 
 - hadoop_master will run the hadoop-resourcemanager service
 - hadoop_slave will run the hadoop-nodemanager service
+
+Formula Dependencies
+--------------------
+
+* hostsfile
+* sun-java
 
 Salt Minion Configuration
 -------------------------
