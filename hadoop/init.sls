@@ -45,7 +45,7 @@ hadoop-home-link:
     - path: {{ hadoop['real_home'] }}
     - priority: 30
     - require:
-      - cmd.run: unpack-hadoop-dist
+      - cmd: unpack-hadoop-dist
 
 {{ hadoop['real_home'] }}:
   file.directory:
@@ -55,7 +55,7 @@ hadoop-home-link:
       - user
       - group
     - require:
-      - cmd.run: unpack-hadoop-dist
+      - cmd: unpack-hadoop-dist
 
 {%- if hadoop.cdhmr1 %}
 
@@ -118,8 +118,8 @@ move-hadoop-dist-conf:
     - unless: test -d {{ hadoop.real_config_dist }}
     - onlyif: test -d {{ real_config_src }}
     - require:
-      - file.directory: {{ hadoop['real_home'] }}
-      - file.directory: /etc/hadoop
+      - file: {{ hadoop['real_home'] }}
+      - file: /etc/hadoop
 
 {{ real_config_src }}:
   file.symlink:
@@ -133,7 +133,7 @@ hadoop-conf-link:
     - path: {{ hadoop['real_config'] }}
     - priority: 30
     - require:
-      - file.directory: {{ hadoop['real_config'] }}
+      - file: {{ hadoop['real_config'] }}
 
 {{ hadoop['real_config'] }}/log4j.properties:
   file.copy:
@@ -143,7 +143,7 @@ hadoop-conf-link:
     - mode: 644
     - require:
       - file: {{ hadoop['real_config'] }}
-      - alternatives.install: hadoop-conf-link
+      - alternatives: hadoop-conf-link
 
 {{ hadoop['real_config'] }}/hadoop-env.sh:
   file.managed:

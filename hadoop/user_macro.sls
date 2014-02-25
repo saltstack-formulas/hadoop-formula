@@ -19,9 +19,9 @@
       - /var/run/hadoop/{{ username }}
       - /var/lib/hadoop/{{ username }}
     - require:
-      - file.directory: /var/lib/hadoop
-      - file.directory: /var/run/hadoop
-      - file.directory: /var/log/hadoop
+      - file: /var/lib/hadoop
+      - file: /var/run/hadoop
+      - file: /var/log/hadoop
 
 {{ userhome }}/.ssh:
   file.directory:
@@ -40,7 +40,7 @@
     - mode: 600
     - source: salt://hadoop/files/dsa-{{ username }}
     - require:
-      - file.directory: {{ userhome }}/.ssh
+      - file: {{ userhome }}/.ssh
 
 {{ username }}_public_key:
   file.managed:
@@ -50,14 +50,14 @@
     - mode: 644
     - source: salt://hadoop/files/dsa-{{ username }}.pub
     - require:
-      - file.managed: {{ username }}_private_key
+      - file: {{ username }}_private_key
 
 ssh_dss_{{ username }}:
   ssh_auth.present:
     - user: {{ username }}
     - source: salt://hadoop/files/dsa-{{ username }}.pub
     - require:
-      - file.managed: {{ username }}_private_key
+      - file: {{ username }}_private_key
 
 {{ userhome }}/.ssh/config:
   file.managed:
@@ -66,7 +66,7 @@ ssh_dss_{{ username }}:
     - group: {{ username }}
     - mode: 644
     - require:
-      - file.directory: {{ userhome }}/.ssh
+      - file: {{ userhome }}/.ssh
 
 {{ userhome }}/.bashrc:
   file.append:

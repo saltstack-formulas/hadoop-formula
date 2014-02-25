@@ -56,7 +56,7 @@ include:
     - mode: 644
     - require:
       - file: {{ hadoop['real_config'] }}
-      - alternatives.install: hadoop-conf-link
+      - alternatives: hadoop-conf-link
 
 {%- if 'hadoop_master' in salt['grains.get']('roles', []) %}
 
