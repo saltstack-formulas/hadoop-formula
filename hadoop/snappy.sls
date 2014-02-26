@@ -31,9 +31,9 @@ install-hadoop-snappy:
     - cwd: /usr/lib/hadoop
     - unless: test -f /usr/lib/hadoop/lib/hadoop-snappy-0.0.1.jar
     - require:
-      - file.managed: /tmp/hadoop-snappy-0.0.1.tgz
-      - alternatives.install: hadoop-home-link
-      - pkg.installed: snappy-libs
+      - file: /tmp/hadoop-snappy-0.0.1.tgz
+      - alternatives: hadoop-home-link
+      - pkg: snappy-libs
 
 {%- for lib in snappies.split() %}
 /usr/lib/hadoop/lib/native/Linux-amd64-64/{{ lib }}:
