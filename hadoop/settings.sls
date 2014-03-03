@@ -9,12 +9,17 @@
 
 {%- set versions = { 'apache-1.2.1' : { 'version'       : '1.2.1',
                                         'version_name'  : 'hadoop-1.2.1',
-                                        'source_url'    : salt['grains.get']('hadoop:source_url', 'http://www.us.apache.org/dist/hadoop/common/hadoop-1.2.1/hadoop-1.2.1-bin.tar.gz'),
+                                        'source_url'    : salt['grains.get']('hadoop:source_url', 'http://apache.osuosl.org/hadoop/common/hadoop-1.2.1/hadoop-1.2.1-bin.tar.gz'),
                                         'major_version' : '1'
                                       },
                      'apache-2.2.0' : { 'version'       : '2.2.0',
                                         'version_name'  : 'hadoop-2.2.0',
-                                        'source_url'    : salt['grains.get']('hadoop:source_url', 'http://www.us.apache.org/dist/hadoop/common/hadoop-2.2.0/hadoop-2.2.0.tar.gz'),
+                                        'source_url'    : salt['grains.get']('hadoop:source_url', 'http://apache.osuosl.org/hadoop/common/hadoop-2.2.0/hadoop-2.2.0.tar.gz'),
+                                        'major_version' : '2'
+                                      },
+                     'apache-2.3.0' : { 'version'       : '2.3.0',
+                                        'version_name'  : 'hadoop-2.3.0',
+                                        'source_url'    : salt['grains.get']('hadoop:source_url', 'http://apache.osuosl.org/hadoop/common/hadoop-2.3.0/hadoop-2.3.0.tar.gz'),
                                         'major_version' : '2'
                                       },
                      'hdp-2.2.0'    : { 'version'       : '2.2.0.2.0.6.0-76',
