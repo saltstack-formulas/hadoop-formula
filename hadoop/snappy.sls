@@ -1,6 +1,3 @@
-include:
-  - hadoop
-
 {%- from 'hadoop/settings.sls' import hadoop with context %}
 
 {%- if grains['os_family'] in ['Debian', 'RedHat'] %}

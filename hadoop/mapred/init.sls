@@ -1,6 +1,3 @@
-include:
-  - hadoop.hdfs
-
 {%- from 'hadoop/settings.sls' import hadoop with context %}
 {%- from 'hadoop/mapred/settings.sls' import mapred with context %}
 {%- from 'hadoop/user_macro.sls' import hadoop_user with context %}

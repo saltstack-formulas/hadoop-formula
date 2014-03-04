@@ -1,6 +1,3 @@
-include:
-  - hadoop.mapred
-
 {%- from "hadoop/settings.sls" import hadoop with context %}
 {%- from "hadoop/yarn/settings.sls" import yarn with context %}
 {%- from "hadoop/user_macro.sls" import hadoop_user with context %}
