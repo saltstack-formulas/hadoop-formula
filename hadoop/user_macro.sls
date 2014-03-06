@@ -9,7 +9,6 @@
     - home: {{ userhome }}
     - groups: ['hadoop']
     - require:
-      - group: hadoop
       - group: {{ username }}
   file.directory:
     - user: {{ username }}
