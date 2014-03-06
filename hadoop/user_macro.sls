@@ -10,17 +10,13 @@
     - groups: ['hadoop']
     - require:
       - group: {{ username }}
-  file.directory:
-    - user: {{ username }}
-    - group: hadoop
-    - names:
-      - /var/log/hadoop/{{ username }}
-      - /var/run/hadoop/{{ username }}
-      - /var/lib/hadoop/{{ username }}
-    - require:
-      - file: /var/lib/hadoop
-      - file: /var/run/hadoop
-      - file: /var/log/hadoop
+#  file.directory:
+#    - user: {{ username }}
+#    - group: hadoop
+#    - names:
+#      - /var/log/hadoop/{{ username }}
+#      - /var/run/hadoop/{{ username }}
+#      - /var/lib/hadoop/{{ username }}
 
 {{ userhome }}/.ssh:
   file.directory:
