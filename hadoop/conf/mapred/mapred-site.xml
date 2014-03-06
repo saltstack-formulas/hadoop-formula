@@ -8,21 +8,6 @@
 
 <configuration>
 
-<!--
-    <property>
-      <name>mapred.local.dir</name>
-        <value>
-{%- for d in mapred.local_disks -%}
-{%- if loop.last -%}
-{{ d }}/mapred
-{%- else -%}
-{{ d }}/mapred,
-{%- endif -%}
-{%- endfor -%}</value>
-        <final>true</final>
-    </property>
--->
-
 {%- if major == '1' %}
     <property>
         <name>mapred.job.tracker</name>
@@ -43,6 +28,11 @@
         <name>mapreduce.history.server.http.address</name>
         <value>{{ mapred.jobtracker_host }}:{{ mapred.jobhistory_port }}</value>
     </property>
+
+    <property>
+        <name>mapred.submit.replication</name>
+        <value>{{ hdfs.datanode_count }}</value>
+    </property>
 {%- else %}
     <property>
         <name>mapreduce.jobhistory.address</name>
@@ -62,6 +52,11 @@
     <property>
         <name>mapreduce.jobhistory.done-dir</name>
         <value>{{ mapred.history_done_dir }}</value>
+    </property>
+
+    <property>
+        <name>mapreduce.client.submit.file.replication</name>
+        <value>{{ hdfs.datanode_count }}</value>
     </property>
 {%- endif %}
 

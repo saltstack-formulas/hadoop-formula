@@ -76,6 +76,16 @@
     </property>
 
     <property>
+        <name>dfs.hosts</name>
+        <value>{{ hadoop.alt_config }}/dfs.hosts</value>
+    </property>
+
+    <property>
+        <name>dfs.hosts.exclude</name>
+        <value>{{ hadoop.alt_config }}/dfs.exclude</value>
+    </property>
+
+    <property>
         <name>dfs.replication</name>
         <value>{{ hdfs.replicas }}</value>
     </property>

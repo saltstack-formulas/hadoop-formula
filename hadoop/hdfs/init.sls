@@ -77,6 +77,14 @@
         {{ slave }}
 {%- endfor %}
 
+{{ hadoop.alt_config }}/dfs.hosts:
+  file.managed:
+    - mode: 644
+    - contents: |
+{%- for slave in hdfs.datanode_hosts %}
+        {{ slave }}
+{%- endfor %}
+
 {%- if 'hadoop_master' in all_roles %}
 
 format-namenode:
