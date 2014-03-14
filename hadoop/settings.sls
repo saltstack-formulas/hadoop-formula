@@ -42,7 +42,18 @@
                                         'source_url'    : salt['grains.get']('hadoop:source_url', 'http://archive.cloudera.com/cdh4/cdh/4/hadoop-2.0.0-cdh4.5.0.tar.gz'),
                                         'major_version' : '1',
                                         'cdhmr1'        : True
-                                      }
+                                      },
+                     'cdh-4.6.0'    : { 'version'       : '2.0.0-cdh4.6.0',
+                                        'version_name'  : 'hadoop-2.0.0-cdh4.6.0',
+                                        'source_url'    : salt['grains.get']('hadoop:source_url', 'http://archive.cloudera.com/cdh4/cdh/4/hadoop-2.0.0-cdh4.6.0.tar.gz'),
+                                        'major_version' : '2'
+                                      },
+                     'cdh-4.6.0-mr1': { 'version'       : '2.0.0-cdh4.6.0',
+                                        'version_name'  : 'hadoop-2.0.0-cdh4.6.0',
+                                        'source_url'    : salt['grains.get']('hadoop:source_url', 'http://archive.cloudera.com/cdh4/cdh/4/hadoop-2.0.0-cdh4.6.0.tar.gz'),
+                                        'major_version' : '1',
+                                        'cdhmr1'        : True
+                                      },
                    }%}
 
 {%- set version_info     = versions.get(dist_id, versions['apache-1.2.1']) %}
