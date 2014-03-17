@@ -90,7 +90,7 @@ case ${prog} in
         ;;
     historyserver )
         DAEMON="HistoryServer"
-        DAEMON_USER=$MAPRED_USER
+        DAEMON_USER=$HDFS_USER
         DAEMON_SCRIPT="${HADOOP_PREFIX}/sbin/mr-jobhistory-daemon.sh"
         ;;
     * )
