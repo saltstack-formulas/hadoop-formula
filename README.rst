@@ -1,3 +1,4 @@
+======
 hadoop
 ======
 
@@ -15,12 +16,12 @@ Available states
     :local:
 
 ``hadoop``
--------
+----------
 
 Downloads the hadoop tarball from the hadoop:source_url, installs the package, creates the hadoop group for all other components to share.
 
 ``hadoop.hdfs``
---------------
+---------------
 
 Installs the hdfs service configuration and starts the hdfs services.
 Which services hadoop ends up running on a given host will depend on the text list files in the
@@ -30,7 +31,7 @@ configuration directory and - in turn - on the roles defined via salt grains:
 - hadoop_slave will run the hadoop-datanode service
 
 ``hadoop.mapred``
---------------
+-----------------
 
 Installs the mapreduce service scripts and configuration, adds directories.
 Which services end up running on a given host will again depend on the role(s) assigned via grains:
@@ -39,12 +40,12 @@ Which services end up running on a given host will again depend on the role(s) a
 - hadoop_slave will run the hadoop-tasktracker service
 
 ``hadoop.snappy``
-----------------
+-----------------
 
 Install snappy and snappy-devel system packages, adds a jar and shared lib compiled off of https://code.google.com/p/hadoop-snappy and also puts symlinks to the snappy libs in place, thus providing compression with snappy to the ecosystem.
 
 ``hadoop.yarn``
---------------
+---------------
 
 Installs the yarn daemon scripts and configuration (if a hadoop 2.2+ version was installed), adds directories.
 Which services end up running on a given host will again depend on the role(s) assigned via grains:
@@ -53,13 +54,13 @@ Which services end up running on a given host will again depend on the role(s) a
 - hadoop_slave will run the hadoop-nodemanager service
 
 Formula Dependencies
---------------------
+====================
 
 * hostsfile
 * sun-java
 
 Salt Minion Configuration
--------------------------
+=========================
 
 As mentioned above, all installation and configuration is assinged via roles. 
 Mounted disks (or just directories) can be configured for use with hdfs and mapreduce via grains.
@@ -90,7 +91,7 @@ For the namenode address to be dynamically configured it is necessary to setup s
       grains.items: []
 
 Hadoop configuration
---------------------
+====================
 
 The hadoop formula exposes the general (cluster-independent) part of the main configuration files (core-site.xml, hdfs-site.sml, mapred-site.xml) 
 as pillar keys.
