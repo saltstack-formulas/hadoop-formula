@@ -21,5 +21,6 @@
                      'resourcemanager_admin_port'  : resourcemanager_admin_port,
                      'resourcemanager_host'        : resourcemanager_host,
                      'local_disks'                 : local_disks,
+                     'first_local_disk'            : local_disks|sort()|first(),
                      'config_yarn_site'            : config_yarn_site,
                    }) %}

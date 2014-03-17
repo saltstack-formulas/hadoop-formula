@@ -52,26 +52,7 @@
 
     <property>
         <name>yarn.nodemanager.log-dirs</name>
-        <value>
-{%- for d in yarn.local_disks -%}
-{%- if loop.last -%}
-{{ d }}/yarn/logs
-{%- else -%}
-{{ d }}/yarn/logs,
-{%- endif -%}
-{%- endfor -%}</value>
-    </property>
-
-    <property>
-        <name>yarn.nodemanager.remote-app-log-dir</name>
-        <value>
-{%- for d in yarn.local_disks -%}
-{%- if loop.last -%}
-{{ d }}/yarn/app_data
-{%- else -%}
-{{ d }}/yarn/app_data,
-{%- endif -%}
-{%- endfor -%}</value>
+        <value>{{ yarn.first_local_disk }}/yarn/logs</value>
     </property>
 
 {%- for name, subdict in dyn_cfg.items() %}

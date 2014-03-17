@@ -22,13 +22,14 @@
     - group: hadoop
     - require:
       - file: {{ disk }}/yarn
-{{ disk }}/yarn/logs:
+{% endfor %}
+
+{{ yarn.first_local_disk }}/yarn/logs:
   file.directory:
     - user: yarn
     - group: hadoop
     - require:
-      - file: {{ disk }}/yarn
-{% endfor %}
+      - file: {{ yarn.first_local_disk }}/yarn
 
 {{ hadoop.alt_config }}/yarn-site.xml:
   file.managed:
@@ -51,9 +52,6 @@
     - user: root
     - group: root
     - mode: 644
-    - require:
-      - file: {{ hadoop['real_config'] }}
-      - alternatives: hadoop-conf-link
 
 {%- if 'hadoop_master' in salt['grains.get']('roles', []) %}
 
