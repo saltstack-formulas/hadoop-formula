@@ -34,8 +34,8 @@
 . /lib/lsb/init-functions
 . /etc/default/hadoop
 
-if [ -f /etc/default/hadoop-{{ hadoop_user }}-{{ hadoop_svc }} ] ; then
-  . /etc/default/hadoop-{{ hadoop_user }}-{{ hadoop_svc }}
+if [ -f /etc/default/mapred-{{ hadoop_user }}-{{ hadoop_svc }} ] ; then
+  . /etc/default/mapred-{{ hadoop_user }}-{{ hadoop_svc }}
 fi
 
 RETVAL_SUCCESS=0
@@ -60,7 +60,7 @@ PROC_NAME="java"
 {%- endif %}
 
 {%- if hadoop_svc == 'historyserver' %}
-PIDFILE="/var/run/hadoop/yarn-{{ hadoop_user }}-{{ hadoop_svc }}.pid"
+PIDFILE="/var/run/hadoop/mapred-{{ hadoop_user }}-{{ hadoop_svc }}.pid"
 EXEC_PATH="{{ hadoop_home }}/{{ bindir }}/mr-jobhistory-daemon.sh"
 {%- elif hadoop_user == 'yarn' %}
 PIDFILE="/var/run/hadoop/yarn-{{ hadoop_user }}-{{ hadoop_svc }}.pid"

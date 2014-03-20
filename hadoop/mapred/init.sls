@@ -64,7 +64,7 @@
     - template: jinja
     - context:
       hadoop_svc: historyserver
-      hadoop_user: mapred
+      hadoop_user: hdfs
       hadoop_major: {{ hadoop.major_version }}
       hadoop_home: {{ hadoop.alt_home }}
 
