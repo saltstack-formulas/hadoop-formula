@@ -85,6 +85,9 @@
         {{ slave }}
 {%- endfor %}
 
+{{ hadoop.alt_config }}/dfs.hosts.exclude:
+  file.managed
+
 {%- if 'hadoop_master' in all_roles %}
 
 format-namenode:
