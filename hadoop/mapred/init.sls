@@ -101,8 +101,9 @@ hadoop-jobtracker:
   service:
     - running
     - enable: True
+{%- endif %}
 
-{%- elif 'hadoop_slave' in salt['grains.get']('roles', []) %}
+{%- if 'hadoop_slave' in salt['grains.get']('roles', []) %}
 
 /etc/init.d/hadoop-tasktracker:
   file.managed:
