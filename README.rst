@@ -24,11 +24,14 @@ Downloads the hadoop tarball from the hadoop:source_url, installs the package, c
 ---------------
 
 Installs the hdfs service configuration and starts the hdfs services.
-Which services hadoop ends up running on a given host will depend on the text list files in the
-configuration directory and - in turn - on the roles defined via salt grains:
+Which services hadoop ends up running on a given host depends on the roles defined via salt grains:
 
 - hadoop_master will run the hadoop-namenode and hadoop-secondarynamenode services
 - hadoop_slave will run the hadoop-datanode service
+
+::
+    roles:
+      - hadoop_slave
 
 ``hadoop.mapred``
 -----------------
@@ -80,15 +83,23 @@ Example /etc/salt/grains for a datanode:
       - /data3
       - /data4
 
+    yarn_data_disks:
+      - /data1
+      - /data2
+      - /data3
+      - /data4
+
     roles:
       - hadoop_slave
-      - accumulo_slave
 
-For the namenode address to be dynamically configured it is necessary to setup salt mine like below::
+For the namenode address to be dynamically configured it is necessary to setup salt mine like below:
+
 ::
     mine_functions:
       network.interfaces: []
       grains.items: []
+
+One thing to keep in mind here is that the implementation currently relies on the minion_id of all nodes to match their FQDN (which is the default) and working name resolution. 
 
 Hadoop configuration
 ====================
@@ -129,5 +140,5 @@ Where the core-site part will appear in core-site.xml as:
         <value>65536</value>
     </property>
 
-Please note that host- and cluster-specific values are not exposed (think: fs.default.name)
+Please note that host- and cluster-specific values are not exposed - the formula controls these (think: fs.default.name)
 
