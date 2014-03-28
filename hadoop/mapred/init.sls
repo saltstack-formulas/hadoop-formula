@@ -43,38 +43,6 @@
 {%- endif %}
 {% endif %}
 
-{%- if 'hadoop_master' in salt['grains.get']('roles', []) and hadoop.major_version == '2' %}
-
-# add mr-history directories for Hadoop 2
-
-{{ hdfs_mkdir(mapred.history_dir, username, username, 755, hadoop.dfs_cmd) }}
-{{ hdfs_mkdir(mapred.history_intermediate_done_dir, username, username, 1777, hadoop.dfs_cmd) }}
-{{ hdfs_mkdir(mapred.history_done_dir, username, username, 1777, hadoop.dfs_cmd) }}
-
-/etc/init.d/hadoop-historyserver:
-  file.managed:
-{%- if grains.os == 'Ubuntu' %}
-    - source: salt://hadoop/files/hadoop.init.d.ubuntu.jinja
-{%- else %}
-    - source: salt://hadoop/files/hadoop.init.d.jinja
-{%- endif %}
-    - user: root
-    - group: root
-    - mode: '755'
-    - template: jinja
-    - context:
-      hadoop_svc: historyserver
-      hadoop_user: hdfs
-      hadoop_major: {{ hadoop.major_version }}
-      hadoop_home: {{ hadoop.alt_home }}
-
-hadoop-historyserver:
-  service:
-    - running
-    - enable: True
-
-{% endif %}
-
 # Hadoop 1 only - provision either job- or tasktracker
 
 {%- if hadoop['major_version'] == '1' %}
