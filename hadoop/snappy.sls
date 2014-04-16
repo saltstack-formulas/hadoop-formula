@@ -1,12 +1,15 @@
 {%- from 'hadoop/settings.sls' import hadoop with context %}
 
-{%- if grains['os_family'] in ['Debian', 'RedHat'] %}
+{%- if grains['os_family'] in ['Debian', 'RedHat', 'Suse'] %}
 snappy-libs:
   pkg.installed:
     - order: 1
     - names:
 {%- if grains['os_family'] == 'RedHat' %}
       - snappy
+      - snappy-devel
+{%- elif grains['os_family'] == 'Suse' %}
+      - libsnappy1
       - snappy-devel
 {%- else %}
       - libsnappy1

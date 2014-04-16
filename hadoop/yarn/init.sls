@@ -3,6 +3,7 @@
 {%- from "hadoop/mapred/settings.sls" import mapred with context %}
 {%- from "hadoop/user_macro.sls" import hadoop_user with context %}
 {%- from 'hadoop/hdfs_mkdir_macro.sls' import hdfs_mkdir with context %}
+{%- set all_roles    = salt['grains.get']('roles', []) %}
 
 # TODO: no users implemented in settings yet
 {%- set hadoop_users = hadoop.get('users', {}) %}
@@ -66,10 +67,10 @@
 
 /etc/init.d/hadoop-historyserver:
   file.managed:
-{%- if grains.os == 'Ubuntu' %}
-    - source: salt://hadoop/files/hadoop.init.d.ubuntu.jinja
-{%- else %}
+{%- if grains.os_family == 'RedHat' %}
     - source: salt://hadoop/files/hadoop.init.d.jinja
+{%- else %}
+    - source: salt://hadoop/files/hadoop.init.d.ubuntu.jinja
 {%- endif %}
     - user: root
     - group: root
@@ -80,6 +81,7 @@
       hadoop_user: hdfs
       hadoop_major: {{ hadoop.major_version }}
       hadoop_home: {{ hadoop.alt_home }}
+      node_roles: {{ all_roles }}
 
 hadoop-historyserver:
   service:
@@ -88,10 +90,10 @@ hadoop-historyserver:
 
 /etc/init.d/hadoop-resourcemanager:
   file.managed:
-{%- if grains.os == 'Ubuntu' %}
-    - source: salt://hadoop/files/hadoop.init.d.ubuntu.jinja
-{%- else %}
+{%- if grains.os_family == 'RedHat' %}
     - source: salt://hadoop/files/hadoop.init.d.jinja
+{%- else %}
+    - source: salt://hadoop/files/hadoop.init.d.ubuntu.jinja
 {%- endif %}
     - user: root
     - group: root
@@ -113,10 +115,10 @@ hadoop-resourcemanager:
 
 /etc/init.d/hadoop-nodemanager:
   file.managed:
-{%- if grains.os == 'Ubuntu' %}
-    - source: salt://hadoop/files/hadoop.init.d.ubuntu.jinja
-{%- else %}
+{%- if grains.os_family == 'RedHat' %}
     - source: salt://hadoop/files/hadoop.init.d.jinja
+{%- else %}
+    - source: salt://hadoop/files/hadoop.init.d.ubuntu.jinja
 {%- endif %}
     - user: root
     - group: root

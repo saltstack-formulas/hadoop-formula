@@ -17,15 +17,19 @@
 #
 # Starts a Hadoop {{ hadoop_major }} {{ hadoop_svc }}
 #
-# chkconfig: 2345 85 15
+# chkconfig: 35 85 15
 # description: Hadoop {{ hadoop_svc }}
 #
 ### BEGIN INIT INFO
-# Provides:          hadoop-hdfs-{{ hadoop_svc }}
+# Provides:          hadoop-{{ hadoop_user }}-{{ hadoop_svc }}
 # Short-Description: Hadoop {{ hadoop_svc }}
-# Default-Start:     2 3 4 5
+# Default-Start:     3 5
 # Default-Stop:      0 1 6
+{%- if hadoop_svc == 'historyserver' %}
+# Required-Start:    $ALL
+{%- else %}
 # Required-Start:    $syslog $remote_fs
+{%- endif %}
 # Required-Stop:     $syslog $remote_fs
 # Should-Start:
 # Should-Stop:

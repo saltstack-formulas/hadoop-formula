@@ -50,10 +50,10 @@
 {%- if 'hadoop_master' in salt['grains.get']('roles', []) %}
 /etc/init.d/hadoop-jobtracker:
   file.managed:
-{%- if grains.os == 'Ubuntu' %}
-    - source: salt://hadoop/files/hadoop.init.d.ubuntu.jinja
-{%- else %}
+{%- if grains.os_family == 'RedHat' %}
     - source: salt://hadoop/files/hadoop.init.d.jinja
+{%- else %}
+    - source: salt://hadoop/files/hadoop.init.d.ubuntu.jinja
 {%- endif %}
     - user: root
     - group: root
@@ -75,10 +75,10 @@ hadoop-jobtracker:
 
 /etc/init.d/hadoop-tasktracker:
   file.managed:
-{%- if grains.os == 'Ubuntu' %}
-    - source: salt://hadoop/files/hadoop.init.d.ubuntu.jinja
-{%- else %}
+{%- if grains.os_family == 'RedHat' %}
     - source: salt://hadoop/files/hadoop.init.d.jinja
+{%- else %}
+    - source: salt://hadoop/files/hadoop.init.d.ubuntu.jinja
 {%- endif %}
     - user: root
     - group: root
