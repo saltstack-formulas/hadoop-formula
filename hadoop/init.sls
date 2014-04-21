@@ -47,15 +47,10 @@ hadoop-home-link:
     - require:
       - cmd: unpack-hadoop-dist
 
-{{ hadoop['real_home'] }}:
-  file.directory:
-    - user: root
-    - group: root
-    - recurse:
-      - user
-      - group
-    - require:
-      - cmd: unpack-hadoop-dist
+# file.directory has trouble changing non-root symlinks
+chown-hadoop-home:
+  cmd.run:
+    - name: chown -R root.root {{ hadoop['real_home'] }}
 
 {%- if hadoop.cdhmr1 %}
 
@@ -118,12 +113,13 @@ move-hadoop-dist-conf:
     - unless: test -d {{ hadoop.real_config_dist }}
     - onlyif: test -d {{ real_config_src }}
     - require:
-      - file: {{ hadoop['real_home'] }}
+      - cmd: chown-hadoop-home
       - file: /etc/hadoop
 
 {{ real_config_src }}:
   file.symlink:
     - target: {{ hadoop['alt_config'] }}
+    - force: true
     - require:
       - cmd: move-hadoop-dist-conf
 
