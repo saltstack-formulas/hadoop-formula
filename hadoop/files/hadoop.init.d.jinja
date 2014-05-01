@@ -1,5 +1,11 @@
 #!/bin/bash
+{%- if hadoop_svc == 'namenode' %}
+# chkconfig: 2345 95 6
+{%- elif hadoop_svc == 'historyserver' %}
+# chkconfig: 2345 99 6
+{%- else %}
 # chkconfig: 2345 96 6
+{%- end %}
 # description: hadoop component init script
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
