@@ -67,11 +67,7 @@
 
 /etc/init.d/hadoop-historyserver:
   file.managed:
-{%- if grains.os_family == 'RedHat' %}
-    - source: salt://hadoop/files/hadoop.init.d.jinja
-{%- else %}
-    - source: salt://hadoop/files/hadoop.init.d.ubuntu.jinja
-{%- endif %}
+    - source: salt://hadoop/files/{{ hadoop.initscript }}
     - user: root
     - group: root
     - mode: '755'
@@ -90,11 +86,7 @@ hadoop-historyserver:
 
 /etc/init.d/hadoop-resourcemanager:
   file.managed:
-{%- if grains.os_family == 'RedHat' %}
-    - source: salt://hadoop/files/hadoop.init.d.jinja
-{%- else %}
-    - source: salt://hadoop/files/hadoop.init.d.ubuntu.jinja
-{%- endif %}
+    - source: salt://hadoop/files/{{ hadoop.initscript }}
     - user: root
     - group: root
     - mode: '755'
@@ -115,11 +107,7 @@ hadoop-resourcemanager:
 
 /etc/init.d/hadoop-nodemanager:
   file.managed:
-{%- if grains.os_family == 'RedHat' %}
-    - source: salt://hadoop/files/hadoop.init.d.jinja
-{%- else %}
-    - source: salt://hadoop/files/hadoop.init.d.ubuntu.jinja
-{%- endif %}
+    - source: salt://hadoop/files/{{ hadoop.initscript }}
     - user: root
     - group: root
     - mode: '755'

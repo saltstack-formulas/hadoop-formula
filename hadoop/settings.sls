@@ -80,6 +80,7 @@
 {%- set real_config_dist = alt_config + '.dist' %}
 {%- set default_log_root = '/var/log/hadoop' %}
 {%- set log_root         = gc.get('log_root', pc.get('log_root', default_log_root)) %}
+{%- set initscript       = 'hadoop.init' %}
 
 {%- if version_info['major_version'] == '1' %}
 {%- set dfs_cmd = alt_home + '/bin/hadoop dfs' %}
@@ -102,6 +103,7 @@
                           'alt_config'       : alt_config,
                           'real_config'      : real_config,
                           'real_config_dist' : real_config_dist,
+                          'initscript'       : initscript,
                           'dfs_cmd'          : dfs_cmd,
                           'java_home'        : java_home,
                           'log_root'         : log_root,

@@ -102,11 +102,7 @@ format-namenode:
 
 /etc/init.d/hadoop-namenode:
   file.managed:
-{%- if grains.os_family == 'RedHat' %}
-    - source: salt://hadoop/files/hadoop.init.d.jinja
-{%- else %}
-    - source: salt://hadoop/files/hadoop.init.d.ubuntu.jinja
-{%- endif %}
+    - source: salt://hadoop/files/{{ hadoop.initscript }}
     - user: root
     - group: root
     - mode: '755'
@@ -119,11 +115,7 @@ format-namenode:
 
 /etc/init.d/hadoop-secondarynamenode:
   file.managed:
-{%- if grains.os_family == 'RedHat' %}
-    - source: salt://hadoop/files/hadoop.init.d.jinja
-{%- else %}
-    - source: salt://hadoop/files/hadoop.init.d.ubuntu.jinja
-{%- endif %}
+    - source: salt://hadoop/files/{{ hadoop.initscript }}
     - user: root
     - group: root
     - mode: '755'
@@ -138,11 +130,7 @@ format-namenode:
 {%- if 'hadoop_slave' in all_roles %}
 /etc/init.d/hadoop-datanode:
   file.managed:
-{%- if grains.os_family == 'RedHat' %}
-    - source: salt://hadoop/files/hadoop.init.d.jinja
-{%- else %}
-    - source: salt://hadoop/files/hadoop.init.d.ubuntu.jinja
-{%- endif %}
+    - source: salt://hadoop/files/{{ hadoop.initscript }}
     - user: root
     - group: root
     - mode: '755'
