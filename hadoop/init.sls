@@ -5,6 +5,11 @@ hadoop:
   group.present:
     - gid: {{ hadoop_users.get('hadoop', '6000') }}
 
+{%- if grains['os_family'] == 'RedHat' %}
+redhat-lsb:
+  pkg.installed
+{%- endif %}
+
 create-common-folders:
   file.directory:
     - user: root
