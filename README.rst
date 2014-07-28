@@ -7,7 +7,7 @@ Formula to set up and configure hadoop components
 .. note::
 
     See the full `Salt Formulas installation and usage instructions
-    <http://docs.saltstack.com/topics/conventions/formulas.html>`_.
+    <http://docs.saltstack.com/en/latest/topics/development/conventions/formulas.html>`_.
 
 Available states
 ================
@@ -30,6 +30,7 @@ Which services hadoop ends up running on a given host depends on the roles defin
 - hadoop_slave will run the hadoop-datanode service
 
 ::
+
     roles:
       - hadoop_slave
 
@@ -59,8 +60,8 @@ Which services end up running on a given host will again depend on the role(s) a
 Formula Dependencies
 ====================
 
-* hostsfile
-* sun-java
+* ``hostsfile``
+* ``sun-java``
 
 Salt Minion Configuration
 =========================
@@ -68,7 +69,7 @@ Salt Minion Configuration
 As mentioned above, all installation and configuration is assinged via roles. 
 Mounted disks (or just directories) can be configured for use with hdfs and mapreduce via grains.
 
-Example /etc/salt/grains for a datanode:
+Example ``/etc/salt/grains`` for a datanode:
 ::
 
     hdfs_data_disks:
@@ -95,6 +96,7 @@ Example /etc/salt/grains for a datanode:
 For the namenode address to be dynamically configured it is necessary to setup salt mine like below:
 
 ::
+
     mine_functions:
       network.interfaces: []
       grains.items: []
