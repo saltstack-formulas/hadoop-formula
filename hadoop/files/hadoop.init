@@ -40,7 +40,7 @@
 ### END INIT INFO
 
 . /lib/lsb/init-functions
-if [ -f . /etc/default/hadoop ]; then
+if [ -f /etc/default/hadoop ]; then
   . /etc/default/hadoop
 fi
 
