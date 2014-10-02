@@ -15,6 +15,7 @@
 {%- set resourcemanager_host        = salt['mine.get']('roles:hadoop_master', 'network.interfaces', 'grain').keys()|first() -%}
 {%- set local_disks                 = salt['grains.get']('yarn_data_disks', ['/yarn_data']) %}
 {%- set config_yarn_site            = gc.get('yarn-site', pc.get('yarn-site', {})) %}
+{%- set config_capacity_scheduler   = gc.get('capacity-scheduler', pc.get('capacity-scheduler', {})) %}
 
 {%- set yarn = {} %}
 {%- do yarn.update({ 'resourcetracker_port'        : resourcetracker_port,
@@ -29,4 +30,5 @@
                      'local_disks'                 : local_disks,
                      'first_local_disk'            : local_disks|sort()|first(),
                      'config_yarn_site'            : config_yarn_site,
+                     'config_capacity_scheduler'   : config_capacity_scheduler,
                    }) %}

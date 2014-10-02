@@ -35,6 +35,20 @@
     - require:
       - file: {{ yarn.first_local_disk }}/yarn
 
+{{ hadoop.alt_config }}/container-executor.cfg:
+  file.managed:
+    - source: salt://hadoop/conf/yarn/container-executor.cfg
+    - mode: 644
+    - user: root
+    - group: root
+    - template: jinja
+    - context:
+      local_disks: 
+{%- for disk in yarn.local_disks %}
+        - {{ disk }}/yarn/local
+{%- endfor %}
+      local_log_disk: {{ yarn.first_local_disk }}/yarn/log
+
 # restore the special permissions of the linux container executor
 fix-executor-group:
   cmd.run:
@@ -57,20 +71,12 @@ fix-executor-permissions:
     - user: root
     - template: jinja
 
-{{ hadoop.alt_config }}/container-executor.cfg:
-  file.managed:
-    - source: salt://hadoop/conf/yarn/container-executor.cfg
-    - mode: 644
-    - user: root
-    - group: root
-    - template: jinja
-
 {{ hadoop.alt_config }}/capacity-scheduler.xml:
-  file.copy:
-    - source: {{ hadoop['real_config_dist'] }}/capacity-scheduler.xml
-    - user: root
-    - group: root
+  file.managed:
+    - source: salt://hadoop/conf/yarn/capacity-scheduler.xml
     - mode: 644
+    - user: root
+    - template: jinja
 
 {%- if 'hadoop_master' in salt['grains.get']('roles', []) %}
 
