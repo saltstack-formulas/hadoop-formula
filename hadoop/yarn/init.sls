@@ -36,18 +36,19 @@
       - file: {{ yarn.first_local_disk }}/yarn
 
 # restore the special permissions of the linux container executor
-fix-executor-permissions:
+fix-executor-group:
   cmd.run:
     - user: root
     - names:
       - chown root {{hadoop.alt_home}}/bin/container-executor
       - chgrp {{username}} {{hadoop.alt_home}}/bin/container-executor
 
-file.set_mode:
-  module.run:
-    - kwargs:
-      path: {{hadoop.alt_home}}/bin/container-executor
-      mode: '6050' 
+fix-executor-permissions:
+  cmd.run:
+    - user: root
+    - name: chmod 06050 {{hadoop.alt_home}}/bin/container-executor
+    - require: 
+      - cmd: fix-executor-group
 
 {{ hadoop.alt_config }}/yarn-site.xml:
   file.managed:
