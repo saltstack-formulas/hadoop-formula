@@ -35,6 +35,13 @@
     - require:
       - file: {{ yarn.first_local_disk }}/yarn
 
+# restore the special permissions of the linux container executor
+{{hadoop.alt_home}}/bin/container-executor:
+  file.touch:
+    - user: root
+    - group: {{ username }}
+    - mode: '6050'
+
 {{ hadoop.alt_config }}/yarn-site.xml:
   file.managed:
     - source: salt://hadoop/conf/yarn/yarn-site.xml

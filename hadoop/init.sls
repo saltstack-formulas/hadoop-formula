@@ -40,7 +40,7 @@ vm.overcommit_memory:
 
 unpack-hadoop-dist:
   cmd.run:
-    - name: curl '{{ hadoop.source_url }}' | tar xz
+    - name: curl '{{ hadoop.source_url }}' | tar xz --no-same-owner
     - cwd: /usr/lib
     - unless: test -d {{ hadoop['real_home'] }}/lib
 
@@ -51,11 +51,6 @@ hadoop-home-link:
     - priority: 30
     - require:
       - cmd: unpack-hadoop-dist
-
-# file.directory has trouble changing non-root symlinks
-chown-hadoop-home:
-  cmd.run:
-    - name: chown -R root.root {{ hadoop['real_home'] }}
 
 {%- if hadoop.cdhmr1 %}
 
