@@ -42,7 +42,12 @@ fix-executor-permissions:
     - names:
       - chown root {{hadoop.alt_home}}/bin/container-executor
       - chgrp {{username}} {{hadoop.alt_home}}/bin/container-executor
-      - chmod 6050 {{hadoop.alt_home}}/bin/container-executor
+
+file.set_mode:
+  module.run:
+    - kwargs:
+      path: {{hadoop.alt_home}}/bin/container-executor
+      mode: '6050' 
 
 {{ hadoop.alt_config }}/yarn-site.xml:
   file.managed:
