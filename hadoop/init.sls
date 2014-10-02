@@ -113,7 +113,6 @@ move-hadoop-dist-conf:
     - unless: test -d {{ hadoop.real_config_dist }}
     - onlyif: test -d {{ real_config_src }}
     - require:
-      - cmd: chown-hadoop-home
       - file: /etc/hadoop
 
 {{ real_config_src }}:
