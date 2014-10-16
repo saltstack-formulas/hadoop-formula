@@ -48,6 +48,7 @@
         - {{ disk }}/yarn/local
 {%- endfor %}
       local_log_disk: {{ yarn.first_local_disk }}/yarn/log
+      banned_users_list: {{ yarn.banned_users|join(',') }}
 
 # restore the special permissions of the linux container executor
 fix-executor-group:

@@ -16,6 +16,8 @@
 {%- set local_disks                 = salt['grains.get']('yarn_data_disks', ['/yarn_data']) %}
 {%- set config_yarn_site            = gc.get('yarn-site', pc.get('yarn-site', {})) %}
 {%- set config_capacity_scheduler   = gc.get('capacity-scheduler', pc.get('capacity-scheduler', {})) %}
+# these are system accounts blacklisted with the YARN LCE
+{%- set banned_users                = gc.get('banned_users', pc.get('banned_users', ['hdfs','yarn','mapred','bin'])) %}
 
 {%- set yarn = {} %}
 {%- do yarn.update({ 'resourcetracker_port'        : resourcetracker_port,
@@ -31,4 +33,5 @@
                      'first_local_disk'            : local_disks|sort()|first(),
                      'config_yarn_site'            : config_yarn_site,
                      'config_capacity_scheduler'   : config_capacity_scheduler,
+                     'banned_users'                : banned_users,
                    }) %}
