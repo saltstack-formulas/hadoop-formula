@@ -75,7 +75,7 @@ ssh_dss_{{ username }}:
     - contents: |
         {{username}} soft nofile 65536
         {{username}} hard nofile 65536
-        {{username}} soft nproc 8092
-        {{username}} hard nproc 8092
+        {{username}} soft nproc 65536
+        {{username}} hard nproc 65536
 
 {%- endmacro %}
