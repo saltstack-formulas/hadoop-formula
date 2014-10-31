@@ -17,9 +17,6 @@ snappy-libs:
 {%- endif %}
 {%- endif %}
 
-# TODO: this is a bug - won't work at first execution because the libs are not yet installed
-{%- set snappies = salt['cmd.run_stdout']('cd /usr/lib64 && ls -1 libsnappy*') %}
-
 {%- if hadoop['major_version'] == '1' %}
 /tmp/hadoop-snappy-0.0.1.tgz:
   file.managed:
@@ -34,11 +31,19 @@ install-hadoop-snappy:
       - file: /tmp/hadoop-snappy-0.0.1.tgz
       - alternatives: hadoop-home-link
       - pkg: snappy-libs
-
-{%- for lib in snappies.split() %}
-/usr/lib/hadoop/lib/native/Linux-amd64-64/{{ lib }}:
-  file.symlink:
-    - target: /usr/lib64/{{ lib }}
-{%- endfor %}
-
 {% endif %}
+
+/etc/ld.so.conf.d/hadoop-x86-64.conf:
+  file.managed:
+    - user: root
+    - contents: {{ hadoop.alt_home }}/lib/native
+
+/etc/ld.so.conf.d/java-x86-64.conf:
+  file.managed:
+    - user: root
+    - contents: {{ hadoop.java_home }}/jre/lib/amd64/server
+
+/sbin/ldconfig:
+  cmd.run:
+    - user: root
+    - onlyif: test -d {{ hadoop.alt_home }}/lib/native
