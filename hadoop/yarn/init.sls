@@ -82,10 +82,13 @@ fix-executor-permissions:
 {%- if 'hadoop_master' in salt['grains.get']('roles', []) %}
 
 # add mr-history directories for Hadoop 2
+{%- set yarn_site = yarn.config_yarn_site %}
+{%- set rald = yarn_site.get('yarn.nodemanager.remote-app-log-dir', '/app-logs') %}
 
 {{ hdfs_mkdir(mapred.history_dir, username, username, 755, hadoop.dfs_cmd) }}
 {{ hdfs_mkdir(mapred.history_intermediate_done_dir, username, username, 1777, hadoop.dfs_cmd) }}
 {{ hdfs_mkdir(mapred.history_done_dir, username, username, 1777, hadoop.dfs_cmd) }}
+{{ hdfs_mkdir(rald, username, 'hadoop', 1777, hadoop.dfs_cmd) }}
 
 /etc/init.d/hadoop-historyserver:
   file.managed:
