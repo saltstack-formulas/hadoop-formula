@@ -89,8 +89,10 @@
 
 {%- if version_info['major_version'] == '1' %}
 {%- set dfs_cmd = alt_home + '/bin/hadoop dfs' %}
+{%- set dfsadmin_cmd = alt_home + '/bin/hadoop dfsadmin' %}
 {%- else %}
 {%- set dfs_cmd = alt_home + '/bin/hdfs dfs' %}
+{%- set dfsadmin_cmd = alt_home + '/bin/hdfs dfsadmin' %}
 {%- endif %}
 
 {%- set java_home        = salt['pillar.get']('java_home', '/usr/lib/java') %}
@@ -110,6 +112,7 @@
                           'real_config_dist' : real_config_dist,
                           'initscript'       : initscript,
                           'dfs_cmd'          : dfs_cmd,
+                          'dfsadmin_cmd'     : dfsadmin_cmd,
                           'java_home'        : java_home,
                           'log_root'         : log_root,
                           'default_log_root' : default_log_root,
