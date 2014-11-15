@@ -31,7 +31,7 @@ create-common-folders:
 vm.swappiness:
   sysctl:
     - present
-    - value: 10
+    - value: 0
 
 vm.overcommit_memory:
   sysctl:
