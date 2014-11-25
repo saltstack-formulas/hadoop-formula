@@ -14,17 +14,22 @@
                                       },
                      'apache-2.2.0' : { 'version'       : '2.2.0',
                                         'version_name'  : 'hadoop-2.2.0',
-                                        'source_url'    : g.get('source_url', p.get('source_url', 'http://apache.osuosl.org/hadoop/common/hadoop-2.2.0/hadoop-2.2.0.tar.gz')),
+                                        'source_url'    : g.get('source_url', p.get('source_url', 'http://archive.apache.org/dist/hadoop/core/hadoop-2.2.0/hadoop-2.2.0.tar.gz')),
                                         'major_version' : '2'
                                       },
                      'apache-2.3.0' : { 'version'       : '2.3.0',
                                         'version_name'  : 'hadoop-2.3.0',
-                                        'source_url'    : g.get('source_url', p.get('source_url', 'http://apache.osuosl.org/hadoop/common/hadoop-2.3.0/hadoop-2.3.0.tar.gz')),
+                                        'source_url'    : g.get('source_url', p.get('source_url', 'http://archive.apache.org/dist/hadoop/core/hadoop-2.3.0/hadoop-2.3.0.tar.gz')),
                                         'major_version' : '2'
                                       },
                      'apache-2.4.0' : { 'version'       : '2.4.0',
                                         'version_name'  : 'hadoop-2.4.0',
-                                        'source_url'    : g.get('source_url', p.get('source_url', 'http://apache.osuosl.org/hadoop/common/hadoop-2.4.0/hadoop-2.4.0.tar.gz')),
+                                        'source_url'    : g.get('source_url', p.get('source_url', 'http://archive.apache.org/dist/hadoop/core/hadoop-2.4.0/hadoop-2.4.0.tar.gz')),
+                                        'major_version' : '2'
+                                      },
+                     'apache-2.5.2' : { 'version'       : '2.5.2',
+                                        'version_name'  : 'hadoop-2.5.2',
+                                        'source_url'    : g.get('source_url', p.get('source_url', 'http://apache.osuosl.org/hadoop/core/hadoop-2.5.2/hadoop-2.5.2.tar.gz')),
                                         'major_version' : '2'
                                       },
                      'hdp-2.4.0'    : { 'version'       : '2.4.0.2.1.2.1-471',
