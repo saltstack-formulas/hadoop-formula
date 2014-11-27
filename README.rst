@@ -93,12 +93,13 @@ Example ``/etc/salt/grains`` for a datanode:
     roles:
       - hadoop_slave
 
-For the namenode address to be dynamically configured it is necessary to setup salt mine like below:
+For the namenode address to be dynamically configured it is necessary to setup salt mine like below /etc/salt/minion.d/mine_functions.conf:
 
 ::
 
     mine_functions:
       network.interfaces: []
+      network.ip_addrs: []
       grains.items: []
 
 One thing to keep in mind here is that the implementation currently relies on the minion_id of all nodes to match their FQDN (which is the default) and working name resolution. 
