@@ -7,6 +7,7 @@
     - uid: {{ uid }}
     - gid: {{ uid }}
     - home: {{ userhome }}
+    - shell: /bin/bash
     - groups: ['hadoop']
     - require:
       - group: {{ username }}
