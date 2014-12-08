@@ -56,6 +56,8 @@ mapred:
       mapred.reduce.shuffle.parallelcopies:
         value: 50
 
+# you only have to configure the capacity-scheduler section to the extent you need it - if omitted the 
+# resulting file (HADOOP_CONF/capacity-scheduler.xml) will just remain empty (no defaults)
 yarn:
   config:
     yarn-site:
@@ -65,4 +67,41 @@ yarn:
         value: org.apache.hadoop.mapred.ShuffleHandler
       yarn.resourcemanager.scheduler.class:
         value: org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler
+   capacity-scheduler:
+      yarn.scheduler.capacity.maximum-applications:
+        value: 10000
+      yarn.scheduler.capacity.resource-calculator:
+        value: org.apache.hadoop.yarn.util.resource.DefaultResourceCalculator
+      yarn.scheduler.capacity.root.queues:
+        value: default,customqueue
+      yarn.scheduler.capacity.root.capacity:
+        value: 100
+      yarn.scheduler.capacity.root.default.capacity:
+        value: 70
+      yarn.scheduler.capacity.root.default.user-limit-factor:
+        value: 1
+      yarn.scheduler.capacity.root.default.maximum-capacity:
+        value: 100
+      yarn.scheduler.capacity.root.default.state:
+        value: RUNNING
+      yarn.scheduler.capacity.root.default.acl_submit_applications:
+        value: '*'
+      yarn.scheduler.capacity.root.default.acl_administer_queue:
+        value: '*'
+      yarn.scheduler.capacity.root.customqueue.capacity:
+        value: 30
+      yarn.scheduler.capacity.root.customqueue.maximum-am-resource-percent:
+        value: 1.0
+      yarn.scheduler.capacity.root.customqueue.user-limit-factor:
+        value: 1
+      yarn.scheduler.capacity.root.customqueue.maximum-capacity:
+        value: 100
+      yarn.scheduler.capacity.root.customqueue.state:
+        value: RUNNING
+      yarn.scheduler.capacity.root.customqueue.acl_submit_applications:
+        value: '*'
+      yarn.scheduler.capacity.root.customqueue.acl_administer_queue:
+        value: '*'
+      yarn.scheduler.capacity.node-locality-delay:
+        value: -1
 

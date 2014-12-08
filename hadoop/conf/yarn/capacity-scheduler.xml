@@ -7,53 +7,6 @@
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 
 <configuration>
-
-  <property>
-    <name>yarn.scheduler.capacity.root.default.capacity</name>
-    <value>100</value>
-    <description>Default queue target capacity.</description>
-  </property>
-
-  <property>
-    <name>yarn.scheduler.capacity.root.default.user-limit-factor</name>
-    <value>1</value>
-    <description>
-      Default queue user limit a percentage from 0.0 to 1.0.
-    </description>
-  </property>
-
-  <property>
-    <name>yarn.scheduler.capacity.root.default.maximum-capacity</name>
-    <value>100</value>
-    <description>
-      The maximum capacity of the default queue. 
-    </description>
-  </property>
-
-  <property>
-    <name>yarn.scheduler.capacity.root.default.state</name>
-    <value>RUNNING</value>
-    <description>
-      The state of the default queue. State can be one of RUNNING or STOPPED.
-    </description>
-  </property>
-
-  <property>
-    <name>yarn.scheduler.capacity.root.default.acl_submit_applications</name>
-    <value>*</value>
-    <description>
-      The ACL of who can submit jobs to the default queue.
-    </description>
-  </property>
-
-  <property>
-    <name>yarn.scheduler.capacity.root.default.acl_administer_queue</name>
-    <value>*</value>
-    <description>
-      The ACL of who can administer jobs on the default queue.
-    </description>
-  </property>
-
 {%- for name, subdict in dyn_cfg.items() %}
     <property>
         <name>{{ name }}</name>
