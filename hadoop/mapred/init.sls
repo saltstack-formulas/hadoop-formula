@@ -34,7 +34,7 @@
 
 # create the /tmp directory
 
-{%- if 'hadoop_master' in salt['grains.get']('roles', []) %}
+{% if mapred.is_jobtracker %}
 # hadoop 1 apparently cannot set the sticky bit
 {%- if hadoop.major_version == '2' %}
 {{ hdfs_mkdir('/tmp', 'hdfs', None, 1777, hadoop.dfs_cmd) }}
@@ -47,7 +47,7 @@
 
 {%- if hadoop['major_version'] == '1' %}
 
-{%- if 'hadoop_master' in salt['grains.get']('roles', []) %}
+{% if mapred.is_jobtracker %}
 /etc/init.d/hadoop-jobtracker:
   file.managed:
     - source: salt://hadoop/files/{{ hadoop.initscript }}
@@ -66,8 +66,7 @@ hadoop-jobtracker:
     - enable: True
 {%- endif %}
 
-{%- if 'hadoop_slave' in salt['grains.get']('roles', []) %}
-
+{% if mapred.is_datatracker %}
 /etc/init.d/hadoop-tasktracker:
   file.managed:
     - source: salt://hadoop/files/{{ hadoop.initscript }}
@@ -86,4 +85,5 @@ hadoop-tasktracker:
     - enable: True
 
 {%- endif %}
+
 {%- endif %}

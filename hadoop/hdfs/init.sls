@@ -3,7 +3,6 @@
 {%- from 'hadoop/user_macro.sls' import hadoop_user with context %}
 # TODO: no users implemented in settings yet
 {%- set hadoop_users = hadoop.get('users', {}) %}
-{%- set all_roles    = salt['grains.get']('roles', []) %}
 {%- set username = 'hdfs' %}
 {%- set uid = hadoop_users.get(username, '6001') %}
 
@@ -19,7 +18,7 @@
     - user: root
     - group: root
     - makedirs: True
-{% if 'hadoop_master' in all_roles %}
+{% if hdfs.is_namenode %}
 {{ disk }}/hdfs/nn:
   file.directory:
     - user: {{ username }}
@@ -41,7 +40,8 @@
     - mode: '1775'
 {% endif %}
 
-{% if 'hadoop_slave' in all_roles %}
+
+{% if hdfs.is_datanode %}
 
 {{ disk }}/hdfs/dn:
   file.directory:
@@ -88,7 +88,9 @@
 {{ hadoop.alt_config }}/dfs.hosts.exclude:
   file.managed
 
-{%- if 'hadoop_master' in all_roles %}
+
+
+{% if hdfs.is_namenode %}
 
 format-namenode:
   cmd.run:
@@ -127,7 +129,8 @@ format-namenode:
       hadoop_home: {{ hadoop.alt_home }}
 {% endif %}
 
-{%- if 'hadoop_slave' in all_roles %}
+
+{% if hdfs.is_datanode %}
 /etc/init.d/hadoop-datanode:
   file.managed:
     - source: salt://hadoop/files/{{ hadoop.initscript }}
@@ -142,17 +145,18 @@ format-namenode:
       hadoop_home: {{ hadoop.alt_home }}
 {% endif %}
 
-{%- if 'hadoop_master' in all_roles or 'hadoop_slave' in all_roles %}
 
+
+{% if hdfs.is_namenode or hdfs.is_datanode %}
 hdfs-services:
   service.running:
     - enable: True
     - names:
-{%- if 'hadoop_master' in all_roles %}
+{% if hdfs.is_namenode %}
       - hadoop-secondarynamenode
       - hadoop-namenode
 {% endif %}
-{%- if 'hadoop_slave' in all_roles %}
+{% if hdfs.is_datanode %}
       - hadoop-datanode
 {% endif %}
 
