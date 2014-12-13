@@ -105,8 +105,7 @@ fix-executor-permissions:
       node_roles: {{ all_roles }}
 
 hadoop-historyserver:
-  service:
-    - running
+  service.running:
     - enable: True
 
 /etc/init.d/hadoop-resourcemanager:
@@ -123,8 +122,7 @@ hadoop-historyserver:
       hadoop_home: {{ hadoop.alt_home }}
 
 hadoop-resourcemanager:
-  service:
-    - running
+  service.running:
     - enable: True
 {% endif %}
 
@@ -144,8 +142,7 @@ hadoop-resourcemanager:
       hadoop_home: {{ hadoop.alt_home }}
 
 hadoop-nodemanager:
-  service:
-    - running
+  service.running:
     - enable: True
 {% endif %}
 

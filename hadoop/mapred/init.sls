@@ -62,8 +62,7 @@
       hadoop_home: {{ hadoop.alt_home }}
 
 hadoop-jobtracker:
-  service:
-    - running
+  service.running:
     - enable: True
 {%- endif %}
 
@@ -83,8 +82,7 @@ hadoop-jobtracker:
       hadoop_home: {{ hadoop.alt_home }}
 
 hadoop-tasktracker:
-  service:
-    - running
+  service.running:
     - enable: True
 
 {%- endif %}
