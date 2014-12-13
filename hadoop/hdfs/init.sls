@@ -145,8 +145,7 @@ format-namenode:
 {%- if 'hadoop_master' in all_roles or 'hadoop_slave' in all_roles %}
 
 hdfs-services:
-  service:
-    - running
+  service.running:
     - enable: True
     - names:
 {%- if 'hadoop_master' in all_roles %}
