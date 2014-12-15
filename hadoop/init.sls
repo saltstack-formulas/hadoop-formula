@@ -90,6 +90,7 @@ rename-config:
     - group: root
     - context:
       hadoop_config: {{ hadoop['alt_config'] }}
+      alt_home: {{ hadoop.get('alt_home', '/usr/lib/hadoop') }}
 
 {% if (hadoop['major_version'] == '1') and not hadoop.cdhmr1 %}
 {% set real_config_src = hadoop['real_home'] + '/conf' %}
