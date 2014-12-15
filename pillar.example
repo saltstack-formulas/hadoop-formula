@@ -2,6 +2,7 @@
 
 hadoop:
   version: apache-1.2.1 # ['apache-1.2.1', 'apache-2.2.0', 'hdp-1.3.0', 'hdp-2.2.0', 'cdh-4.5.0', 'cdh-4.5.0-mr1']
+  targeting_method: grain # [compound, glob] also supported
   users:
     hadoop: 6000
     hdfs: 6001
@@ -19,6 +20,8 @@ hadoop:
 
 hdfs:
   config:
+    namenode_target: "roles:hadoop_master" # Specify compound matching string to match all your namenodes
+    datanode_target: "roles:hadoop_slave" # Specify compound matching string to match all your datanodes e.g. if you were to use pillar I@datanode:true
     namenode_port: 8020
     namenode_http_port: 50070
     secondarynamenode_http_port: 50090
@@ -35,6 +38,8 @@ hdfs:
 
 mapred:
   config:
+    jobtracker_target: "roles:hadoop_master"
+    datatracker_target: "roles:hadoop_slave"
     jobtracker_port: 9001
     jobtracker_http_port: 50030
     jobhistory_port: 10020
