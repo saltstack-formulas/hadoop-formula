@@ -1,8 +1,7 @@
 {%- from 'hadoop/settings.sls' import hadoop with context %}
 {%- from 'hadoop/hdfs/settings.sls' import hdfs with context %}
 
-{%- set all_roles    = salt['grains.get']('roles', []) %}
-{%- if 'hadoop_master' in all_roles %}
+{% if salt['match.' ~ hadoop.targeting_method](hdfs.namenode_target) %}
 
 {%- for filename in hdfs.load.keys() %}
 {%- set url = hdfs.load.get(filename, '') %}

@@ -11,8 +11,9 @@
 {%- set nodemanager_port            = gc.get('nodemanager_port', pc.get('nodemanager_port', '50024')) %}
 {%- set nodemanager_webapp_port     = gc.get('nodemanager_webapp_port', pc.get('nodemanager_webapp_port', '50025')) %}
 {%- set nodemanager_localizer_port  = gc.get('nodemanager_localizer_port', pc.get('nodemanager_localizer_port', '50026')) %}
+{%- set resourcemanager_target      = gc.get('resourcemanager_target', pc.get('resourcemanager_target', 'roles:hadoop_master'))
+{%- set resourcemanager_host        = salt['mine.get'](resourcemanager_target, 'network.interfaces', expr_form=hadoop.targeting_method).keys()|first() %}
 
-{%- set resourcemanager_host        = salt['mine.get']('roles:hadoop_master', 'network.interfaces', 'grain').keys()|first() -%}
 {%- set local_disks                 = salt['grains.get']('yarn_data_disks', ['/yarn_data']) %}
 {%- set config_yarn_site            = gc.get('yarn-site', pc.get('yarn-site', {})) %}
 {%- set config_capacity_scheduler   = gc.get('capacity-scheduler', pc.get('capacity-scheduler', {})) %}
