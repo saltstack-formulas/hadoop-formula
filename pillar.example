@@ -19,13 +19,13 @@ hadoop:
         value: 60
 
 hdfs:
+  namenode_target: "roles:hadoop_master" # Specify compound matching string to match all your namenodes
+  datanode_target: "roles:hadoop_slave" # Specify compound matching string to match all your datanodes e.g. if you were to use pillar I@datanode:true
   config:
-    namenode_target: "roles:hadoop_master" # Specify compound matching string to match all your namenodes
-    datanode_target: "roles:hadoop_slave" # Specify compound matching string to match all your datanodes e.g. if you were to use pillar I@datanode:true
     namenode_port: 8020
     namenode_http_port: 50070
     secondarynamenode_http_port: 50090
-    # the number of hdfs replicas is normally auto-configured for you by the hadoop-formula
+    # the number of hdfs replicas is normally auto-configured for you in hdfs.settings
     # according to the number of available datanodes
     # replication: 1
     hdfs-site:
@@ -37,9 +37,9 @@ hdfs:
         value: true
 
 mapred:
+  jobtracker_target: "roles:hadoop_master"
+  tasktracker_target: "roles:hadoop_slave"
   config:
-    jobtracker_target: "roles:hadoop_master"
-    datatracker_target: "roles:hadoop_slave"
     jobtracker_port: 9001
     jobtracker_http_port: 50030
     jobhistory_port: 10020
@@ -64,6 +64,8 @@ mapred:
 # you only have to configure the capacity-scheduler section to the extent you need it - if omitted the 
 # resulting file (HADOOP_CONF/capacity-scheduler.xml) will just remain empty (no defaults)
 yarn:
+  resourcemanager_target: "roles:hadoop_master"
+  nodemanager_target: "roles:hadoop_slave"
   config:
     yarn-site:
       yarn.nodemanager.aux-services:
@@ -72,7 +74,7 @@ yarn:
         value: org.apache.hadoop.mapred.ShuffleHandler
       yarn.resourcemanager.scheduler.class:
         value: org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler
-   capacity-scheduler:
+    capacity-scheduler:
       yarn.scheduler.capacity.maximum-applications:
         value: 10000
       yarn.scheduler.capacity.resource-calculator:
@@ -109,4 +111,3 @@ yarn:
         value: '*'
       yarn.scheduler.capacity.node-locality-delay:
         value: -1
-

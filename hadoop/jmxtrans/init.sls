@@ -1,9 +1,9 @@
-# this would mean we now have /etc/jmxtrans/json
-{%- from 'hadoop/settings.sls' import hadoop with context %}
-{%- from 'hadoop/hdfs/settings.sls' import hdfs with context %}
+# this would mean we now have /etc/jmxtrans/json, as is expected to be created by jmxtrans-formula _before_
+# this is executed, usually you'd do that in some overstate/orchestration state
 
-{# this is new for me and was not shown in README either can this be removed or 
-  do you think that adding another targeting rule would be better?, i never saw/used this role before #}
+# FIXME: allow targeting alternatives
+# this change needs to be in lockstep with changes in https://github.com/saltstack-formulas/jmxtrans-formula
+{%- set all_roles    = salt['grains.get']('roles', []) %}
 {%- if 'monitor' in all_roles %}
 
 include:

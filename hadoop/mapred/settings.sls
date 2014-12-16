@@ -1,5 +1,3 @@
-{%- from "hadoop/settings.sls" import hadoop with context %}
-
 {% set p  = salt['pillar.get']('mapred', {}) %}
 {% set pc = p.get('config', {}) %}
 {% set g  = salt['grains.get']('mapred', {}) %}
@@ -13,15 +11,15 @@
 {%- set history_intermediate_done_dir = history_dir + '/tmp' %}
 {%- set history_done_dir = history_dir + '/done' %}
 {%- set jobtracker_target = gc.get('jobtracker_target', pc.get('jobtracker_target', 'roles:hadoop_master')) %}
-{%- set datatracker_target = gc.get('datatracker_target', pc.get('datatracker_target', 'roles:hadoop_slave')) %}
+{%- set tasktracker_target = gc.get('tasktracker_target', pc.get('tasktracker_target', 'roles:hadoop_slave')) %}
+{%- set targeting_method = salt['grains.get']('hadoop:targeting_method', salt['pillar.get']('hadoop:targeting_method', 'grain')) %}
 
-{%- set jobtracker_host  = salt['mine.get'](jobtracker_target, 'network.interfaces', expr_form=hadoop.targeting_method)|first %}
+{%- set jobtracker_host  = salt['mine.get'](jobtracker_target, 'network.interfaces', expr_form=targeting_method)|first %}
 {%- set local_disks     = salt['grains.get']('mapred_data_disks', ['/data']) %}
 {%- set config_mapred_site = gc.get('mapred-site', pc.get('mapred-site', {})) %}
 
-
-{% set is_jobtracker = salt['match.' ~ hadoop.targeting_method](jobtracker_target) %}
-{% set is_datatracker = salt['match.' ~ hadoop.targeting_method](datatracker_target) %}
+{%- set is_jobtracker = salt['match.' ~ targeting_method](jobtracker_target) %}
+{%- set is_tasktracker = salt['match.' ~ targeting_method](tasktracker_target) %}
 
 {%- set mapred = {} %}
 {%- do mapred.update({ 'jobtracker_port'               : jobtracker_port|string(),
@@ -30,9 +28,9 @@
                        'jobhistory_webapp_port'        : jobhistory_webapp_port|string(),
                        'jobtracker_host'               : jobtracker_host,
                        'jobtracker_target'             : jobtracker_target,
-                       'datatracker_target'            : datatracker_target,
+                       'tasktracker_target'            : tasktracker_target,
                        'is_jobtracker'                 : is_jobtracker,
-                       'is_datatracker'                : is_datatracker,
+                       'is_tasktracker'                : is_tasktracker,
                        'history_dir'                   : history_dir,
                        'history_intermediate_done_dir' : history_intermediate_done_dir,
                        'history_done_dir'              : history_done_dir,

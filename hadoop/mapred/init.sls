@@ -66,7 +66,7 @@ hadoop-jobtracker:
     - enable: True
 {%- endif %}
 
-{% if mapred.is_datatracker %}
+{% if mapred.is_tasktracker %}
 /etc/init.d/hadoop-tasktracker:
   file.managed:
     - source: salt://hadoop/files/{{ hadoop.initscript }}

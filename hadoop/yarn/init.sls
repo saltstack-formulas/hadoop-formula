@@ -78,7 +78,7 @@ fix-executor-permissions:
     - user: root
     - template: jinja
 
-{% if hdfs.is_namenode %}
+{% if yarn.is_resourcemanager %}
 
 # add mr-history directories for Hadoop 2
 {%- set yarn_site = yarn.config_yarn_site %}
@@ -124,7 +124,7 @@ hadoop-resourcemanager:
     - enable: True
 {% endif %}
 
-{% if hdfs.is_datanode %}
+{% if yarn.is_nodemanager %}
 
 /etc/init.d/hadoop-nodemanager:
   file.managed:
