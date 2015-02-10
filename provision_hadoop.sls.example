@@ -1,0 +1,34 @@
+# this is an example of using the saltstack orchestrate runner to provision hadoop
+# on a cluster, run with "salt-run state.orchestrate orchestration.provision_hadoop"
+# after placing this file in /srv/salt/orchestration/ as provision_hadoop.sls
+#
+# more info on orchstrate:
+# http://docs.saltstack.com/en/latest/topics/tutorials/states_pt5.html#orchestrate-runner
+# make sure your salt server has the hostsfile, ntp, sun-java and hadoop formulas available
+
+prep:
+  salt.state:
+    - tgt: '*'
+    - sls:
+      - hostsfile
+      - hostsfile.hostname
+      - ntp.server
+      - sun-java
+      - sun-java.env
+
+# the target for hadoop_services only means where the binaries and config will end up
+# targetting for service startup and configuration is done on the service level in pillars
+
+hadoop_services:
+  salt.state:
+    - tgt: 'G@roles:hadoop_master or G@roles:hadoop_slave'
+    - tgt_type: compound
+    - require:
+      - salt: prep
+    - sls:
+      - hadoop
+      - hadoop.snappy
+      - hadoop.hdfs
+      - hadoop.mapred
+      - hadoop.yarn
+
