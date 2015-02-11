@@ -3,7 +3,6 @@
 {%- from "hadoop/mapred/settings.sls" import mapred with context %}
 {%- from "hadoop/user_macro.sls" import hadoop_user with context %}
 {%- from 'hadoop/hdfs_mkdir_macro.sls' import hdfs_mkdir with context %}
-{%- set all_roles    = salt['grains.get']('roles', []) %}
 
 # TODO: no users implemented in settings yet
 {%- set hadoop_users = hadoop.get('users', {}) %}
@@ -79,7 +78,7 @@ fix-executor-permissions:
     - user: root
     - template: jinja
 
-{%- if 'hadoop_master' in salt['grains.get']('roles', []) %}
+{% if yarn.is_resourcemanager %}
 
 # add mr-history directories for Hadoop 2
 {%- set yarn_site = yarn.config_yarn_site %}
@@ -102,7 +101,6 @@ fix-executor-permissions:
       hadoop_user: hdfs
       hadoop_major: {{ hadoop.major_version }}
       hadoop_home: {{ hadoop.alt_home }}
-      node_roles: {{ all_roles }}
 
 hadoop-historyserver:
   service.running:
@@ -126,7 +124,7 @@ hadoop-resourcemanager:
     - enable: True
 {% endif %}
 
-{%- if 'hadoop_slave' in salt['grains.get']('roles', []) %}
+{% if yarn.is_nodemanager %}
 
 /etc/init.d/hadoop-nodemanager:
   file.managed:

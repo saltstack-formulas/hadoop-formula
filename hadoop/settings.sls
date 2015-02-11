@@ -96,6 +96,7 @@
 {%- set default_log_root = '/var/log/hadoop' %}
 {%- set log_root         = gc.get('log_root', pc.get('log_root', default_log_root)) %}
 {%- set initscript       = 'hadoop.init' %}
+{%- set targeting_method = g.get('targeting_method', p.get('targeting_method', 'grain')) %}
 
 {%- if version_info['major_version'] == '1' %}
 {%- set dfs_cmd = alt_home + '/bin/hadoop dfs' %}
@@ -127,4 +128,5 @@
                           'log_root'         : log_root,
                           'default_log_root' : default_log_root,
                           'config_core_site' : config_core_site,
+                          'targeting_method': targeting_method,
                       }) %}
