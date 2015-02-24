@@ -10,8 +10,8 @@
 {%- set history_dir      = gc.get('history_dir', pc.get('history_dir', '/mr-history')) %}
 {%- set history_intermediate_done_dir = history_dir + '/tmp' %}
 {%- set history_done_dir = history_dir + '/done' %}
-{%- set jobtracker_target = gc.get('jobtracker_target', pc.get('jobtracker_target', 'roles:hadoop_master')) %}
-{%- set tasktracker_target = gc.get('tasktracker_target', pc.get('tasktracker_target', 'roles:hadoop_slave')) %}
+{%- set jobtracker_target = g.get('jobtracker_target', p.get('jobtracker_target', 'roles:hadoop_master')) %}
+{%- set tasktracker_target = g.get('tasktracker_target', p.get('tasktracker_target', 'roles:hadoop_slave')) %}
 {%- set targeting_method = salt['grains.get']('hadoop:targeting_method', salt['pillar.get']('hadoop:targeting_method', 'grain')) %}
 
 {%- set jobtracker_host  = salt['mine.get'](jobtracker_target, 'network.interfaces', expr_form=targeting_method)|first %}

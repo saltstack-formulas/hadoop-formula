@@ -4,8 +4,8 @@
 {%- set gc = g.get('config', {}) %}
 
 # TODO: https://github.com/accumulo/hadoop-formula/issues/1 'Replace direct mine.get calls'
-{%- set namenode_target     = p.get('namenode_target', 'roles:hadoop_master') %}
-{%- set datanode_target     = p.get('datanode_target', 'roles:hadoop_slave') %}
+{%- set namenode_target     = g.get('namenode_target', p.get('namenode_target', 'roles:hadoop_master')) %}
+{%- set datanode_target     = g.get('datanode_target', p.get('datanode_target', 'roles:hadoop_slave')) %}
 # this is a deliberate duplication as to not re-import hadoop/settings multiple times
 {%- set targeting_method    = salt['grains.get']('hadoop:targeting_method', salt['pillar.get']('hadoop:targeting_method', 'grain')) %}
 {%- set namenode_host       = salt['mine.get'](namenode_target, 'network.interfaces', expr_form=targeting_method)|first %}
