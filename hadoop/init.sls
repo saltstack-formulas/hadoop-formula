@@ -21,6 +21,7 @@ create-common-folders:
       - /var/lib/hadoop
     - require:
       - group: hadoop
+    - makedirs: True
 
 {%- if hadoop.log_root != hadoop.default_log_root %}
 /var/log/hadoop:
