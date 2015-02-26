@@ -85,6 +85,17 @@
                                         'major_version' : '1',
                                         'cdhmr1'        : True
                                       },
+                     'cdh-5.3.1'    : { 'version'       : '2.5.0-cdh5.3.1',
+                                        'version_name'  : 'hadoop-2.5.0-cdh5.3.1',
+                                        'source_url'    : g.get('source_url', p.get('source_url', 'http://archive-primary.cloudera.com/cdh5/cdh/5/hadoop-2.5.0-cdh5.3.1.tar.gz')),
+                                        'major_version' : '2'
+                                      },
+                     'cdh-5.3.1-mr1': { 'version'       : '2.5.0-cdh5.3.1',
+                                        'version_name'  : 'hadoop-2.5.0-cdh5.3.1',
+                                        'source_url'    : g.get('source_url', p.get('source_url', 'http://archive-primary.cloudera.com/cdh5/cdh/5/hadoop-2.5.0-cdh5.3.1.tar.gz')),
+                                        'major_version' : '1',
+                                        'cdhmr1'        : True
+                                      },
                    }%}
 
 {%- set version_info     = versions.get(dist_id, versions['apache-1.2.1']) %}
