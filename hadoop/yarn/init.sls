@@ -37,13 +37,14 @@
 
 {{ hadoop.alt_config }}/container-executor.cfg:
   file.managed:
+    - unless: test ! -f {{hadoop.alt_home}}/bin/container-executor
     - source: salt://hadoop/conf/yarn/container-executor.cfg
     - mode: 644
     - user: root
     - group: root
     - template: jinja
     - context:
-      local_disks: 
+      local_disks:
 {%- for disk in yarn.local_disks %}
         - {{ disk }}/yarn/local
 {%- endfor %}
@@ -53,6 +54,7 @@
 # restore the special permissions of the linux container executor
 fix-executor-group:
   cmd.run:
+    - unless: test ! -f {{hadoop.alt_home}}/bin/container-executor
     - user: root
     - names:
       - chown root {{hadoop.alt_home}}/bin/container-executor
@@ -60,9 +62,10 @@ fix-executor-group:
 
 fix-executor-permissions:
   cmd.run:
+    - unless: test ! -f {{hadoop.alt_home}}/bin/container-executor
     - user: root
     - name: chmod 06050 {{hadoop.alt_home}}/bin/container-executor
-    - require: 
+    - require:
       - cmd: fix-executor-group
 
 {{ hadoop.alt_config }}/yarn-site.xml:
