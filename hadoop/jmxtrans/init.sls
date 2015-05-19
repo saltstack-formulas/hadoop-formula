@@ -3,6 +3,7 @@
 
 # FIXME: allow targeting alternatives
 # this change needs to be in lockstep with changes in https://github.com/saltstack-formulas/jmxtrans-formula
+{%- from 'hadoop/hdfs/settings.sls' import hdfs with context %}
 {%- set all_roles    = salt['grains.get']('roles', []) %}
 {%- if 'monitor' in all_roles %}
 
