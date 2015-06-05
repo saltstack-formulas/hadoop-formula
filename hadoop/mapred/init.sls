@@ -11,6 +11,9 @@
 {% set uid = hadoop_users.get(username, '6002') %}
 {{ hadoop_user(username, uid) }}
 
+# skip all except user creation if there is no targeting match
+{% if mapred.is_tasktracker or mapred.is_jobtracker %}
+
 {% for disk in mapred.local_disks %}
 {{ disk }}/mapred:
   file.directory:
@@ -32,6 +35,7 @@
     - template: jinja
     - mode: 644
 
+{%- endif %}
 # create the /tmp directory
 
 {% if mapred.is_jobtracker %}

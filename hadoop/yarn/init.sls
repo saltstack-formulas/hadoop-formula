@@ -13,6 +13,8 @@
 {% set uid = hadoop_users.get(username, '6003') %}
 {{ hadoop_user(username, uid) }}
 
+{% if yarn.is_resourcemanager or yarn.is_nodemanager %}
+
 {% for disk in yarn.local_disks %}
 {{ disk }}/yarn:
   file.directory:
@@ -80,6 +82,8 @@ fix-executor-permissions:
     - mode: 644
     - user: root
     - template: jinja
+
+{%- endif %}
 
 {% if yarn.is_resourcemanager %}
 
