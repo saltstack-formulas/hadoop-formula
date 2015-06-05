@@ -7,7 +7,7 @@
 {%- set default_dist_id = 'apache-2.2.0' %}
 {%- set dist_id = g.get('version', p.get('version', default_dist_id)) %}
 
-{%- set versions = { 'apache-1.2.1' : { 'version'       : '1.2.1',
+{%- set default_versions = { 'apache-1.2.1' : { 'version'       : '1.2.1',
                                         'version_name'  : 'hadoop-1.2.1',
                                         'source_url'    : g.get('source_url', p.get('source_url', 'http://apache.osuosl.org/hadoop/common/hadoop-1.2.1/hadoop-1.2.1-bin.tar.gz')),
                                         'major_version' : '1'
@@ -98,6 +98,7 @@
                                       },
                    }%}
 
+{%- set versions         = p.get('versions', default_versions) %}
 {%- set version_info     = versions.get(dist_id, versions['apache-1.2.1']) %}
 {%- set alt_home         = salt['pillar.get']('hadoop:prefix', '/usr/lib/hadoop') %}
 {%- set real_home        = '/usr/lib/' + version_info['version_name'] %}
