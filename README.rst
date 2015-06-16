@@ -157,7 +157,7 @@ Example:
       version: hdp-2.6.0
 
 This example will make the formula use the latest (maintained) version of HDP-2.2 (which happens to be Hadoop 2.6.0).
-At the time this documentation is written this is mor specifically 2.6.0.2.2.6.0-2800, an update release that will soon 
+At the time this documentation is written this is more specifically 2.6.0.2.2.6.0-2800, an update release that will soon 
 change and with some likelyhood be what you need.
 
 If for whatever reason that is not the case (because for example you need to provision HDP 2.6.0.2.2.4.2-2) then you need to 
