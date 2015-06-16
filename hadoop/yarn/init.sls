@@ -7,7 +7,7 @@
 # TODO: no users implemented in settings yet
 {%- set hadoop_users = hadoop.get('users', {}) %}
 
-{%- if hadoop['major_version'] == '2' %}
+{%- if hadoop.major_version|string() == '2' %}
 
 {% set username = 'yarn' %}
 {% set uid = hadoop_users.get(username, '6003') %}

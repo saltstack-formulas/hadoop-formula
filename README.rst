@@ -145,3 +145,40 @@ Where the core-site part will appear in core-site.xml as:
 
 Please note that host- and cluster-specific values are not exposed - the formula controls these (think: fs.default.name)
 
+Custom Hadoop distribution settings
+===================================
+
+The formula includes all data to allow referencing a specific distribution release by simply using the version key:
+
+Example:
+::
+
+    hadoop:
+      version: hdp-2.6.0
+
+This example will make the formula use the latest (maintained) version of HDP-2.2 (which happens to be Hadoop 2.6.0).
+At the time this documentation is written this is more specifically 2.6.0.2.2.6.0-2800, an update release that will soon 
+change and with some likelyhood be what you need.
+
+If for whatever reason that is not the case (because for example you need to provision HDP 2.6.0.2.2.4.2-2) then you need to 
+provide the full data structure in the versions hash that is normally part of the formula.
+
+Example:
+::
+
+    hadoop:
+      version: hdp-2.6.0-update2242
+      versions:
+        hdp-2.6.0-update2242:
+          version: 2.6.0.2.2.4.2-2
+          version_name: hadoop-2.6.0.2.2.4.2-2
+          source_url: http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.2.4.2/tars/hadoop-2.6.0.2.2.4.2-2.tar.gz
+          major_version: '2'
+        hdp-2.6.0-GA:
+          version: 2.6.0.2.2.0.0-2041
+          version_name: hadoop-2.6.0.2.2.0.0-2041
+          source_url: http://public-repo-1.hortonworks.com/HDP/centos6/2.x/GA/2.2.0.0/tars/hadoop-2.6.0.2.2.0.0-2041.tar.gz
+          major_version: '2'
+
+This would end up provisioning the earlier update version and additionally give you a way to install the GA version - just by changing the `hadoop.version` attribute to hdp-2.6.0-GA.
+

@@ -32,9 +32,9 @@
                                         'source_url'    : g.get('source_url', p.get('source_url', 'http://apache.osuosl.org/hadoop/core/hadoop-2.5.2/hadoop-2.5.2.tar.gz')),
                                         'major_version' : '2'
                                       },
-                     'hdp-2.6.0'    : { 'version'       : '2.6.0.2.2.4.2-2',
-                                        'version_name'  : 'hadoop-2.6.0.2.2.4.2-2',
-                                        'source_url'    : g.get('source_url', p.get('source_url', 'http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.2.4.2/tars/hadoop-2.6.0.2.2.4.2-2.tar.gz')),
+                     'hdp-2.6.0'    : { 'version'       : '2.6.0.2.2.6.0-2800',
+                                        'version_name'  : 'hadoop-2.6.0.2.2.6.0-2800',
+                                        'source_url'    : 'http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.2.6.0/tars/hadoop-2.6.0.2.2.6.0-2800.tar.gz',
                                         'major_version' : '2'
                                       },
                      'hdp-2.4.0'    : { 'version'       : '2.4.0.2.1.10.0-881',
@@ -127,7 +127,7 @@
                           'version'          : version_info['version'],
                           'version_name'     : version_info['version_name'],
                           'source_url'       : version_info['source_url'],
-                          'major_version'    : version_info['major_version'],
+                          'major_version'    : version_info['major_version']|string(),
                           'alt_home'         : alt_home,
                           'real_home'        : real_home,
                           'alt_config'       : alt_config,
