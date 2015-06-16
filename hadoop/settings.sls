@@ -127,7 +127,7 @@
                           'version'          : version_info['version'],
                           'version_name'     : version_info['version_name'],
                           'source_url'       : version_info['source_url'],
-                          'major_version'    : version_info['major_version'],
+                          'major_version'    : version_info['major_version']|string(),
                           'alt_home'         : alt_home,
                           'real_home'        : real_home,
                           'alt_config'       : alt_config,
