@@ -151,7 +151,7 @@ Custom Hadoop distribution settings
 The formula includes all data to allow referencing a specific distribution release by simply using the version key:
 
 Example:
-;;
+::
 
     hadoop:
       version: hdp-2.6.0
@@ -164,7 +164,7 @@ If for whatever reason that is not the case (because for example you need to pro
 provide the full data structure in the versions hash that is normally part of the formula.
 
 Example:
-;;
+::
 
     hadoop:
       version: hdp-2.6.0-update2242
