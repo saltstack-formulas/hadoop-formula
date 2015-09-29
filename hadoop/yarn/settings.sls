@@ -12,7 +12,7 @@
 {%- set nodemanager_webapp_port     = gc.get('nodemanager_webapp_port', pc.get('nodemanager_webapp_port', '50025')) %}
 {%- set nodemanager_localizer_port  = gc.get('nodemanager_localizer_port', pc.get('nodemanager_localizer_port', '50026')) %}
 {%- set resourcemanager_target      = g.get('resourcemanager_target', p.get('resourcemanager_target', 'roles:hadoop_master')) %}
-{%- set nodemanager_target          = g.get('resourcemanager_target', p.get('nodemanager_target', 'roles:hadoop_slave')) %}
+{%- set nodemanager_target          = g.get('nodemanager_target', p.get('nodemanager_target', 'roles:hadoop_slave')) %}
 # this is a deliberate duplication as to not re-import hadoop/settings multiple times
 {%- set targeting_method            = salt['grains.get']('hadoop:targeting_method', salt['pillar.get']('hadoop:targeting_method', 'grain')) %}
 {%- set resourcemanager_host        = salt['mine.get'](resourcemanager_target, 'network.interfaces', expr_form=targeting_method)|first() %}
