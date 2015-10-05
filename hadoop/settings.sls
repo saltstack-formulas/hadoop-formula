@@ -39,7 +39,7 @@
                                       },
                      'hdp-2.6.0'    : { 'version'       : '2.6.0.2.2.6.0-2800',
                                         'version_name'  : 'hadoop-2.6.0.2.2.6.0-2800',
-                                        'source_url'    : 'http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.2.6.0/tars/hadoop-2.6.0.2.2.6.0-2800.tar.gz',
+                                        'source_url'    : g.get('source_url', p.get('source_url', 'http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.2.6.0/tars/hadoop-2.6.0.2.2.6.0-2800.tar.gz')),
                                         'major_version' : '2'
                                       },
                      'hdp-2.4.0'    : { 'version'       : '2.4.0.2.1.10.0-881',
