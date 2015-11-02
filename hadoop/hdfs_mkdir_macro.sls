@@ -3,8 +3,7 @@
 make{{ localname }}-dir:
   cmd.run:
     - user: hdfs
-    - name: {{ cmd }} -mkdir {{ name }}
-    - unless: {{ cmd }} -stat {{ name }}
+    - name: {{ cmd }} -mkdir -p {{ name }}
 
 chown{{ localname }}-dir:
   cmd.run:

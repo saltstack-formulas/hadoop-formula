@@ -6,6 +6,7 @@
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 
 <configuration>
+{%- if hdfs.namenode_count == 1  %}
 {%- if major == '1' %}
     <property>
         <name>fs.checkpoint.dir</name>
@@ -29,13 +30,19 @@
 {%- endif %}
         <value>hdfs://{{ hdfs.namenode_host }}:{{ hdfs.namenode_port }}</value>
     </property>
-     
+
 <!--
     <property>
         <name>hadoop.tmp.dir</name>
         <value>{{ hdfs.tmp_dir }}</value>
     </property>
 -->
+{%- else %}
+    <property>
+      <name>fs.defaultFS</name>
+      <value>hdfs://{{hdfs.ha_cluster_id}}</value>
+    </property>
+{%- endif %}
 
 {%- for name, subdict in dyn_cfg.items() %}
     <property>
