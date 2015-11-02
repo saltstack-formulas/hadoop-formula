@@ -41,14 +41,21 @@
 {% endif %}
 
 
-{% if hdfs.is_datanode %}
-
+{%- if hdfs.is_datanode %}
 {{ disk }}/hdfs/dn:
   file.directory:
     - user: {{ username }}
     - group: hadoop
     - makedirs: True
-{% endif %}
+{%- endif %}
+
+{%- if hdfs.is_journalnode %}
+{{ disk }}/hdfs/journal:
+  file.directory:
+    - user: {{ username }}
+    - group: hadoop
+    - makedirs: True
+{%- endif %}
 
 {% endfor %}
 
@@ -88,10 +95,9 @@
 {{ hadoop.alt_config }}/dfs.hosts.exclude:
   file.managed
 
-
-
 {% if hdfs.is_namenode %}
 
+{%- if hdfs.namenode_count == 1 %}
 format-namenode:
   cmd.run:
 {%- if hadoop.major_version|string() == '1' %}
@@ -101,6 +107,7 @@ format-namenode:
 {% endif %}
     - user: hdfs
     - unless: test -d {{ test_folder }}
+{%- endif %}
 
 /etc/init.d/hadoop-namenode:
   file.managed:
@@ -115,6 +122,7 @@ format-namenode:
       hadoop_major: {{ hadoop.major_version }}
       hadoop_home: {{ hadoop.alt_home }}
 
+{%- if hdfs.namenode_count == 1 %}
 /etc/init.d/hadoop-secondarynamenode:
   file.managed:
     - source: salt://hadoop/files/{{ hadoop.initscript }}
@@ -127,8 +135,21 @@ format-namenode:
       hadoop_user: hdfs
       hadoop_major: {{ hadoop.major_version }}
       hadoop_home: {{ hadoop.alt_home }}
+{%- else %}
+/etc/init.d/hadoop-zkfc:
+  file.managed:
+    - source: salt://hadoop/files/{{ hadoop.initscript }}
+    - user: root
+    - group: root
+    - mode: '755'
+    - template: jinja
+    - context:
+      hadoop_svc: zkfc
+      hadoop_user: hdfs
+      hadoop_major: {{ hadoop.major_version }}
+      hadoop_home: {{ hadoop.alt_home }}
 {% endif %}
-
+{% endif %}
 
 {% if hdfs.is_datanode %}
 /etc/init.d/hadoop-datanode:
@@ -145,19 +166,41 @@ format-namenode:
       hadoop_home: {{ hadoop.alt_home }}
 {% endif %}
 
+{% if hdfs.is_journalnode %}
+/etc/init.d/hadoop-journalnode:
+  file.managed:
+    - source: salt://hadoop/files/{{ hadoop.initscript }}
+    - user: root
+    - group: root
+    - mode: '755'
+    - template: jinja
+    - context:
+      hadoop_svc: journalnode
+      hadoop_user: hdfs
+      hadoop_major: {{ hadoop.major_version }}
+      hadoop_home: {{ hadoop.alt_home }}
+{% endif %}
 
+{% if hdfs.is_namenode %}
+{%- if hdfs.namenode_count == 1 %}
+hdfs-nn-services:
+  service.running:
+    - enable: True
+    - names:
+      - hadoop-secondarynamenode
+      - hadoop-namenode
+{%- endif %}
+{%- endif %}
 
-{% if hdfs.is_namenode or hdfs.is_datanode %}
+{% if hdfs.is_datanode or hdfs.is_journalnode %}
 hdfs-services:
   service.running:
     - enable: True
     - names:
-{% if hdfs.is_namenode %}
-      - hadoop-secondarynamenode
-      - hadoop-namenode
-{% endif %}
-{% if hdfs.is_datanode %}
+{%- if hdfs.is_datanode %}
       - hadoop-datanode
-{% endif %}
-
-{% endif %}
+{%- endif %}
+{%- if hdfs.is_journalnode %}
+      - hadoop-journalnode
+{%- endif %}
+{%- endif %}
