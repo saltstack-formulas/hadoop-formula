@@ -69,17 +69,6 @@ PROC_NAME="java"
 {%- set bindir='sbin' %}
 {%- endif %}
 
-{%- if hadoop_svc == 'historyserver' %}
-PIDFILE="/var/run/hadoop/mapred-{{ hadoop_user }}-{{ hadoop_svc }}.pid"
-EXEC_PATH="{{ hadoop_home }}/{{ bindir }}/mr-jobhistory-daemon.sh"
-{%- elif hadoop_user == 'yarn' %}
-PIDFILE="/var/run/hadoop/yarn-{{ hadoop_user }}-{{ hadoop_svc }}.pid"
-EXEC_PATH="{{ hadoop_home }}/{{ bindir }}/yarn-daemon.sh"
-{%- else %}
-PIDFILE="/var/run/hadoop/hadoop-{{ hadoop_user }}-{{ hadoop_svc }}.pid"
-EXEC_PATH="{{ hadoop_home }}/{{ bindir }}/hadoop-daemon.sh"
-{%- endif %}
-
 DAEMON="hadoop-{{ hadoop_user }}-{{ hadoop_svc }}"
 DESC="Hadoop {{ hadoop_svc }}"
 SVC_USER="{{ hadoop_user }}"
@@ -87,8 +76,21 @@ DAEMON_FLAGS="{{ hadoop_svc }}"
 CONF_DIR="/etc/hadoop/conf"
 LOCKDIR="/var/lock/subsys"
 LOCKFILE="$LOCKDIR/hadoop-{{ hadoop_svc }}"
+PIDDIR="/var/run/hadoop"
 
-[ -d "$LOCKDIR" ] || install -d -m 0755 $LOCKDIR 1>/dev/null 2>&1 || :
+[ -d "${LOCKDIR}" ] || install -d -m 0755 ${LOCKDIR} 1>/dev/null 2>&1 || :
+[ -d "${PIDDIR}" ] || install -d -g hadoop -m 0775 ${PIDDIR} 1>/dev/null 2>&1 || :
+
+{%- if hadoop_svc == 'historyserver' %}
+PIDFILE="${PIDDIR}/mapred-{{ hadoop_user }}-{{ hadoop_svc }}.pid"
+EXEC_PATH="{{ hadoop_home }}/{{ bindir }}/mr-jobhistory-daemon.sh"
+{%- elif hadoop_user == 'yarn' %}
+PIDFILE="${PIDDIR}/yarn-{{ hadoop_user }}-{{ hadoop_svc }}.pid"
+EXEC_PATH="{{ hadoop_home }}/{{ bindir }}/yarn-daemon.sh"
+{%- else %}
+PIDFILE="${PIDDIR}/hadoop-{{ hadoop_user }}-{{ hadoop_svc }}.pid"
+EXEC_PATH="{{ hadoop_home }}/{{ bindir }}/hadoop-daemon.sh"
+{%- endif %}
 
 start() {
   [ -x $EXEC_PATH ] || exit $ERROR_PROGRAM_NOT_INSTALLED
