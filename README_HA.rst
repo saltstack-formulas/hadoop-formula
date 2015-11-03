@@ -119,6 +119,7 @@ Below is an example orchestration script to illustrate what the listed actions m
         - sls:
           - sun-java
           - sun-java.env
+          - zookeeper
 
     zookeeper_service:
       salt.state:
@@ -127,12 +128,11 @@ Below is an example orchestration script to illustrate what the listed actions m
         - require:
             - salt: hnode_prep
         - sls:
-            - zookeeper
             - zookeeper.server
 
     hadoop_hdfs:
       salt.state:
-        - tgt: 'G@roles:hadoop_master or G@roles:hadoop_slave'
+        - tgt: 'G@roles:hadoop_master or G@roles:hadoop_slave or G@roles:hdfs_journalnode'
         - tgt_type: compound
         - require:
           - salt: zookeeper_service
