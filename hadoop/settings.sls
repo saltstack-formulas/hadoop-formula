@@ -37,24 +37,29 @@
                                         'source_url'    : g.get('source_url', p.get('source_url', 'http://archive.apache.org/dist/hadoop/core/hadoop-2.6.0/hadoop-2.6.0.tar.gz')),
                                         'major_version' : '2',
                                       },
-                     'hdp-2.7.1'    : { 'version'       : '2.7.1.2.3.2.0-2950',
-                                        'version_name'  : 'hadoop-2.7.1.2.3.2.0-2950',
-                                        'source_url'    : g.get('source_url', p.get('source_url', 'http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.3.2.0/tars/hadoop-2.7.1.2.3.2.0-2950.tar.gz')),
+                     'apache-2.7.1' : { 'version'       : '2.7.1',
+                                        'version_name'  : 'hadoop-2.7.1',
+                                        'source_url'    : g.get('source_url', p.get('source_url', 'http://archive.apache.org/dist/hadoop/core/hadoop-2.7.1/hadoop-2.7.1.tar.gz')),
+                                        'major_version' : '2',
+                                      },
+                     'hdp-2.7.1'    : { 'version'       : '2.7.1.2.3.4.0-3485',
+                                        'version_name'  : 'hadoop-2.7.1.2.3.4.0-3485',
+                                        'source_url'    : g.get('source_url', p.get('source_url', 'http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.3.4.0/tars/hadoop-2.7.1.2.3.4.0-3485.tar.gz')),
                                         'major_version' : '2'
                                       },
-                     'hdp-2.6.0'    : { 'version'       : '2.6.0.2.2.6.0-2800',
-                                        'version_name'  : 'hadoop-2.6.0.2.2.6.0-2800',
-                                        'source_url'    : g.get('source_url', p.get('source_url', 'http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.2.6.0/tars/hadoop-2.6.0.2.2.6.0-2800.tar.gz')),
+                     'hdp-2.6.0'    : { 'version'       : '2.6.0.2.2.9.0-3393',
+                                        'version_name'  : 'hadoop-2.6.0.2.2.9.0-3393',
+                                        'source_url'    : g.get('source_url', p.get('source_url', 'http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.2.9.0/tars/hadoop-2.6.0.2.2.9.0-3393.tar.gz')),
                                         'major_version' : '2'
                                       },
-                     'hdp-2.4.0'    : { 'version'       : '2.4.0.2.1.10.0-881',
-                                        'version_name'  : 'hadoop-2.4.0.2.1.10.0-881',
-                                        'source_url'    : g.get('source_url', p.get('source_url', 'http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.1.10.0/tars/hadoop-2.4.0.2.1.10.0-881.tar.gz')),
+                     'hdp-2.4.0'    : { 'version'       : '2.4.0.2.1.15.0-946',
+                                        'version_name'  : 'hadoop-2.4.0.2.1.15.0-946',
+                                        'source_url'    : g.get('source_url', p.get('source_url', 'http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.1.15.0/tars/hadoop-2.4.0.2.1.15.0-946.tar.gz')),
                                         'major_version' : '2'
                                       },
-                     'hdp-2.2.0'    : { 'version'       : '2.2.0.2.0.6.0-76',
-                                        'version_name'  : 'hadoop-2.2.0.2.0.6.0-76',
-                                        'source_url'    : g.get('source_url', p.get('source_url', 'http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.0.6.0/tars/hadoop-2.2.0.2.0.6.0-76.tar.gz')),
+                     'hdp-2.2.0'    : { 'version'       : '2.2.0.2.0.13.0-43',
+                                        'version_name'  : 'hadoop-2.2.0.2.0.13.0-43',
+                                        'source_url'    : g.get('source_url', p.get('source_url', 'http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.0.13.0/tars/hadoop-2.2.0.2.0.13.0-43.tar.gz')),
                                         'major_version' : '2'
                                       },
                      'hdp-1.3.0'    : { 'version'       : '1.2.0.1.3.10.0-24',
@@ -109,7 +114,7 @@
                    }%}
 
 {%- set versions         = p.get('versions', default_versions) %}
-{%- set version_info     = versions.get(dist_id, versions['apache-1.2.1']) %}
+{%- set version_info     = versions.get(dist_id, versions['apache-2.7.1']) %}
 {%- set alt_home         = salt['pillar.get']('hadoop:prefix', '/usr/lib/hadoop') %}
 {%- set real_home        = '/usr/lib/' + version_info['version_name'] %}
 {%- set alt_config       = gc.get('directory', pc.get('directory', '/etc/hadoop/conf')) %}
