@@ -40,18 +40,27 @@ vm.overcommit_memory:
     - value: 0
 
 unpack-hadoop-dist:
+{%- if hadoop.source_hash %}
+  archive.extracted:
+    - name: /usr/lib/
+    - source: {{ hadoop.source_url }}
+    - source_hash: md5={{ hadoop.source_hash }}
+    - if_missing: /usr/lib/{{ hadoop.version_name }}
+    - archive_format: tar
+{%- else %}
   cmd.run:
     - name: curl '{{ hadoop.source_url }}' | tar xz --no-same-owner
     - cwd: /usr/lib
     - unless: test -d {{ hadoop['real_home'] }}/lib
+{%- endif %}
+    - require_in:
+      - alternatives: hadoop-home-link
 
 hadoop-home-link:
   alternatives.install:
     - link: {{ hadoop['alt_home'] }}
     - path: {{ hadoop['real_home'] }}
     - priority: 30
-    - require:
-      - cmd: unpack-hadoop-dist
 
 {%- if hadoop.cdhmr1 %}
 
