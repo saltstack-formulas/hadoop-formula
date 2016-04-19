@@ -55,11 +55,32 @@ unpack-hadoop-dist:
 {%- endif %}
     - require_in:
       - alternatives: hadoop-home-link
+      - alternatives: hadoop-bin-link
+      - alternatives: hdfs-bin-link
+      - alternatives: yarn-bin-link
 
 hadoop-home-link:
   alternatives.install:
     - link: {{ hadoop['alt_home'] }}
     - path: {{ hadoop['real_home'] }}
+    - priority: 30
+
+hadoop-bin-link:
+  alternatives.install:
+    - link: /usr/bin/hadoop
+    - path: {{ hadoop['alt_home'] }}/bin/hadoop
+    - priority: 30
+
+hdfs-bin-link:
+  alternatives.install:
+    - link: /usr/bin/hdfs
+    - path: {{ hadoop['alt_home'] }}/bin/hdfs
+    - priority: 30
+
+yarn-bin-link:
+  alternatives.install:
+    - link: /usr/bin/yarn
+    - path: {{ hadoop['alt_home'] }}/bin/yarn
     - priority: 30
 
 {%- if hadoop.cdhmr1 %}
