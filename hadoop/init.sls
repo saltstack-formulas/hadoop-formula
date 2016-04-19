@@ -57,6 +57,7 @@ unpack-hadoop-dist:
       - alternatives: hadoop-home-link
       - alternatives: hadoop-bin-link
       - alternatives: hdfs-bin-link
+      - alternatives: mapred-bin-link
       - alternatives: yarn-bin-link
 
 hadoop-home-link:
@@ -75,6 +76,12 @@ hdfs-bin-link:
   alternatives.install:
     - link: /usr/bin/hdfs
     - path: {{ hadoop['alt_home'] }}/bin/hdfs
+    - priority: 30
+
+mapred-bin-link:
+  alternatives.install:
+    - link: /usr/bin/mapred
+    - path: {{ hadoop['alt_home'] }}/bin/mapred
     - priority: 30
 
 yarn-bin-link:
