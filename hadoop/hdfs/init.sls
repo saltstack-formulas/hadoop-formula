@@ -64,12 +64,18 @@
     - source: salt://hadoop/conf/hdfs/core-site.xml
     - template: jinja
     - mode: 644
+    - watch_in:
+      - service: hdfs-services
+      - service: hdfs-nn-services
 
 {{ hadoop.alt_config }}/hdfs-site.xml:
   file.managed:
     - source: salt://hadoop/conf/hdfs/hdfs-site.xml
     - template: jinja
     - mode: 644
+    - watch_in:
+      - service: hdfs-services
+      - service: hdfs-nn-services
 
 {{ hadoop.alt_config }}/masters:
   file.managed:
