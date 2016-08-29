@@ -64,18 +64,12 @@
     - source: salt://hadoop/conf/hdfs/core-site.xml
     - template: jinja
     - mode: 644
-    - watch_in:
-      - service: hdfs-services
-      - service: hdfs-nn-services
 
 {{ hadoop.alt_config }}/hdfs-site.xml:
   file.managed:
     - source: salt://hadoop/conf/hdfs/hdfs-site.xml
     - template: jinja
     - mode: 644
-    - watch_in:
-      - service: hdfs-services
-      - service: hdfs-nn-services
 
 {{ hadoop.alt_config }}/masters:
   file.managed:
@@ -195,6 +189,11 @@ hdfs-nn-services:
     - names:
       - hadoop-secondarynamenode
       - hadoop-namenode
+{%- if hdfs.restart_on_config_change == True %}
+    - watch:
+      - file: {{ hadoop.alt_config }}/core-site.xml
+      - file: {{ hadoop.alt_config }}/hdfs-site.xml
+{%- endif %}
 {%- endif %}
 {%- endif %}
 
@@ -208,5 +207,10 @@ hdfs-services:
 {%- endif %}
 {%- if hdfs.is_journalnode %}
       - hadoop-journalnode
+{%- endif %}
+{%- if hdfs.restart_on_config_change == True %}
+    - watch:
+      - file: {{ hadoop.alt_config }}/core-site.xml
+      - file: {{ hadoop.alt_config }}/hdfs-site.xml
 {%- endif %}
 {%- endif %}

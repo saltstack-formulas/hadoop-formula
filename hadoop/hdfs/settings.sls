@@ -84,6 +84,8 @@
 {%- set is_journalnode = salt['match.' ~ targeting_method](journalnode_target) %}
 {%- set is_datanode    = salt['match.' ~ targeting_method](datanode_target) %}
 
+{%- set restart_on_config_change = pc.get('restart_on_config_change', False) %}
+
 {%- set hdfs = {} %}
 {%- do hdfs.update({ 'local_disks'                 : local_disks,
                      'namenode_host'               : namenode_host,
@@ -101,6 +103,7 @@
                      'is_journalnode'              : is_journalnode,
                      'is_datanode'                 : is_datanode,
                      'secondarynamenode_http_port' : secondarynamenode_http_port,
+                     'restart_on_config_change'    : restart_on_config_change,
                      'replicas'                    : replicas,
                      'datanode_count'              : datanode_count,
                      'journalnode_count'           : journalnode_count,
