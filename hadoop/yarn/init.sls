@@ -10,6 +10,7 @@
 {%- if hadoop.major_version|string() == '2' %}
 
 {% set username = 'yarn' %}
+{% set yarn_home_directory = '/user/' + username %}
 {% set uid = hadoop_users.get(username, '6003') %}
 {{ hadoop_user(username, uid) }}
 
@@ -94,6 +95,7 @@ fix-executor-permissions:
 {{ hdfs_mkdir(mapred.history_dir, username, username, 755, hadoop.dfs_cmd) }}
 {{ hdfs_mkdir(mapred.history_intermediate_done_dir, username, username, 1777, hadoop.dfs_cmd) }}
 {{ hdfs_mkdir(mapred.history_done_dir, username, username, 1777, hadoop.dfs_cmd) }}
+{{ hdfs_mkdir(yarn_home_directory, username, username, 700, hadoop.dfs_cmd) }}
 {{ hdfs_mkdir(rald, username, 'hadoop', 1777, hadoop.dfs_cmd) }}
 
 /etc/init.d/hadoop-historyserver:
