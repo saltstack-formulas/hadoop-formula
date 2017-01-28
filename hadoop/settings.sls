@@ -153,8 +153,7 @@
 {%- set dfsadmin_cmd = alt_home + '/bin/hdfs dfsadmin' %}
 {%- endif %}
 
-{%- set java_home_pillar = p.get('java_home_pillar', 'java:java_home') %}
-{%- set java_home        = salt['grains.get']('java_home', salt['pillar.get'](java_home_pillar, '/usr/lib/java')) %}
+{%- set java_home        = salt['grains.get']('java_home', salt['pillar.get']('java_home', '/usr/lib/java')) %}
 {%- set config_core_site = gc.get('core-site', pc.get('core-site', {})) %}
 
 {%- set hadoop = {} %}
