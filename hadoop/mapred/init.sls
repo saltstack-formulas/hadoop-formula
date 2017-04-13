@@ -40,7 +40,7 @@
 
 {% if mapred.is_jobtracker %}
 # hadoop 1 apparently cannot set the sticky bit
-{%- if hadoop.major_version == '2' %}
+{%- if hadoop.major_version != '1' %}
 {{ hdfs_mkdir('/tmp', 'hdfs', None, 1777, hadoop.dfs_cmd) }}
 {%- else %}
 {{ hdfs_mkdir('/tmp', 'hdfs', None, 777, hadoop.dfs_cmd) }}

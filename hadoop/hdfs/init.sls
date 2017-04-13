@@ -181,8 +181,7 @@ format-namenode:
       hadoop_home: {{ hadoop.alt_home }}
 {% endif %}
 
-{% if hdfs.is_namenode %}
-{%- if hdfs.namenode_count == 1 %}
+{% if hdfs.is_namenode and hdfs.namenode_count == 1 %}
 hdfs-nn-services:
   service.running:
     - enable: True
@@ -193,7 +192,6 @@ hdfs-nn-services:
     - watch:
       - file: {{ hadoop.alt_config }}/core-site.xml
       - file: {{ hadoop.alt_config }}/hdfs-site.xml
-{%- endif %}
 {%- endif %}
 {%- endif %}
 

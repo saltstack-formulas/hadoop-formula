@@ -55,14 +55,7 @@
 
     <property>
         <name>yarn.nodemanager.local-dirs</name>
-        <value>
-{%- for d in yarn.local_disks -%}
-{%- if loop.last -%}
-{{ d }}/yarn/local
-{%- else -%}
-{{ d }}/yarn/local,
-{%- endif -%}
-{%- endfor -%}</value>
+        <value>{{ '/yarn/local,'.join(yarn.local_disks) }}/yarn/local</value>
    </property>
 
     <property>

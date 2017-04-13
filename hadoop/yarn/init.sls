@@ -54,21 +54,13 @@
       banned_users_list: {{ yarn.banned_users|join(',') }}
 
 # restore the special permissions of the linux container executor
-fix-executor-group:
-  cmd.run:
-    - unless: test ! -f {{hadoop.alt_home}}/bin/container-executor
-    - user: root
-    - names:
-      - chown root {{hadoop.alt_home}}/bin/container-executor
-      - chgrp {{username}} {{hadoop.alt_home}}/bin/container-executor
-
 fix-executor-permissions:
-  cmd.run:
-    - unless: test ! -f {{hadoop.alt_home}}/bin/container-executor
+  file.managed:
+    - mode: 06050
     - user: root
-    - name: chmod 06050 {{hadoop.alt_home}}/bin/container-executor
-    - require:
-      - cmd: fix-executor-group
+    - group: {{username}}
+    - onlyif: test -f {{hadoop.alt_home}}/bin/container-executor
+    - name: {{hadoop.alt_home}}/bin/container-executor
 
 {{ hadoop.alt_config }}/yarn-site.xml:
   file.managed:
