@@ -158,6 +158,12 @@ rename-config:
       hadoop_config: {{ hadoop['alt_config'] }}
       alt_home: {{ hadoop.get('alt_home', '/usr/lib/hadoop') }}
 
+hadoop-setup-env-vars:
+  cmd.run:
+    - name: source /etc/profile.d/hadoop.sh
+    - onchanges:
+      - file: /etc/profile.d/hadoop.sh
+      
 {% if (hadoop['major_version'] == '1') and not hadoop.cdhmr1 %}
 {% set real_config_src = hadoop['real_home'] + '/conf' %}
 {% else %}
