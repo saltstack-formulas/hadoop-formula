@@ -1,10 +1,9 @@
 {%- from 'hadoop/settings.sls' import hadoop with context %}
 {%- from 'hadoop/hdfs/settings.sls' import hdfs with context %}
 {%- from 'hadoop/user_macro.sls' import hadoop_user with context %}
-# TODO: no users implemented in settings yet
-{%- set hadoop_users = hadoop.get('users', {}) %}
+
 {%- set username = 'hdfs' %}
-{%- set uid = hadoop_users.get(username, '6001') %}
+{%- set uid = hadoop.users[username] %}
 
 {{ hadoop_user(username, uid) }}
 

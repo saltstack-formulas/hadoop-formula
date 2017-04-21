@@ -1,9 +1,8 @@
 {%- from 'hadoop/settings.sls' import hadoop with context %}
-{%- set hadoop_users = hadoop.get('users', {}) %}
 
 hadoop:
   group.present:
-    - gid: {{ hadoop_users.get('hadoop', '6000') }}
+    - gid: {{ hadoop.users['hadoop'] }}
 
 {%- if grains['os_family'] == 'RedHat' %}
 redhat-lsb:

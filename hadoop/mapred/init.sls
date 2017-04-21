@@ -4,11 +4,9 @@
 {%- from 'hadoop/hdfs_mkdir_macro.sls' import hdfs_mkdir with context %}
 
 # TODO: for what is ends up doing this state is way too complex
-# TODO: no users implemented in settings yet
-{%- set hadoop_users = hadoop.get('users', {}) %}
 
 {% set username = 'mapred' %}
-{% set uid = hadoop_users.get(username, '6002') %}
+{% set uid = hadoop.users.[username] %}
 {{ hadoop_user(username, uid) }}
 
 # skip all except user creation if there is no targeting match

@@ -162,6 +162,12 @@
 {%- set java_home        = salt['grains.get']('java_home', salt['pillar.get']('java_home', '/usr/lib/java')) %}
 {%- set config_core_site = gc.get('core-site', pc.get('core-site', {})) %}
 
+{%- set users = { 'hadoop' : 6000,
+                  'hdfs'   : 6001,
+                  'mapred' : 6002,
+                  'yarn'   : 6003,
+                } %}
+
 {%- set hadoop = {} %}
 {%- do hadoop.update( {   'dist_id'          : dist_id,
                           'cdhmr1'           : version_info.get('cdhmr1', False),
@@ -182,5 +188,6 @@
                           'log_root'         : log_root,
                           'default_log_root' : default_log_root,
                           'config_core_site' : config_core_site,
-                          'targeting_method': targeting_method,
+                          'targeting_method' : targeting_method,
+                          'users'            : users,
                       }) %}
