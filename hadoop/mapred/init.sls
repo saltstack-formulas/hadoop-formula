@@ -6,7 +6,7 @@
 # TODO: for what is ends up doing this state is way too complex
 
 {% set username = 'mapred' %}
-{% set uid = hadoop.users.[username] %}
+{% set uid = hadoop.users[username] %}
 {{ hadoop_user(username, uid) }}
 
 # skip all except user creation if there is no targeting match
