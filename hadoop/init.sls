@@ -47,7 +47,6 @@ unpack-hadoop-dist:
 {%- else %}
     - skip_verify: True
 {%- endif %}
-    - if_missing: /usr/lib/{{ hadoop.version_name }}
     - archive_format: tar
     - if_missing: {{ hadoop['real_home'] }}
     - require_in:
