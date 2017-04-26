@@ -115,6 +115,7 @@ nn{{loop.index}}{{ '' if loop.last else ',' }}
         <value>{{ zk.connection_string }}</value>
     </property>
 
+{%- if dyn_cfg['dfs.ha.fencing.methods'] is not defined %}
     <property>
         <name>dfs.ha.fencing.methods</name>
         <value>sshfence</value>
@@ -124,6 +125,8 @@ nn{{loop.index}}{{ '' if loop.last else ',' }}
         <name>dfs.ha.fencing.ssh.private-key-files</name>
         <value>/home/hdfs/.ssh/id_dsa</value>
     </property>
+{%- endif %}
+
 {%- endif %}
     <!-- end of HA attributes section -->
 {%- endif %}

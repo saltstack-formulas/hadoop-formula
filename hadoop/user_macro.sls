@@ -1,3 +1,5 @@
+{%- from 'hadoop/settings.sls' import hadoop with context %}
+
 {% macro hadoop_user(username, uid) -%}
 {%- set userhome='/home/'+username %}
 {{ username }}:
@@ -67,7 +69,7 @@ ssh_dss_{{ username }}:
 {{ userhome }}/.bashrc:
   file.append:
     - text:
-      - export PATH=$PATH:/usr/lib/hadoop/bin:/usr/lib/hadoop/sbin
+      - export PATH=$PATH:{{ hadoop['alt_home'] }}/bin:{{ hadoop['alt_home'] }}/sbin
 
 /etc/security/limits.d/99-{{username}}.conf:
   file.managed:
