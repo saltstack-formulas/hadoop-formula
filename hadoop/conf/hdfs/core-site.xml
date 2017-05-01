@@ -24,7 +24,11 @@
 
     <property>
         <name>{{ 'fs.default.name' if major == '1' else 'fs.defaultFS' }}</name>
-        <value>hdfs://{{ hdfs.namenode_host+':'+hdfs.namenode_port if hdfs.namenode_count == 1 else hdfs.ha_cluster_id }}</value>
+{%- if hdfs.namenode_count > 1 %}
+        <value>hdfs://{{ hdfs.ha_cluster_id }}</value>
+{%- else %}
+        <value>hdfs://{{ hdfs.namenode_host }}:{{ hdfs.namenode_port }}</value>
+{%- endif %}
     </property>
 
 
