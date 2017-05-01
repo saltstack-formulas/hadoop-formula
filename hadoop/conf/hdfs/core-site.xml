@@ -6,30 +6,14 @@
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 
 <configuration>
-{%- if hdfs.namenode_count == 1  %}
+
 {%- if major == '1' %}
     <property>
         <name>fs.checkpoint.dir</name>
-        <value>
-{%- for d in hdfs.local_disks -%}
-{%- if loop.last -%}
-{{ d }}/hdfs/snn
-{%- else -%}
-{{ d }}/hdfs/snn,
-{%- endif -%}
-{%- endfor -%}</value>
+        <value>{{ '/hdfs/snn,'.join(hdfs.local_disks) }}/hdfs/snn</value>
         <final>true</final>
     </property>
 {%- endif %}
-
-    <property>
-{%- if major == '1' %}
-        <name>fs.default.name</name>
-{%- else %}
-        <name>fs.defaultFS</name>
-{%- endif %}
-        <value>hdfs://{{ hdfs.namenode_host }}:{{ hdfs.namenode_port }}</value>
-    </property>
 
 <!--
     <property>
@@ -37,12 +21,16 @@
         <value>{{ hdfs.tmp_dir }}</value>
     </property>
 -->
-{%- else %}
+
     <property>
-      <name>fs.defaultFS</name>
-      <value>hdfs://{{hdfs.ha_cluster_id}}</value>
-    </property>
+        <name>{{ 'fs.default.name' if major == '1' else 'fs.defaultFS' }}</name>
+{%- if hdfs.namenode_count > 1 %}
+        <value>hdfs://{{ hdfs.ha_cluster_id }}</value>
+{%- else %}
+        <value>hdfs://{{ hdfs.namenode_host }}:{{ hdfs.namenode_port }}</value>
 {%- endif %}
+    </property>
+
 
 {%- for name, subdict in dyn_cfg.items() %}
     <property>
@@ -51,6 +39,5 @@
         <{{k}}>{{ v }}</{{k}}>
 {%- endfor %}
     </property>
-
 {%- endfor %}
 </configuration>

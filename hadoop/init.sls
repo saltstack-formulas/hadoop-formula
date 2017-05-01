@@ -1,9 +1,8 @@
 {%- from 'hadoop/settings.sls' import hadoop with context %}
-{%- set hadoop_users = hadoop.get('users', {}) %}
 
 hadoop:
   group.present:
-    - gid: {{ hadoop_users.get('hadoop', '6000') }}
+    - gid: {{ hadoop.users['hadoop'] }}
 
 {%- if grains['os_family'] == 'RedHat' %}
 redhat-lsb:
@@ -40,19 +39,16 @@ vm.overcommit_memory:
     - value: 0
 
 unpack-hadoop-dist:
-{%- if hadoop.source_hash %}
   archive.extracted:
     - name: /usr/lib/
     - source: {{ hadoop.source_url }}
+{%- if hadoop.source_hash %}
     - source_hash: md5={{ hadoop.source_hash }}
-    - if_missing: /usr/lib/{{ hadoop.version_name }}
-    - archive_format: tar
 {%- else %}
-  cmd.run:
-    - name: curl '{{ hadoop.source_url }}' | tar xz --no-same-owner
-    - cwd: /usr/lib
-    - unless: test -d {{ hadoop['real_home'] }}/lib
+    - skip_verify: True
 {%- endif %}
+    - archive_format: tar
+    - if_missing: {{ hadoop['real_home'] }}
     - require_in:
       - alternatives: hadoop-home-link
       - alternatives: hadoop-bin-link
@@ -65,31 +61,61 @@ hadoop-home-link:
     - link: {{ hadoop['alt_home'] }}
     - path: {{ hadoop['real_home'] }}
     - priority: 30
-
+    - onlyif: test -d {{ hadoop['real_home'] }} && test ! -L {{ hadoop['alt_home'] }}
+  file.symlink:
+    - name: {{ hadoop['alt_home'] }}
+    - target: {{ hadoop['real_home'] }}
+    - require:
+      - alternatives: hadoop-home-link
+      
 hadoop-bin-link:
   alternatives.install:
     - link: /usr/bin/hadoop
     - path: {{ hadoop['alt_home'] }}/bin/hadoop
     - priority: 30
-
+    - onlyif: test -f {{ hadoop['alt_home'] }}/bin/hadoop && test ! -L /usr/bin/hadoop
+  file.symlink:
+    - name: /usr/bin/hadoop
+    - target: {{ hadoop['alt_home'] }}/bin/hadoop
+    - require:
+      - alternatives: hadoop-bin-link
+      
 hdfs-bin-link:
   alternatives.install:
     - link: /usr/bin/hdfs
     - path: {{ hadoop['alt_home'] }}/bin/hdfs
     - priority: 30
-
+    - onlyif: test -f {{ hadoop['alt_home'] }}/bin/hdfs && test ! -L /usr/bin/hdfs
+  file.symlink:
+    - name: /usr/bin/hdfs
+    - target: {{ hadoop['alt_home'] }}/bin/hdfs
+    - require:
+      - alternatives: hdfs-bin-link
+      
 mapred-bin-link:
   alternatives.install:
     - link: /usr/bin/mapred
     - path: {{ hadoop['alt_home'] }}/bin/mapred
     - priority: 30
-
+    - onlyif: test -f {{ hadoop['alt_home'] }}/bin/mapred && test ! -L /usr/bin/mapred
+  file.symlink:
+    - name: /usr/bin/mapred
+    - target: {{ hadoop['alt_home'] }}/bin/mapred
+    - require:
+      - alternatives: mapred-bin-link
+      
 yarn-bin-link:
   alternatives.install:
     - link: /usr/bin/yarn
     - path: {{ hadoop['alt_home'] }}/bin/yarn
     - priority: 30
-
+    - onlyif: test -f {{ hadoop['alt_home'] }}/bin/yarn && test ! -L /usr/bin/yarn
+  file.symlink:
+    - name: /usr/bin/yarn
+    - target: {{ hadoop['alt_home'] }}/bin/yarn
+    - require:
+      - alternatives: yarn-bin-link
+      
 {%- if hadoop.cdhmr1 %}
 
 {{ hadoop.alt_home }}/share/hadoop/mapreduce:
@@ -130,6 +156,12 @@ rename-config:
       hadoop_config: {{ hadoop['alt_config'] }}
       alt_home: {{ hadoop.get('alt_home', '/usr/lib/hadoop') }}
 
+hadoop-setup-env-vars:
+  cmd.run:
+    - name: source /etc/profile.d/hadoop.sh
+    - onchanges:
+      - file: /etc/profile.d/hadoop.sh
+      
 {% if (hadoop['major_version'] == '1') and not hadoop.cdhmr1 %}
 {% set real_config_src = hadoop['real_home'] + '/conf' %}
 {% else %}
@@ -166,9 +198,15 @@ hadoop-conf-link:
     - link: {{ hadoop['alt_config'] }}
     - path: {{ hadoop['real_config'] }}
     - priority: 30
+    - onlyif: test -d {{ hadoop['real_config'] }} && test ! -L {{ hadoop['alt_config'] }}
     - require:
       - file: {{ hadoop['real_config'] }}
-
+  file.symlink:
+    - name: {{ hadoop['alt_config'] }}
+    - target: {{ hadoop['real_config'] }}
+    - require:
+      - alternatives: hadoop-conf-link
+      
 {{ hadoop['real_config'] }}/log4j.properties:
   file.copy:
     - source: {{ hadoop['real_config_dist'] }}/log4j.properties

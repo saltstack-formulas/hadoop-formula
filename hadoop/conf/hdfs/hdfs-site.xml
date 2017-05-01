@@ -4,43 +4,27 @@
 {%- set major = hadoop.major_version|string() -%}
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
-{%- if hdfs.namenode_count == 2 %}
-{%- from 'zookeeper/settings.sls' import zk with context %}
+{%- if hdfs.namenode_count > 1 %}
+  {%- from 'zookeeper/settings.sls' import zk with context %}
 {%- else %}
-{%- set zk = {} %}
+  {%- set zk = {} %}
 {%- endif %}
 
 <configuration>
     <property>
-{%- if major == '1' %}
-        <name>dfs.name.dir</name>
-{%- else %}
-        <name>dfs.namenode.name.dir</name>
-{%- endif %}
+        <name>{{ 'dfs.name.dir' if major == '1' else 'dfs.namenode.name.dir' }}</name>
         <value>
 {%- for d in hdfs.local_disks -%}
-{%- if loop.last -%}
-file://{{ d }}/hdfs/nn
-{%- else -%}
-file://{{ d }}/hdfs/nn,
-{%- endif -%}
+file://{{ d }}/hdfs/nn{{ '' if loop.last else ',' }}
 {%- endfor -%}</value>
         <final>true</final>
     </property>
 
     <property>
-{%- if major == '1' %}
-        <name>dfs.data.dir</name>
-{%- else %}
-        <name>dfs.datanode.data.dir</name>
-{%- endif %}
+        <name>{{ 'dfs.data.dir' if major == '1' else 'dfs.datanode.data.dir' }}</name>
         <value>
 {%- for d in hdfs.local_disks -%}
-{%- if loop.last -%}
-file://{{ d }}/hdfs/dn
-{%- else -%}
-file://{{ d }}/hdfs/dn,
-{%- endif -%}
+file://{{ d }}/hdfs/dn{{ '' if loop.last else ',' }}
 {%- endfor -%}</value>
         <final>true</final>
     </property>
@@ -50,11 +34,7 @@ file://{{ d }}/hdfs/dn,
         <name>dfs.namenode.checkpoint.dir</name>
         <value>
 {%- for d in hdfs.local_disks -%}
-{%- if loop.last -%}
-file://{{ d }}/hdfs/snn
-{%- else -%}
-file://{{ d }}/hdfs/snn,
-{%- endif -%}
+file://{{ d }}/hdfs/snn{{ '' if loop.last else ',' }}
 {%- endfor -%}</value>
         <final>true</final>
     </property>
@@ -62,21 +42,13 @@ file://{{ d }}/hdfs/snn,
 
 {%- if hdfs.namenode_count == 1 %}
     <property>
-{%- if major == '1' %}
-        <name>dfs.http-address</name>
-{%- else %}
-        <name>dfs.namenode.http-address</name>
-{%- endif %}
+        <name>{{ 'dfs.http-address' if major == '1' else 'dfs.namenode.http-address' }}</name>
         <value>{{ hdfs.namenode_host }}:{{ hdfs.namenode_http_port }}</value>
         <final>true</final>
     </property>
 
     <property>
-{%- if major == '1' %}
-        <name>dfs.secondary.http-address</name>
-{%- else %}
-        <name>dfs.secondary.namenode.http-address</name>
-{%- endif %}
+        <name>{{ 'dfs.secondary.http-address' if major == '1' else 'dfs.secondary.namenode.http-address' }}</name>
         <value>{{ hdfs.namenode_host }}:{{ hdfs.secondarynamenode_http_port }}</value>
         <final>true</final>
     </property>
@@ -89,29 +61,23 @@ file://{{ d }}/hdfs/snn,
 
     <property>
         <name>dfs.ha.namenodes.{{hdfs.ha_cluster_id}}</name>
-        <value>nn1,nn2</value>
+        <value>
+{%- for i in range(hdfs.namenode_count) -%}
+nn{{loop.index}}{{ '' if loop.last else ',' }}
+{%- endfor -%}</value>
     </property>
-
+{% for namenode in hdfs.namenode_hosts %}
     <property>
-        <name>dfs.namenode.rpc-address.{{hdfs.ha_cluster_id}}.nn1</name>
-        <value>{{hdfs.namenode_hosts|first()}}:{{hdfs.namenode_port}}</value>
+        <name>dfs.namenode.rpc-address.{{hdfs.ha_cluster_id}}.nn{{loop.index}}</name>
+        <value>{{namenode}}:{{hdfs.namenode_port}}</value>
     </property>
-
+    
     <property>
-        <name>dfs.namenode.rpc-address.{{hdfs.ha_cluster_id}}.nn2</name>
-        <value>{{hdfs.namenode_hosts|last()}}:{{hdfs.ha_namenode_port}}</value>
+        <name>dfs.namenode.http-address.{{hdfs.ha_cluster_id}}.nn{{loop.index}}</name>
+        <value>{{namenode}}:{{hdfs.namenode_http_port}}</value>
     </property>
-
-    <property>
-        <name>dfs.namenode.http-address.{{hdfs.ha_cluster_id}}.nn1</name>
-        <value>{{hdfs.namenode_hosts|first()}}:{{hdfs.namenode_http_port}}</value>
-    </property>
-
-    <property>
-      <name>dfs.namenode.http-address.{{hdfs.ha_cluster_id}}.nn2</name>
-      <value>{{hdfs.namenode_hosts|last()}}:{{hdfs.ha_namenode_http_port}}</value>
-    </property>
-
+{%- endfor -%}
+    
     <!-- todo: setup https? -->
 
     <!-- doc says:
@@ -123,12 +89,7 @@ file://{{ d }}/hdfs/snn,
        -->
     <property>
         <name>dfs.journalnode.edits.dir</name>
-        <value>
-{%- for d in hdfs.local_disks -%}
-{%- if loop.first -%}
-{{ d }}/hdfs/journal
-{%- endif %}
-{%- endfor %}</value>
+        <value>{{ hdfs.local_disks|first() }}/hdfs/journal</value>
         <final>true</final>
     </property>
 
@@ -142,7 +103,7 @@ file://{{ d }}/hdfs/snn,
         <value>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider</value>
     </property>
 
-{%- if zk.items()|count() > 0 %}
+{%- if zk %}
     <!-- zookeeper and fencing configuration -->
     <property>
         <name>dfs.ha.automatic-failover.enabled</name>
@@ -154,6 +115,7 @@ file://{{ d }}/hdfs/snn,
         <value>{{ zk.connection_string }}</value>
     </property>
 
+{%- if dyn_cfg['dfs.ha.fencing.methods'] is not defined %}
     <property>
         <name>dfs.ha.fencing.methods</name>
         <value>sshfence</value>
@@ -163,6 +125,8 @@ file://{{ d }}/hdfs/snn,
         <name>dfs.ha.fencing.ssh.private-key-files</name>
         <value>/home/hdfs/.ssh/id_dsa</value>
     </property>
+{%- endif %}
+
 {%- endif %}
     <!-- end of HA attributes section -->
 {%- endif %}

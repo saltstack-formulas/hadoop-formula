@@ -46,7 +46,13 @@
                      'apache-2.7.3' : { 'version'       : '2.7.3',
                                         'version_name'  : 'hadoop-2.7.3',
                                         'source_url'    : g.get('source_url', p.get('source_url', 'http://archive.apache.org/dist/hadoop/core/hadoop-2.7.3/hadoop-2.7.3.tar.gz')),
-                                        'source_hash'   : g.get('source_hash', p.get('source_hash', '')),
+                                        'source_hash'   : g.get('source_hash', p.get('source_hash', '3455bb57e4b4906bbea67b58cca78fa8')),
+                                        'major_version' : '2',
+                                      },
+                     'apache-2.8.0' : { 'version'       : '2.8.0',
+                                        'version_name'  : 'hadoop-2.8.0',
+                                        'source_url'    : g.get('source_url', p.get('source_url', 'http://archive.apache.org/dist/hadoop/core/hadoop-2.8.0/hadoop-2.8.0.tar.gz')),
+                                        'source_hash'   : g.get('source_hash', p.get('source_hash', 'c728a090b68d009070085367695ed507')),
                                         'major_version' : '2',
                                       },
                      'hdp-2.7.1'    : { 'version'       : '2.7.1.2.3.4.0-3485',
@@ -134,7 +140,7 @@
                    }%}
 
 {%- set versions         = p.get('versions', default_versions) %}
-{%- set version_info     = versions.get(dist_id, versions['apache-2.7.3']) %}
+{%- set version_info     = versions.get(dist_id, versions['apache-2.8.0']) %}
 {%- set alt_home         = salt['pillar.get']('hadoop:prefix', '/usr/lib/hadoop') %}
 {%- set real_home        = '/usr/lib/' + version_info['version_name'] %}
 {%- set alt_config       = gc.get('directory', pc.get('directory', '/etc/hadoop/conf')) %}
@@ -156,6 +162,12 @@
 {%- set java_home        = salt['grains.get']('java_home', salt['pillar.get']('java_home', '/usr/lib/java')) %}
 {%- set config_core_site = gc.get('core-site', pc.get('core-site', {})) %}
 
+{%- set users = { 'hadoop' : 6000,
+                  'hdfs'   : 6001,
+                  'mapred' : 6002,
+                  'yarn'   : 6003,
+                } %}
+
 {%- set hadoop = {} %}
 {%- do hadoop.update( {   'dist_id'          : dist_id,
                           'cdhmr1'           : version_info.get('cdhmr1', False),
@@ -176,5 +188,6 @@
                           'log_root'         : log_root,
                           'default_log_root' : default_log_root,
                           'config_core_site' : config_core_site,
-                          'targeting_method': targeting_method,
+                          'targeting_method' : targeting_method,
+                          'users'            : users,
                       }) %}

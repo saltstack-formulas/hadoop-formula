@@ -1,10 +1,9 @@
 {%- from 'hadoop/settings.sls' import hadoop with context %}
 {%- from 'hadoop/hdfs/settings.sls' import hdfs with context %}
 {%- from 'hadoop/user_macro.sls' import hadoop_user with context %}
-# TODO: no users implemented in settings yet
-{%- set hadoop_users = hadoop.get('users', {}) %}
+
 {%- set username = 'hdfs' %}
-{%- set uid = hadoop_users.get(username, '6001') %}
+{%- set uid = hadoop.users[username] %}
 
 {{ hadoop_user(username, uid) }}
 
@@ -181,8 +180,7 @@ format-namenode:
       hadoop_home: {{ hadoop.alt_home }}
 {% endif %}
 
-{% if hdfs.is_namenode %}
-{%- if hdfs.namenode_count == 1 %}
+{% if hdfs.is_namenode and hdfs.namenode_count == 1 %}
 hdfs-nn-services:
   service.running:
     - enable: True
@@ -193,7 +191,6 @@ hdfs-nn-services:
     - watch:
       - file: {{ hadoop.alt_config }}/core-site.xml
       - file: {{ hadoop.alt_config }}/hdfs-site.xml
-{%- endif %}
 {%- endif %}
 {%- endif %}
 
