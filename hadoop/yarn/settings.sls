@@ -1,7 +1,9 @@
+{%- from 'hadoop/hdfs/settings.sls' import hdfs with context %}
 {% set p  = salt['pillar.get']('yarn', {}) %}
 {% set pc = p.get('config', {}) %}
 {% set g  = salt['grains.get']('yarn', {}) %}
 {% set gc = g.get('config', {}) %}
+{%- set p_hdfs  = salt['pillar.get']('hdfs', {}) %}
 
 {%- set resourcetracker_port        = gc.get('resourcetracker_port', pc.get('resourcetracker_port', '8031')) %}
 {%- set scheduler_port              = gc.get('scheduler_port', pc.get('scheduler_port', '8030')) %}
@@ -15,8 +17,53 @@
 {%- set nodemanager_target          = g.get('nodemanager_target', p.get('nodemanager_target', 'roles:hadoop_slave')) %}
 # this is a deliberate duplication as to not re-import hadoop/settings multiple times
 {%- set targeting_method            = salt['grains.get']('hadoop:targeting_method', salt['pillar.get']('hadoop:targeting_method', 'grain')) %}
-{%- set resourcemanager_hosts       = g.get('resourcemanager_hosts', p.get('resourcemanager_hosts', salt['mine.get'](resourcemanager_target, 'network.interfaces', expr_form=targeting_method)|sort)) %}
-{%- set ha_cluster_id               = salt['grains.get']('ha_cluster_id', salt['pillar.get']('ha_cluster_id', 'hdfscluster')) %}
+{%- set ha_cluster_id               = salt['grains.get']('ha_cluster_id', salt['pillar.get']('ha_cluster_id', None)) %}
+
+{%- set minion_hosts                = [salt['network.get_hostname'](),
+                                       grains['fqdn'],
+                                       grains['nodename']] + salt['network.ip_addrs']() %}
+
+{%- set is_clusters           = True if p.get('clusters') else False %} 
+{%- set pillar_cluster_id = [] %}
+
+{%- if is_clusters and ha_cluster_id == None %}
+  {%- for cluster_name, cluster_value in p.clusters.items() %}
+    {%- for minion_host in minion_hosts %}
+      {%- if minion_host in cluster_value.get('resourcemanager_hosts', []) or
+             minion_host in cluster_value.get('nodemanager_hosts', []) %}
+        {%- do pillar_cluster_id.append(cluster_name) %}
+        {%- break %}
+      {%- endif %}
+    {%- endfor %}
+    {%- if pillar_cluster_id %}
+      {%- break %}
+    {%- endif %}
+  {%- endfor %}
+{%- endif %}
+
+{%- if pillar_cluster_id %}
+  {%- set ha_cluster_id = pillar_cluster_id[0] %}
+{%- endif %}
+
+{%- if is_clusters and ha_cluster_id != None %}
+  {%- set resourcemanager_hosts = p.clusters.get(ha_cluster_id, {}).get('resourcemanager_hosts', []) %}
+  {%- set nodemanager_hosts = p.clusters.get(ha_cluster_id, {}).get('nodemanager_hosts', []) %}
+  {%- if p.get(ha_cluster_id, {}).get('resource_manager_on_namenode', False) %}
+    {%- set resourcemanager_hosts = resourcemanager_hosts + hdfs.namenode_hosts %}
+  {%- endif %}
+  {%- if p.get(ha_cluster_id, {}).get('nodemanagers_on_datanodes', False) %}
+    {%- set nodemanager_hosts = nodemanager_hosts + hdfs.datanode_hosts %}
+  {%- endif %}
+{%- else %}
+  {%- set resourcemanager_hosts = g.get('resourcemanager_hosts', p.get('resourcemanager_hosts', salt['mine.get'](resourcemanager_target, 'network.interfaces', expr_form=targeting_method)|sort)) %}
+  {%- set nodemanager_hosts = g.get('nodemanager_hosts', p.get('nodemanager_hosts', [])) %}
+  {%- if p.get('resource_manager_on_namenode', False) %}
+    {%- set resourcemanager_hosts = resourcemanager_hosts + hdfs.namenode_hosts %}
+  {%- endif %}
+  {%- if p.get('nodemanagers_on_datanodes', False) %}
+    {%- set nodemanager_hosts = nodemanager_hosts + hdfs.datanode_hosts %}
+  {%- endif %}
+{%- endif %}
 
 {%- set local_disks                 = salt['grains.get']('yarn_data_disks', ['/yarn_data']) %}
 {%- set config_yarn_site            = gc.get('yarn-site', pc.get('yarn-site', {})) %}
@@ -26,6 +73,36 @@
 
 {%- set is_resourcemanager          = salt['match.' ~ targeting_method](resourcemanager_target) %}
 {%- set is_nodemanager              = salt['match.' ~ targeting_method](nodemanager_target) %}
+
+{%- if not is_resourcemanager %}
+  {%- for minion_host in minion_hosts %}
+    {%- if minion_host in resourcemanager_hosts %}
+      {%- set is_resourcemanager_in_pillar = True %}
+      {% break %}
+    {%- endif %}
+  {%- endfor %}
+{%- endif %}
+
+{%- if not is_nodemanager %}
+  {%- for minion_host in minion_hosts %}
+    {%- if minion_host in nodemanager_hosts %}
+      {%- set is_nodemanager_in_pillar = True %}
+      {% break %}
+    {%- endif %}
+  {%- endfor %}
+{%- endif %}
+
+{%- if is_resourcemanager_in_pillar is defined %}
+  {%- set is_resourcemanager = is_resourcemanager or is_resourcemanager_in_pillar %}
+{%- endif %}
+
+{%- if is_nodemanager_in_pillar is defined %}
+  {%- set is_nodemanager = is_nodemanager or is_nodemanager_in_pillar %}
+{%- endif %}
+
+{%- if ha_cluster_id == None %}
+  {%- set ha_cluster_id = 'hdfscluster' %}
+{%- endif %}
 
 {%- set yarn = {} %}
 {%- do yarn.update({ 'resourcetracker_port'        : resourcetracker_port,

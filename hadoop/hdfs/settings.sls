@@ -16,40 +16,71 @@
 {%- set secondarynamenode_http_port  = gc.get('secondarynamenode_http_port', pc.get('secondarynamenode_http_port', '50090')) %}
 {%- set local_disks           = salt['grains.get']('hdfs_data_disks', ['/data']) %}
 {%- set load                  = salt['grains.get']('hdfs_load', salt['pillar.get']('hdfs_load', {})) %}
-{%- set ha_cluster_id         = salt['grains.get']('ha_cluster_id', salt['pillar.get']('ha_cluster_id', 'hdfscluster')) %}
+{%- set ha_cluster_id         = salt['grains.get']('ha_cluster_id', salt['pillar.get']('ha_cluster_id', None)) %}
 {%- set ha_namenode_port      = gc.get('ha_namenode_port', pc.get('ha_namenode_port', namenode_port)) %}
 {%- set ha_journal_port       = gc.get('ha_journal_port', pc.get('ha_journal_port', '8485')) %}
 {%- set ha_namenode_http_port = gc.get('ha_namenode_http_port', pc.get('ha_namenode_http_port', namenode_http_port)) %}
 
 {%- set config_hdfs_site = gc.get('hdfs-site', pc.get('hdfs-site', {})) %}
 
-{%- set minion_ids          = [salt['network.get_hostname'](),
-                               grains['id'],
-                               grains['fqdn'],
-                               grains['nodename']] + salt['network.ip_addrs']() %}
+{%- set minion_hosts          = [salt['network.get_hostname'](),
+                                 grains['fqdn'],
+                                 grains['nodename']] + salt['network.ip_addrs']() %}
 
-{%- set namenode_hosts         = g.get('namenode_host', p.get('namenode_host', salt['mine.get'](namenode_target, 'network.interfaces', expr_form=targeting_method).keys())) %}
-{%- set namenode_count = namenode_hosts|count() %}
-{%- if namenode_count > 0 %}
-  {%- set namenode_host = namenode_hosts|sort()|first()|join() %}
+{%- set is_clusters           = True if p.get('clusters') else False %}                               
+
+{%- set pillar_cluster_id = [] %}
+
+{%- if is_clusters and ha_cluster_id == None %}
+  {%- for cluster_name, cluster_value in p.clusters.items() %}
+    {%- for minion_host in minion_hosts %}
+      {%- if minion_host in cluster_value.get('namenode_hosts', []) or
+             minion_host in cluster_value.get('datanode_hosts', []) or 
+             minion_host in cluster_value.get('journalnode_hosts', []) or
+             minion_host == cluster_value.get('primary_namenode_host', '') %}
+        {%- do pillar_cluster_id.append(cluster_name) %}
+        {%- break %}
+      {%- endif %}
+    {%- endfor %}
+    {%- if pillar_cluster_id %}
+      {%- break %}
+    {%- endif %}
+  {%- endfor %}
 {%- endif %}
 
-{%- set primary_namenode_host = g.get('primary_namenode_host', p.get('primary_namenode_host')) %}
-{%- if not primary_namenode_host %}
-  {%- set primary_namenode_host = salt['mine.get'](primary_namenode_target, 'network.interfaces', expr_form=targeting_method).keys() %}
-  {%- if primary_namenode_host|count > 0 %}
-    {%- set primary_namenode_host = primary_namenode_host|first() %}
+{%- if pillar_cluster_id %}
+  {%- set ha_cluster_id = pillar_cluster_id[0] %}
+{%- endif %}
+
+{%- if is_clusters and ha_cluster_id != None %}
+  {%- set namenode_hosts = p.clusters.get(ha_cluster_id, {}).get('namenode_hosts', []) %}
+  {%- set primary_namenode_host = p.clusters.get(ha_cluster_id, {}).get('primary_namenode_host', '') %}
+  {%- set datanode_hosts = p.clusters.get(ha_cluster_id, {}).get('datanode_hosts', []) %}
+  {%- set journalnode_hosts = p.clusters.get(ha_cluster_id, {}).get('journalnode_hosts', []) %}
+{%- else %}
+  {%- set namenode_hosts        = g.get('namenode_hosts', p.get('namenode_hosts', salt['mine.get'](namenode_target, 'network.interfaces', expr_form=targeting_method).keys()|sort())) %}
+  {%- set datanode_hosts        = g.get('datanode_hosts', p.get('datanode_hosts', salt['mine.get'](datanode_target, 'network.interfaces', expr_form=targeting_method).keys())) %}
+  {%- set journalnode_hosts     = g.get('journalnode_hosts', p.get('journalnode_hosts', salt['mine.get'](journalnode_target, 'network.interfaces', expr_form=targeting_method).keys()|sort())) %}
+  {%- set primary_namenode_host = g.get('primary_namenode_host', p.get('primary_namenode_host')) %}
+  {%- if not primary_namenode_host %}
+    {%- set primary_namenode_host = salt['mine.get'](primary_namenode_target, 'network.interfaces', expr_form=targeting_method).keys() %}
+    {%- if primary_namenode_host|count > 0 %}
+      {%- set primary_namenode_host = primary_namenode_host|first() %}
+    {%- endif %}
   {%- endif %}
 {%- endif %}
-{%- set secondary_namenode_host = salt['mine.get'](secondary_namenode_target, 'network.interfaces', expr_form=targeting_method).keys() %}
-{%- if secondary_namenode_host|count > 0 %}
-  {%- set secondary_namenode_host = secondary_namenode_host|first() %}
+
+{%- if ha_cluster_id == None %}
+  {%- set ha_cluster_id = 'hdfscluster' %}
 {%- endif %}
 
-{%- set datanode_hosts        = g.get('datanode_hosts', p.get('datanode_hosts', salt['mine.get'](datanode_target, 'network.interfaces', expr_form=targeting_method).keys())) %}
-{%- set journalnode_hosts     = g.get('journalnode_hosts', p.get('journalnode_hosts', salt['mine.get'](journalnode_target, 'network.interfaces', expr_form=targeting_method).keys())) %}
-{%- set datanode_count        = datanode_hosts|count() %}
-{%- set journalnode_count     = journalnode_hosts|count() %}
+{%- set namenode_count = namenode_hosts|count() %}
+{%- if namenode_count > 0 %}
+  {%- set namenode_host = namenode_hosts|first()|join() %}
+{%- endif %}
+
+{%- set datanode_count    = datanode_hosts|count() %}
+{%- set journalnode_count = journalnode_hosts|count() %}
 
 {%- set quorum_connection_string = "" %}
 
@@ -62,19 +93,19 @@
 {%- endif %}
 # Todo: this might be a candidate for pillars/grains
 # {%- set tmp_root        = local_disks|first() %}
-{%- set tmp_dir         = '/tmp' %}
+{%- set tmp_dir               = '/tmp' %}
 
-{%- set replicas = gc.get('replication', pc.get('replication', datanode_count % 4 if datanode_count < 4 else 3 )) %}
+{%- set replicas              = gc.get('replication', pc.get('replication', datanode_count % 4 if datanode_count < 4 else 3 )) %}
 
-{%- set is_namenode    = salt['match.' ~ targeting_method](namenode_target) %}
+{%- set is_namenode           = salt['match.' ~ targeting_method](namenode_target) %}
 {%- set is_primary_namenode   = salt['match.' ~ targeting_method](primary_namenode_target) %}
 {%- set is_secondary_namenode = salt['match.' ~ targeting_method](secondary_namenode_target) %}
-{%- set is_journalnode = salt['match.' ~ targeting_method](journalnode_target) %}
-{%- set is_datanode    = salt['match.' ~ targeting_method](datanode_target) %}
+{%- set is_journalnode        = salt['match.' ~ targeting_method](journalnode_target) %}
+{%- set is_datanode           = salt['match.' ~ targeting_method](datanode_target) %}
 
 {%- if not is_datanode %}
-  {%- for minion_id in minion_ids %}
-    {%- if minion_id in datanode_hosts %}
+  {%- for minion_host in minion_hosts %}
+    {%- if minion_host in datanode_hosts %}
       {%- set is_datanode_in_pillar = True %}
       {% break %}
     {%- endif %}
@@ -82,8 +113,8 @@
 {%- endif %}
 
 {%- if not is_namenode %}
-  {%- for minion_id in minion_ids %}
-    {%- if minion_id == namenode_host or minion_id in namenode_hosts %}
+  {%- for minion_host in minion_hosts %}
+    {%- if minion_host in namenode_hosts %}
       {%- set is_namenode_in_pillar = True %}
       {% break %}
     {%- endif %}
@@ -91,8 +122,8 @@
 {%- endif %}
 
 {%- if not is_journalnode %}
-  {%- for minion_id in minion_ids %}
-    {%- if minion_id in journalnode_hosts %}
+  {%- for minion_host in minion_hosts %}
+    {%- if minion_host in journalnode_hosts %}
       {%- set is_journalnode_in_pillar = True %}
       {% break %}
     {%- endif %}
@@ -103,10 +134,6 @@
   {%- set is_namenode = is_namenode or is_namenode_in_pillar %}
 {%- endif %}
 
-{%- set is_primary_namenode = is_primary_namenode or primary_namenode_host in minion_ids %}
-
-{%- set is_secondary_namenode = is_secondary_namenode or secondary_namenode_host in minion_ids %}
-
 {%- if is_journalnode_in_pillar is defined %}
   {%- set is_journalnode = is_journalnode or is_journalnode_in_pillar %}
 {%- endif %}
@@ -114,6 +141,10 @@
 {%- if is_datanode_in_pillar is defined %}
   {%- set is_datanode = is_datanode or is_datanode_in_pillar %}
 {%- endif %}
+
+{%- set is_primary_namenode = is_primary_namenode or primary_namenode_host in minion_hosts %}
+
+{%- set is_secondary_namenode = is_secondary_namenode or ( is_namenode and not is_primary_namenode ) %}
 
 {%- set restart_on_config_change = pc.get('restart_on_config_change', False) %}
 
