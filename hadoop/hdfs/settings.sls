@@ -11,33 +11,6 @@
 # this is a deliberate duplication as to not re-import hadoop/settings multiple times
 {%- set targeting_method    = salt['grains.get']('hadoop:targeting_method', salt['pillar.get']('hadoop:targeting_method', 'grain')) %}
 
-# HA requires that you have exactly two NNs
-{%- set namenode_host           = salt['mine.get'](namenode_target, 'network.interfaces', expr_form=targeting_method).keys() %}
-{%- set primary_namenode_host   = salt['mine.get'](primary_namenode_target, 'network.interfaces', expr_form=targeting_method).keys() %}
-{%- set secondary_namenode_host = salt['mine.get'](secondary_namenode_target, 'network.interfaces', expr_form=targeting_method).keys() %}
-{%- set namenode_hosts          = [] %}
-
-# it is required to specify the namenode target and one of primary and secondary for each namenode
-{%- set namenode_count = namenode_host|count() %}
-
-# sanitize targeting results - these come as arrays, so we always pick the first
-{%- if namenode_count > 0 %}
-{%- set namenode_host = namenode_host|first()|join() %}
-{%- endif %}
-
-{%- if primary_namenode_host|count() > 0 %}
-  {%- set primary_namenode_host = primary_namenode_host|first() %}
-  {%- set namenode_hosts = [primary_namenode_host] %}
-  {%- if secondary_namenode_host|count() > 0 %}
-    {%- set secondary_namenode_host = secondary_namenode_host|first() %}
-    {%- set namenode_hosts      = [primary_namenode_host,secondary_namenode_host] %}
-  {%- endif %}
-{%- endif %}
-
-{%- set datanode_hosts        = salt['mine.get'](datanode_target, 'network.interfaces', expr_form=targeting_method).keys() %}
-{%- set journalnode_hosts     = salt['mine.get'](journalnode_target, 'network.interfaces', expr_form=targeting_method).keys() %}
-{%- set datanode_count        = datanode_hosts|count() %}
-{%- set journalnode_count     = journalnode_hosts|count() %}
 {%- set namenode_port         = gc.get('namenode_port', pc.get('namenode_port', '8020')) %}
 {%- set namenode_http_port    = gc.get('namenode_http_port', pc.get('namenode_http_port', '50070')) %}
 {%- set secondarynamenode_http_port  = gc.get('secondarynamenode_http_port', pc.get('secondarynamenode_http_port', '50090')) %}
@@ -48,15 +21,44 @@
 {%- set ha_journal_port       = gc.get('ha_journal_port', pc.get('ha_journal_port', '8485')) %}
 {%- set ha_namenode_http_port = gc.get('ha_namenode_http_port', pc.get('ha_namenode_http_port', namenode_http_port)) %}
 
+{%- set config_hdfs_site = gc.get('hdfs-site', pc.get('hdfs-site', {})) %}
+
+{%- set minion_ids          = [salt['network.get_hostname'](),
+                               grains['id'],
+                               grains['fqdn'],
+                               grains['nodename']] + salt['network.ip_addrs']() %}
+
+{%- set namenode_hosts         = g.get('namenode_host', p.get('namenode_host', salt['mine.get'](namenode_target, 'network.interfaces', expr_form=targeting_method).keys())) %}
+{%- set namenode_count = namenode_hosts|count() %}
+{%- if namenode_count > 0 %}
+  {%- set namenode_host = namenode_hosts|sort()|first()|join() %}
+{%- endif %}
+
+{%- set primary_namenode_host = g.get('primary_namenode_host', p.get('primary_namenode_host')) %}
+{%- if not primary_namenode_host %}
+  {%- set primary_namenode_host = salt['mine.get'](primary_namenode_target, 'network.interfaces', expr_form=targeting_method).keys() %}
+  {%- if primary_namenode_host|count > 0 %}
+    {%- set primary_namenode_host = primary_namenode_host|first() %}
+  {%- endif %}
+{%- endif %}
+{%- set secondary_namenode_host = salt['mine.get'](secondary_namenode_target, 'network.interfaces', expr_form=targeting_method).keys() %}
+{%- if secondary_namenode_host|count > 0 %}
+  {%- set secondary_namenode_host = secondary_namenode_host|first() %}
+{%- endif %}
+
+{%- set datanode_hosts        = g.get('datanode_hosts', p.get('datanode_hosts', salt['mine.get'](datanode_target, 'network.interfaces', expr_form=targeting_method).keys())) %}
+{%- set journalnode_hosts     = g.get('journalnode_hosts', p.get('journalnode_hosts', salt['mine.get'](journalnode_target, 'network.interfaces', expr_form=targeting_method).keys())) %}
+{%- set datanode_count        = datanode_hosts|count() %}
+{%- set journalnode_count     = journalnode_hosts|count() %}
+
+{%- set quorum_connection_string = "" %}
+
 {%- if journalnode_count > 0 %}
-{%- set quorum_connection_string = "" %}
-{%- set connection_string_list = [] %}
-{%- for n in journalnode_hosts %}
-{%- do connection_string_list.append( n + ':' + ha_journal_port | string() ) %}
-{%- endfor %}
-{%- set quorum_connection_string = connection_string_list | join(';')%}
-{%- else %}
-{%- set quorum_connection_string = "" %}
+  {%- set connection_string_list = [] %}
+  {%- for n in journalnode_hosts %}
+    {%- do connection_string_list.append( n + ':' + ha_journal_port | string() ) %}
+  {%- endfor %}
+  {%- set quorum_connection_string = connection_string_list | join(';')%}
 {%- endif %}
 # Todo: this might be a candidate for pillars/grains
 # {%- set tmp_root        = local_disks|first() %}
@@ -64,12 +66,54 @@
 
 {%- set replicas = gc.get('replication', pc.get('replication', datanode_count % 4 if datanode_count < 4 else 3 )) %}
 
-{%- set config_hdfs_site = gc.get('hdfs-site', pc.get('hdfs-site', {})) %}
 {%- set is_namenode    = salt['match.' ~ targeting_method](namenode_target) %}
 {%- set is_primary_namenode   = salt['match.' ~ targeting_method](primary_namenode_target) %}
 {%- set is_secondary_namenode = salt['match.' ~ targeting_method](secondary_namenode_target) %}
 {%- set is_journalnode = salt['match.' ~ targeting_method](journalnode_target) %}
 {%- set is_datanode    = salt['match.' ~ targeting_method](datanode_target) %}
+
+{%- if not is_datanode %}
+  {%- for minion_id in minion_ids %}
+    {%- if minion_id in datanode_hosts %}
+      {%- set is_datanode_in_pillar = True %}
+      {% break %}
+    {%- endif %}
+  {%- endfor %}
+{%- endif %}
+
+{%- if not is_namenode %}
+  {%- for minion_id in minion_ids %}
+    {%- if minion_id == namenode_host or minion_id in namenode_hosts %}
+      {%- set is_namenode_in_pillar = True %}
+      {% break %}
+    {%- endif %}
+  {%- endfor %}
+{%- endif %}
+
+{%- if not is_journalnode %}
+  {%- for minion_id in minion_ids %}
+    {%- if minion_id in journalnode_hosts %}
+      {%- set is_journalnode_in_pillar = True %}
+      {% break %}
+    {%- endif %}
+  {%- endfor %}
+{%- endif %}
+
+{%- if is_namenode_in_pillar is defined %}
+  {%- set is_namenode = is_namenode or is_namenode_in_pillar %}
+{%- endif %}
+
+{%- set is_primary_namenode = is_primary_namenode or primary_namenode_host in minion_ids %}
+
+{%- set is_secondary_namenode = is_secondary_namenode or secondary_namenode_host in minion_ids %}
+
+{%- if is_journalnode_in_pillar is defined %}
+  {%- set is_journalnode = is_journalnode or is_journalnode_in_pillar %}
+{%- endif %}
+
+{%- if is_datanode_in_pillar is defined %}
+  {%- set is_datanode = is_datanode or is_datanode_in_pillar %}
+{%- endif %}
 
 {%- set restart_on_config_change = pc.get('restart_on_config_change', False) %}
 
