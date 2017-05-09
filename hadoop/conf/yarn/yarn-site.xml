@@ -7,31 +7,91 @@
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 
 <configuration>
+{%- if yarn.resourcemanager_hosts|count() > 1 %}
+
+{%- from 'zookeeper/settings.sls' import zk with context %}
+
+    <property>
+      <name>yarn.resourcemanager.ha.enabled</name>
+      <value>true</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.cluster-id</name>
+      <value>{{yarn.ha_cluster_id}}</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.ha.rm-ids</name>
+        <value>
+{%- for i in range(yarn.resourcemanager_hosts|count()) -%}
+rm{{loop.index}}{{ '' if loop.last else ',' }}
+{%- endfor -%}</value>
+    </property>
+    
+    <property>
+      <name>yarn.resourcemanager.zk-address</name>
+      <value>{{ zk.connection_string }}</value>
+    </property>
+    
+{% for resourcemanager_host in yarn.resourcemanager_hosts %}
+
+    <property>
+        <name>yarn.resourcemanager.scheduler.address.rm{{loop.index}}</name>
+        <value>{{ resourcemanager_host }}:{{ yarn.scheduler_port }}</value>
+    </property>
+     
+    <property>
+        <name>yarn.resourcemanager.resource-tracker.address.rm{{loop.index}}</name>
+        <value>{{ resourcemanager_host }}:{{ yarn.resourcetracker_port }}</value>
+    </property>
+     
+    <property>
+        <name>yarn.resourcemanager.address.rm{{loop.index}}</name>
+        <value>{{ resourcemanager_host }}:{{ yarn.resourcemanager_port }}</value>
+    </property>
+     
+    <property>
+        <name>yarn.resourcemanager.admin.address.rm{{loop.index}}</name>
+        <value>{{ resourcemanager_host }}:{{ yarn.resourcemanager_admin_port }}</value>
+    </property>
+     
+    <property>
+        <name>yarn.resourcemanager.webapp.address.rm{{loop.index}}</name>
+        <value>{{ resourcemanager_host }}:{{ yarn.resourcemanager_webapp_port }}</value>
+    </property>
+
+{%- endfor -%}
+    
+{%- else -%}
+
     <property>
         <name>yarn.resourcemanager.scheduler.address</name>
-        <value>{{ yarn.resourcemanager_host }}:{{ yarn.scheduler_port }}</value>
+        <value>{{ yarn.resourcemanager_hosts|first() }}:{{ yarn.scheduler_port }}</value>
     </property>
      
     <property>
         <name>yarn.resourcemanager.resource-tracker.address</name>
-        <value>{{ yarn.resourcemanager_host }}:{{ yarn.resourcetracker_port }}</value>
+        <value>{{ yarn.resourcemanager_hosts|first() }}:{{ yarn.resourcetracker_port }}</value>
     </property>
      
     <property>
         <name>yarn.resourcemanager.address</name>
-        <value>{{ yarn.resourcemanager_host }}:{{ yarn.resourcemanager_port }}</value>
+        <value>{{ yarn.resourcemanager_hosts|first() }}:{{ yarn.resourcemanager_port }}</value>
     </property>
      
     <property>
         <name>yarn.resourcemanager.admin.address</name>
-        <value>{{ yarn.resourcemanager_host }}:{{ yarn.resourcemanager_admin_port }}</value>
+        <value>{{ yarn.resourcemanager_hosts|first() }}:{{ yarn.resourcemanager_admin_port }}</value>
     </property>
      
     <property>
         <name>yarn.resourcemanager.webapp.address</name>
-        <value>{{ yarn.resourcemanager_host }}:{{ yarn.resourcemanager_webapp_port }}</value>
+        <value>{{ yarn.resourcemanager_hosts|first() }}:{{ yarn.resourcemanager_webapp_port }}</value>
     </property>
 
+{%- endif -%}
+    
     <property>
         <name>yarn.nodemanager.address</name>
         <value>0.0.0.0:{{ yarn.nodemanager_port }}</value>
