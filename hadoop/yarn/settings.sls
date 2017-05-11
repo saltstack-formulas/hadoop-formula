@@ -1,9 +1,7 @@
-{%- from 'hadoop/hdfs/settings.sls' import hdfs with context %}
 {% set p  = salt['pillar.get']('yarn', {}) %}
 {% set pc = p.get('config', {}) %}
 {% set g  = salt['grains.get']('yarn', {}) %}
 {% set gc = g.get('config', {}) %}
-{%- set p_hdfs  = salt['pillar.get']('hdfs', {}) %}
 
 {%- set resourcetracker_port        = gc.get('resourcetracker_port', pc.get('resourcetracker_port', '8031')) %}
 {%- set scheduler_port              = gc.get('scheduler_port', pc.get('scheduler_port', '8030')) %}
@@ -45,22 +43,27 @@
   {%- set ha_cluster_id = pillar_cluster_id[0] %}
 {%- endif %}
 
+{%- set is_resourcemanager_on_namenode = False %}
+{%- set is_nodemanagers_on_datanodes = False %}
+
 {%- if is_clusters and ha_cluster_id != None %}
   {%- set resourcemanager_hosts = p.clusters.get(ha_cluster_id, {}).get('resourcemanager_hosts', []) %}
   {%- set nodemanager_hosts = p.clusters.get(ha_cluster_id, {}).get('nodemanager_hosts', []) %}
-  {%- if p.get(ha_cluster_id, {}).get('resource_manager_on_namenode', False) %}
-    {%- set resourcemanager_hosts = resourcemanager_hosts + hdfs.namenode_hosts %}
-  {%- endif %}
-  {%- if p.get(ha_cluster_id, {}).get('nodemanagers_on_datanodes', False) %}
-    {%- set nodemanager_hosts = nodemanager_hosts + hdfs.datanode_hosts %}
-  {%- endif %}
+  {%- set is_resourcemanager_on_namenode = p.get(ha_cluster_id, {}).get('resourcemanager_on_namenode', False) %}
+  {%- set is_nodemanager_hosts = p.get(ha_cluster_id, {}).get('nodemanagers_on_datanodes', False) %}
 {%- else %}
   {%- set resourcemanager_hosts = g.get('resourcemanager_hosts', p.get('resourcemanager_hosts', salt['mine.get'](resourcemanager_target, 'network.interfaces', expr_form=targeting_method)|sort)) %}
   {%- set nodemanager_hosts = g.get('nodemanager_hosts', p.get('nodemanager_hosts', [])) %}
-  {%- if p.get('resource_manager_on_namenode', False) %}
+  {%- set is_resourcemanager_on_namenode = p.get('resourcemanager_on_namenode', False) %}
+  {%- set is_nodemanager_hosts = p.get('nodemanagers_on_datanodes', False) %}
+{%- endif %}
+
+{%- if is_resourcemanager_on_namenode or is_nodemanagers_on_datanodes %}
+  {%- from 'hadoop/hdfs/settings.sls' import hdfs with context %}
+  {%- if is_resourcemanager_on_namenode %}
     {%- set resourcemanager_hosts = resourcemanager_hosts + hdfs.namenode_hosts %}
   {%- endif %}
-  {%- if p.get('nodemanagers_on_datanodes', False) %}
+  {%- if is_nodemanagers_on_datanodes %}
     {%- set nodemanager_hosts = nodemanager_hosts + hdfs.datanode_hosts %}
   {%- endif %}
 {%- endif %}

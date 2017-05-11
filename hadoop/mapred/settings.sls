@@ -1,4 +1,3 @@
-{%- from 'hadoop/hdfs/settings.sls' import hdfs with context %}
 {% set p  = salt['pillar.get']('mapred', {}) %}
 {% set pc = p.get('config', {}) %}
 {% set g  = salt['grains.get']('mapred', {}) %}
@@ -42,12 +41,12 @@
   {%- set ha_cluster_id = pillar_cluster_id[0] %}
 {%- endif %}
 
+{%- set is_tasktrackers_on_datanodes = False %}
+
 {%- if is_clusters and ha_cluster_id != None %}
   {%- set jobtracker_host = p.clusters.get(ha_cluster_id, {}).get('jobtracker_host', '') %}
   {%- set tasktracker_hosts = p.clusters.get(ha_cluster_id, {}).get('tasktracker_hosts', []) %}
-  {%- if p.get(ha_cluster_id, {}).get('tasktrackers_on_datanodes', False) %}
-    {%- set tasktracker_hosts = tasktracker_hosts + hdfs.datanode_hosts %}
-  {%- endif %}
+  {%- set is_tasktrackers_on_datanodes = p.get(ha_cluster_id, {}).get('tasktrackers_on_datanodes', False) %}
 {%- else %}
   {%- set jobtracker_host  = g.get('jobtracker_host', p.get('jobtracker_host', None)) %}
   {%- if jobtracker_host == None %}
@@ -57,9 +56,12 @@
     {%- endif %}
   {%- endif %}
   {%- set tasktracker_hosts = g.get('tasktracker_hosts', p.get('tasktracker_hosts', [])) %}
-  {%- if p.get('tasktrackers_on_datanodes', False) %}
-    {%- set tasktracker_hosts = tasktracker_hosts + hdfs.datanode_hosts %}
-  {%- endif %}
+  {%- set is_tasktrackers_on_datanodes = p.get('tasktrackers_on_datanodes', False) %}
+{%- endif %}
+
+{%- if is_tasktrackers_on_datanodes %}
+  {%- from 'hadoop/hdfs/settings.sls' import hdfs with context %}
+  {%- set tasktracker_hosts = tasktracker_hosts + hdfs.datanode_hosts %}
 {%- endif %}
 
 {%- set local_disks     = salt['grains.get']('mapred_data_disks', ['/data']) %}
