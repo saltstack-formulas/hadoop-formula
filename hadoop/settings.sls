@@ -3,9 +3,9 @@
 {% set g  = salt['grains.get']('hadoop', {}) %}
 {% set gc = g.get('config', {}) %}
 
-{%- set versions = {} %}
-{%- set default_dist_id = 'apache-2.2.0' %}
-{%- set dist_id = g.get('version', p.get('version', default_dist_id)) %}
+{%- set versions         = {} %}
+{%- set default_dist_id  = 'apache-2.2.0' %}
+{%- set dist_id          = g.get('version', p.get('version', default_dist_id)) %}
 
 {%- set default_versions = { 'apache-1.2.1' : { 'version'       : '1.2.1',
                                         'version_name'  : 'hadoop-1.2.1',
@@ -152,21 +152,21 @@
 {%- set targeting_method = g.get('targeting_method', p.get('targeting_method', 'grain')) %}
 
 {%- if version_info['major_version'] == '1' %}
-{%- set dfs_cmd = alt_home + '/bin/hadoop dfs' %}
-{%- set dfsadmin_cmd = alt_home + '/bin/hadoop dfsadmin' %}
+  {%- set dfs_cmd = alt_home + '/bin/hadoop dfs' %}
+  {%- set dfsadmin_cmd = alt_home + '/bin/hadoop dfsadmin' %}
 {%- else %}
-{%- set dfs_cmd = alt_home + '/bin/hdfs dfs' %}
-{%- set dfsadmin_cmd = alt_home + '/bin/hdfs dfsadmin' %}
+  {%- set dfs_cmd = alt_home + '/bin/hdfs dfs' %}
+  {%- set dfsadmin_cmd = alt_home + '/bin/hdfs dfsadmin' %}
 {%- endif %}
 
 {%- set java_home        = salt['grains.get']('java_home', salt['pillar.get']('java_home', '/usr/lib/java')) %}
 {%- set config_core_site = gc.get('core-site', pc.get('core-site', {})) %}
 
-{%- set users = { 'hadoop' : 6000,
-                  'hdfs'   : 6001,
-                  'mapred' : 6002,
-                  'yarn'   : 6003,
-                } %}
+{%- set users            = { 'hadoop' : 6000,
+                             'hdfs'   : 6001,
+                             'mapred' : 6002,
+                             'yarn'   : 6003,
+                           } %}
 
 {%- set hadoop = {} %}
 {%- do hadoop.update( {   'dist_id'          : dist_id,

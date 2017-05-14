@@ -1,32 +1,37 @@
-{% set p  = salt['pillar.get']('mapred', {}) %}
-{% set pc = p.get('config', {}) %}
-{% set g  = salt['grains.get']('mapred', {}) %}
-{% set gc = g.get('config', {}) %}
+{% set p       = salt['pillar.get']('mapred', {}) %}
+{% set pc      = p.get('config', {}) %}
+{% set g       = salt['grains.get']('mapred', {}) %}
+{% set gc      = g.get('config', {}) %}
+{% set p_hdfs  = salt['pillar.get']('hdfs', {}) %}
 
-{%- set jobtracker_port  = gc.get('jobtracker_port', pc.get('jobtracker_port', '9001')) %}
-{%- set jobtracker_http_port  = gc.get('jobtracker_http_port', pc.get('jobtracker_http_port', '50030')) %}
-{%- set jobhistory_port  = gc.get('jobhistory_port', pc.get('jobhistory_port', '10020')) %}
-{%- set jobhistory_webapp_port  = gc.get('jobhistory_webapp_port', pc.get('jobhistory_webapp_port', '19888')) %}
-{%- set history_dir      = gc.get('history_dir', pc.get('history_dir', '/mr-history')) %}
+{%- set jobtracker_port               = gc.get('jobtracker_port', pc.get('jobtracker_port', '9001')) %}
+{%- set jobtracker_http_port          = gc.get('jobtracker_http_port', pc.get('jobtracker_http_port', '50030')) %}
+{%- set jobhistory_port               = gc.get('jobhistory_port', pc.get('jobhistory_port', '10020')) %}
+{%- set jobhistory_webapp_port        = gc.get('jobhistory_webapp_port', pc.get('jobhistory_webapp_port', '19888')) %}
+{%- set history_dir                   = gc.get('history_dir', pc.get('history_dir', '/mr-history')) %}
 {%- set history_intermediate_done_dir = history_dir + '/tmp' %}
-{%- set history_done_dir = history_dir + '/done' %}
-{%- set jobtracker_target = g.get('jobtracker_target', p.get('jobtracker_target', 'roles:hadoop_master')) %}
-{%- set tasktracker_target = g.get('tasktracker_target', p.get('tasktracker_target', 'roles:hadoop_slave')) %}
-{%- set targeting_method = salt['grains.get']('hadoop:targeting_method', salt['pillar.get']('hadoop:targeting_method', 'grain')) %}
-{%- set ha_cluster_id               = salt['grains.get']('ha_cluster_id', salt['pillar.get']('ha_cluster_id', None)) %}
+{%- set history_done_dir              = history_dir + '/done' %}
+{%- set jobtracker_target             = g.get('jobtracker_target', p.get('jobtracker_target', 'roles:hadoop_master')) %}
+{%- set tasktracker_target            = g.get('tasktracker_target', p.get('tasktracker_target', 'roles:hadoop_slave')) %}
+{%- set targeting_method              = salt['grains.get']('hadoop:targeting_method', salt['pillar.get']('hadoop:targeting_method', 'grain')) %}
+{%- set ha_cluster_id                 = salt['grains.get']('ha_cluster_id', salt['pillar.get']('ha_cluster_id', None)) %}
 
-{%- set minion_hosts                = [salt['network.get_hostname'](),
-                                       grains['fqdn'],
-                                       grains['nodename']] + salt['network.ip_addrs']() %}
+{%- set minion_hosts                  = [salt['network.get_hostname'](),
+                                         grains['fqdn'],
+                                         grains['nodename']] + salt['network.ip_addrs']() %}
 
-{%- set is_clusters           = True if p.get('clusters') else False %} 
-{%- set pillar_cluster_id = [] %}
+{%- set is_clusters                   = True if p.get('clusters') else False %} 
+{%- set pillar_cluster_id             = [] %}
 
 {%- if is_clusters and ha_cluster_id == None %}
   {%- for cluster_name, cluster_value in p.clusters.items() %}
+    {%- set mapred_hosts = cluster_value.get('tasktracker_hosts', []) %}
+    {%- if cluster_value.get('tasktrackers_on_datanodes', False) %}
+      {%- set mapred_hosts = mapred_hosts + p_hdfs.get('clusters', {}).get(cluster_name, {}).get('datanode_hosts', []) %}
+    {%- endif %}
+    {%- do mapred_hosts.append(cluster_value.get('jobtracker_host', '')) %}
     {%- for minion_host in minion_hosts %}
-      {%- if minion_host in cluster_value.get('tasktracker_hosts', []) or
-             minion_host == cluster_value.get('jobtracker_host', '') %}
+      {%- if minion_host in mapred_hosts %}
         {%- do pillar_cluster_id.append(cluster_name) %}
         {%- break %}
       {%- endif %}
@@ -41,12 +46,12 @@
   {%- set ha_cluster_id = pillar_cluster_id[0] %}
 {%- endif %}
 
-{%- set is_tasktrackers_on_datanodes = False %}
-
 {%- if is_clusters and ha_cluster_id != None %}
   {%- set jobtracker_host = p.clusters.get(ha_cluster_id, {}).get('jobtracker_host', '') %}
   {%- set tasktracker_hosts = p.clusters.get(ha_cluster_id, {}).get('tasktracker_hosts', []) %}
-  {%- set is_tasktrackers_on_datanodes = p.get(ha_cluster_id, {}).get('tasktrackers_on_datanodes', False) %}
+  {%- if p.clusters.get(ha_cluster_id, {}).get('tasktrackers_on_datanodes', False) %}
+    {%- set tasktracker_hosts = tasktracker_hosts + p_hdfs.get('clusters', {}).get(ha_cluster_id, {}).get('datanode_hosts', []) %}
+  {%- endif %}
 {%- else %}
   {%- set jobtracker_host  = g.get('jobtracker_host', p.get('jobtracker_host', None)) %}
   {%- if jobtracker_host == None %}
@@ -56,24 +61,23 @@
     {%- endif %}
   {%- endif %}
   {%- set tasktracker_hosts = g.get('tasktracker_hosts', p.get('tasktracker_hosts', [])) %}
-  {%- set is_tasktrackers_on_datanodes = p.get('tasktrackers_on_datanodes', False) %}
+  {%- if p.get('tasktrackers_on_datanodes', False) %}
+    {%- set tasktracker_hosts = tasktracker_hosts + p_hdfs.get('datanode_hosts', []) %}
+  {%- endif %}
 {%- endif %}
 
-{%- if is_tasktrackers_on_datanodes %}
-  {%- from 'hadoop/hdfs/settings.sls' import hdfs with context %}
-  {%- set tasktracker_hosts = tasktracker_hosts + hdfs.datanode_hosts %}
-{%- endif %}
+{%- set local_disks              = salt['grains.get']('mapred_data_disks', ['/data']) %}
+{%- set config_mapred_site       = gc.get('mapred-site', pc.get('mapred-site', {})) %}
 
-{%- set local_disks     = salt['grains.get']('mapred_data_disks', ['/data']) %}
-{%- set config_mapred_site = gc.get('mapred-site', pc.get('mapred-site', {})) %}
+{%- set is_jobtracker            = salt['match.' ~ targeting_method](jobtracker_target) %}
+{%- set is_tasktracker           = salt['match.' ~ targeting_method](tasktracker_target) %}
 
-{%- set is_jobtracker = salt['match.' ~ targeting_method](jobtracker_target) %}
-{%- set is_tasktracker = salt['match.' ~ targeting_method](tasktracker_target) %}
+{%- set is_tasktracker_in_pillar = [] %}
 
 {%- if not is_tasktracker %}
   {%- for minion_host in minion_hosts %}
     {%- if minion_host in tasktracker_hosts %}
-      {%- set is_tasktracker_in_pillar = True %}
+      {%- do is_tasktracker_in_pillar.append(True) %}
       {% break %}
     {%- endif %}
   {%- endfor %}
@@ -81,8 +85,8 @@
 
 {%- set is_jobtracker = is_jobtracker or jobtracker_host in minion_hosts %}
 
-{%- if is_tasktracker_in_pillar is defined %}
-  {%- set is_tasktracker = is_tasktracker or is_tasktracker_in_pillar %}
+{%- if is_tasktracker_in_pillar %}
+  {%- set is_tasktracker = True %}
 {%- endif %}
 
 {%- set mapred = {} %}
