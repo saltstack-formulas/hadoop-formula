@@ -139,6 +139,7 @@
                                       },
                    }%}
 
+
 {%- set versions         = p.get('versions', default_versions) %}
 {%- set version_info     = versions.get(dist_id, versions['apache-2.8.0']) %}
 {%- set alt_home         = salt['pillar.get']('hadoop:prefix', '/usr/lib/hadoop') %}

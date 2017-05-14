@@ -1,7 +1,7 @@
 {%- if hadoop_major == 1 %}
-{%- set bindir='bin' %}
+  {%- set bindir='bin' %}
 {%- else %}
-{%- set bindir='sbin' %}
+  {%- set bindir='sbin' %}
 {%- endif %}
 
 {%- set piddir="/var/run/hadoop" %}
@@ -16,6 +16,10 @@
 {%- else %}
   {%- set pidfile=piddir+"/hadoop-"+hadoop_user+"-"+hadoop_svc+".pid" %}
   {%- set exec_path=hadoop_home+"/"+bindir+"/hadoop-daemon.sh" %}
+{%- endif %}
+
+{%- if hadoop_major > 2 %}
+  {%- set pidfile=piddir+"/hadoop-"+hadoop_user+"-"+hadoop_svc+".pid" %}
 {%- endif %}
 
 [Unit]

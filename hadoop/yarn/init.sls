@@ -4,7 +4,7 @@
 {%- from "hadoop/user_macro.sls" import hadoop_user with context %}
 {%- from 'hadoop/hdfs_mkdir_macro.sls' import hdfs_mkdir with context %}
 
-{%- if hadoop.major_version|string() == '2' %}
+{%- if hadoop.major_version|string() != '1' %}
 
 {% set username = 'yarn' %}
 {% set yarn_home_directory = '/user/' + username %}
