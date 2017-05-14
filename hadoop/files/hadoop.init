@@ -44,6 +44,10 @@ if [ -f /etc/default/hadoop ]; then
   . /etc/default/hadoop
 fi
 
+if [ -f /etc/init.d/functions ]; then
+  . /etc/init.d/functions
+fi
+
 if [ -f /etc/default/mapred-{{ hadoop_user }}-{{ hadoop_svc }} ] ; then
   . /etc/default/mapred-{{ hadoop_user }}-{{ hadoop_svc }}
 fi

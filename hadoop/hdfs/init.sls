@@ -108,8 +108,13 @@ format-namenode:
     - unless: test -d {{ test_folder }}
 {%- endif %}
 
-/etc/init.d/hadoop-namenode:
+hadoop-namenode-service:
   file.managed:
+{%- if grains.get('systemd') %}
+    - name: /etc/systemd/system/hadoop-namenode.service
+{% else %}
+    - name: /etc/init.d/hadoop-namenode
+{% endif %}
     - source: salt://hadoop/files/{{ hadoop.initscript }}
     - user: root
     - group: root
@@ -120,10 +125,23 @@ format-namenode:
       hadoop_user: hdfs
       hadoop_major: {{ hadoop.major_version }}
       hadoop_home: {{ hadoop.alt_home }}
+{%- if grains.get('systemd') %}
+  module.wait:
+    - name: service.systemctl_reload
+    - watch:
+      - file: hadoop-namenode-service
+    - watch_in:
+      - service: hdfs-services
+{% endif %}
 
 {%- if hdfs.namenode_count == 1 %}
-/etc/init.d/hadoop-secondarynamenode:
+hadoop-secondarynamenode-service:
   file.managed:
+{%- if grains.get('systemd') %}
+    - name: /etc/systemd/system/hadoop-secondarynamenode.service
+{% else %}
+    - name: /etc/init.d/hadoop-secondarynamenode
+{% endif %}
     - source: salt://hadoop/files/{{ hadoop.initscript }}
     - user: root
     - group: root
@@ -134,9 +152,22 @@ format-namenode:
       hadoop_user: hdfs
       hadoop_major: {{ hadoop.major_version }}
       hadoop_home: {{ hadoop.alt_home }}
+{%- if grains.get('systemd') %}
+  module.wait:
+    - name: service.systemctl_reload
+    - watch:
+      - file: hadoop-secondarynamenode-service
+    - watch_in:
+      - service: hdfs-nn-services
+{% endif %}
 {%- else %}
-/etc/init.d/hadoop-zkfc:
+hadoop-zkfc-service:
   file.managed:
+{%- if grains.get('systemd') %}
+    - name: /etc/systemd/system/hadoop-zkfc.service
+{% else %}
+    - name: /etc/init.d/hadoop-zkfc
+{% endif %}
     - source: salt://hadoop/files/{{ hadoop.initscript }}
     - user: root
     - group: root
@@ -147,12 +178,24 @@ format-namenode:
       hadoop_user: hdfs
       hadoop_major: {{ hadoop.major_version }}
       hadoop_home: {{ hadoop.alt_home }}
+{%- if grains.get('systemd') %}
+  module.wait:
+    - name: service.systemctl_reload
+    - watch:
+      - file: hadoop-zkfc-service
+{% endif %}
 {% endif %}
 {% endif %}
 
 {% if hdfs.is_datanode %}
-/etc/init.d/hadoop-datanode:
+
+hadoop-datanode-service:
   file.managed:
+{%- if grains.get('systemd') %}
+    - name: /etc/systemd/system/hadoop-datanode.service
+{% else %}
+    - name: /etc/init.d/hadoop-datanode
+{% endif %}
     - source: salt://hadoop/files/{{ hadoop.initscript }}
     - user: root
     - group: root
@@ -163,11 +206,24 @@ format-namenode:
       hadoop_user: hdfs
       hadoop_major: {{ hadoop.major_version }}
       hadoop_home: {{ hadoop.alt_home }}
+{%- if grains.get('systemd') %}
+  module.wait:
+    - name: service.systemctl_reload
+    - watch:
+      - file: hadoop-datanode-service
+    - watch_in:
+      - service: hdfs-services
+{% endif %}
 {% endif %}
 
 {% if hdfs.is_journalnode %}
-/etc/init.d/hadoop-journalnode:
+hadoop-journalnode-service:
   file.managed:
+{%- if grains.get('systemd') %}
+    - name: /etc/systemd/system/hadoop-journalnode.service
+{% else %}
+    - name: /etc/init.d/hadoop-journalnode
+{% endif %}
     - source: salt://hadoop/files/{{ hadoop.initscript }}
     - user: root
     - group: root
@@ -178,6 +234,14 @@ format-namenode:
       hadoop_user: hdfs
       hadoop_major: {{ hadoop.major_version }}
       hadoop_home: {{ hadoop.alt_home }}
+{%- if grains.get('systemd') %}
+  module.wait:
+    - name: service.systemctl_reload
+    - watch:
+      - file: hadoop-journalnode-service
+    - watch_in:
+      - service: hdfs-services
+{% endif %}
 {% endif %}
 
 {% if hdfs.is_namenode and hdfs.namenode_count == 1 %}
