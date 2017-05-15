@@ -44,7 +44,7 @@ bootstrap-secondary-namenode:
 
 {%- if hdfs.is_primary_namenode or hdfs.is_secondary_namenode %}
 
-hdfs-services:
+hdfs-ha-services:
   service.running:
     - enable: True
     - names:

@@ -1,3 +1,5 @@
+{%- from 'hadoop/settings.sls' import hadoop with context %}
+
 {%- set p  = salt['pillar.get']('hdfs', {}) %}
 {%- set pc = p.get('config', {}) %}
 {%- set g  = salt['grains.get']('hdfs', {}) %}
@@ -76,6 +78,15 @@
 {%- endif %}
 
 {%- set namenode_count = namenode_hosts|count() %}
+
+{%- if namenode_count > 1 and hadoop.major_version == '1' %}
+  {%- set namenode_hosts = [namenode_hosts[0]] %}
+  {%- set namenode_count = namenode_hosts|count() %}
+{%- elif namenode_count > 2 and hadoop.major_version == '2' %}
+  {%- set namenode_hosts = [namenode_hosts[0], namenode_hosts[1]] %}
+  {%- set namenode_count = namenode_hosts|count() %}
+{%- endif %}
+
 {%- if namenode_count > 0 %}
   {%- set namenode_host = namenode_hosts|first()|join() %}
 {%- endif %}
@@ -149,7 +160,7 @@
 
 {%- set is_primary_namenode      = is_primary_namenode or primary_namenode_host in minion_hosts %}
 
-{%- set is_secondary_namenode    = is_secondary_namenode or ( is_namenode and not is_primary_namenode ) %}
+{%- set is_secondary_namenode    = ( is_secondary_namenode or is_namenode ) and not is_primary_namenode %}
 
 {%- set restart_on_config_change = pc.get('restart_on_config_change', False) %}
 
