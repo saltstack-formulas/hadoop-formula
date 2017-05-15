@@ -1,7 +1,7 @@
 # java_home: /usr/lib/java
 
 hadoop:
-  version: apache-1.2.1 # ['apache-1.2.1', 'apache-2.2.0', 'hdp-1.3.0', 'hdp-2.2.0', 'cdh-4.5.0', 'cdh-4.5.0-mr1']
+  version: apache-1.2.1 # ['apache-1.2.1', 'apache-2.8.0', 'hdp-1.3.0', 'hdp-2.2.0', 'cdh-4.5.0', 'cdh-4.5.0-mr1']
   targeting_method: grain # [compound, glob] also supported
   users:
     hadoop: 6000

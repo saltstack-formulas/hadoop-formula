@@ -93,7 +93,7 @@ Since this feature is more complex than the already distributed Hadoop architect
   b) Initialize Zookeeper for namenode HA (hdfs zkfc -formatZK)
   c) Start namenode service as usual (service hadoop-namenode start)
   d) Start the zookeeper fencing service (service hadoop-zkfc start)
-8. On the designated "second" namenode (to become the standby member):
+8. On the designated "second" namenodes (to become the standby members):
   a) Prepare HDFS namenode metadata (hdfs namenode -prepareStandby)
   b) Start namenode service as usual (service hadoop-namenode start)
   c) Start the zookeeper fencing service (service hadoop-zkfc start)
