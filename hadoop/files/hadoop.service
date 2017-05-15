@@ -31,9 +31,12 @@ Requires=network-online.target
 User={{ hadoop_user }}
 Group=hadoop
 Type=forking
+RuntimeDirectory=hadoop
+RuntimeDirectoryMode=775
 ExecStart={{ exec_path }} --config {{ conf_dir }} start {{ hadoop_svc }}
 ExecStop={{ exec_path }} --config {{ conf_dir }} stop {{ hadoop_svc }}
 TimeoutStartSec=2min
+Restart=on-failure
 PIDFile={{ pidfile }}
 
 [Install]
