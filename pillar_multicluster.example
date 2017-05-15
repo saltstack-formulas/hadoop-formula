@@ -1,0 +1,86 @@
+# It is possible to specify several clusters in pillar directly. When you specify `clusters` parameter all other targeting methods will be omitted.
+# hdfs, yarn and mapred support multicluster options.
+# You can specify clusters in the next manner:
+#
+# hdfs:
+#   <cluster_name_1>:
+#     [cluster_options_1]
+#   <cluster_name_2>:
+#     [cluster_options_2]
+#
+# When hdfs, yarn or mapred state is executed on the node, it will try to determine to which cluster it is related.  
+# The node will try to fetch `ha_cluster_id` to determine to which cluster it is related. In case if `ha_cluster_id` is not specified (via Grains or Pillar)
+# it will try to find its IP, hostname or fqdn in all clusters to determine to which cluster it is related.
+# Be aware that you can't use the same node in two different clusters!
+
+# An example of using multiple clusters specified via Pillar:
+
+hdfs:
+  clusters:
+    cluster0:
+      primary_namenode_host: 192.168.1.101
+      namenode_hosts:
+        - 192.168.0.101
+        - 192.168.0.102
+      journalnode_hosts:
+        - 192.168.0.101
+        - 192.168.0.102
+        - 192.168.0.103
+      datanode_hosts:
+        - 192.168.0.101
+        - 192.168.0.102
+        - 192.168.0.103
+    cluster1:
+      primary_namenode_host: 192.168.1.101
+      namenode_hosts:
+        - 192.168.1.101
+        - 192.168.1.102
+        - 192.168.1.103
+      journalnode_hosts:
+        - 192.168.1.101
+        - 192.168.1.102
+        - 192.168.1.103
+      datanode_hosts:
+        - 192.168.1.101
+        - 192.168.1.102
+        - 192.168.1.103
+# Other options ...
+
+mapred:
+  clusters:
+    cluster0:
+      jobtracker_host: 192.168.0.101
+      tasktracker_hosts:
+        - 192.168.0.101
+        - 192.168.0.102
+        - 192.168.0.103
+      tasktrackers_on_datanodes: False # By setting this option to True you extend the `tasktracker_hosts` list with the list from `hdfs.datanode_hosts` of the same cluster. By default, this option is False
+    cluster1:
+      jobtracker_host: myhost1
+      tasktracker_hosts:
+        - myhost1
+        - myhost2
+        - myhost3
+# Other options ...
+
+yarn:
+  clusters:
+    cluster0:
+      resourcemanager_on_namenode: False # By setting this option to True you extend the `resourcemanager_hosts` list with the list from `hdfs.namenode_hosts` of the same cluster. By default, this option is False
+      nodemanagers_on_datanodes: False # By setting this option to True you extend the `nodemanager_hosts` list with the list from `hdfs.datanode_hosts` of the same cluster. By default, this option is False
+      resourcemanager_hosts:
+        - 192.168.0.101
+        - 192.168.0.102
+      nodemanager_hosts:
+        - 192.168.0.101
+        - 192.168.0.102
+        - 192.168.0.103
+    cluster1:
+      resourcemanager_hosts:
+        - resourcemanager1.mydomain.com
+        - resourcemanager2.mydomain.com
+      nodemanager_hosts:
+        - nodemanager1.mydomain.com
+        - nodemanager2.mydomain.com
+        - nodemanager3.mydomain.com
+# Other options ...

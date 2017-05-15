@@ -25,7 +25,7 @@ mapred:
     - 192.168.0.101
     - 192.168.0.102
     - 192.168.0.103
-  tasktrackers_on_datanodes: False # By setting this option to True you extend the tasktracker_hosts list with the list from hdfs.datanode_hosts . By dafault, this option is False
+  tasktrackers_on_datanodes: False # By setting this option to True you extend the `tasktracker_hosts` list with the list from `hdfs.datanode_hosts`. By default, this option is False
 # Other options ...
 
 yarn:
@@ -36,6 +36,6 @@ yarn:
     - 192.168.0.101
     - 192.168.0.102
     - 192.168.0.103
-  resourcemanager_on_namenode: False # By setting this option to True you extend the resourcemanager_hosts list with the list from hdfs.namenode_hosts . By dafault, this option is False
-  nodemanagers_on_datanodes: False # By setting this option to True you extend the nodemanager_hosts list with the list from hdfs.datanode_hosts . By dafault, this option is False
+  resourcemanager_on_namenode: False # By setting this option to True you extend the `resourcemanager_hosts` list with the list from `hdfs.namenode_hosts`. By default, this option is False
+  nodemanagers_on_datanodes: False # By setting this option to True you extend the `nodemanager_hosts` list with the list from `hdfs.datanode_hosts`. By default, this option is False
 # Other options ...
