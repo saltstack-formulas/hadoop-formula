@@ -21,7 +21,7 @@
 {%- set namenode_count = namenode_host|count() %}
 
 # sanitize targeting results - these come as arrays, so we always pick the first
-{%- if namenode_host|count() > 0 %}
+{%- if namenode_count > 0 %}
 {%- set namenode_host = namenode_host|first()|join() %}
 {%- endif %}
 
@@ -42,7 +42,6 @@
 {%- set namenode_http_port    = gc.get('namenode_http_port', pc.get('namenode_http_port', '50070')) %}
 {%- set secondarynamenode_http_port  = gc.get('secondarynamenode_http_port', pc.get('secondarynamenode_http_port', '50090')) %}
 {%- set local_disks           = salt['grains.get']('hdfs_data_disks', ['/data']) %}
-{%- set hdfs_repl_override    = gc.get('replication', pc.get('replication', 'x')) %}
 {%- set load                  = salt['grains.get']('hdfs_load', salt['pillar.get']('hdfs_load', {})) %}
 {%- set ha_cluster_id         = salt['grains.get']('ha_cluster_id', salt['pillar.get']('ha_cluster_id', 'hdfscluster')) %}
 {%- set ha_namenode_port      = gc.get('ha_namenode_port', pc.get('ha_namenode_port', namenode_port)) %}
@@ -63,19 +62,7 @@
 # {%- set tmp_root        = local_disks|first() %}
 {%- set tmp_dir         = '/tmp' %}
 
-{%- if hdfs_repl_override == 'x' %}
-{%- if datanode_count >= 3 %}
-{%- set replicas = '3' %}
-{%- elif datanode_count == 2 %}
-{%- set replicas = '2' %}
-{%- else %}
-{%- set replicas = '1' %}
-{%- endif %}
-{%- endif %}
-
-{%- if hdfs_repl_override != 'x' %}
-{%- set replicas = hdfs_repl_override %}
-{%- endif %}
+{%- set replicas = gc.get('replication', pc.get('replication', datanode_count % 4 if datanode_count < 4 else 3 )) %}
 
 {%- set config_hdfs_site = gc.get('hdfs-site', pc.get('hdfs-site', {})) %}
 {%- set is_namenode    = salt['match.' ~ targeting_method](namenode_target) %}

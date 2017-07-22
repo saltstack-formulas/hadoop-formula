@@ -4,14 +4,11 @@
 {%- from "hadoop/user_macro.sls" import hadoop_user with context %}
 {%- from 'hadoop/hdfs_mkdir_macro.sls' import hdfs_mkdir with context %}
 
-# TODO: no users implemented in settings yet
-{%- set hadoop_users = hadoop.get('users', {}) %}
-
 {%- if hadoop.major_version|string() == '2' %}
 
 {% set username = 'yarn' %}
 {% set yarn_home_directory = '/user/' + username %}
-{% set uid = hadoop_users.get(username, '6003') %}
+{% set uid = hadoop.users[username] %}
 {{ hadoop_user(username, uid) }}
 
 {% if yarn.is_resourcemanager or yarn.is_nodemanager %}
@@ -54,21 +51,13 @@
       banned_users_list: {{ yarn.banned_users|join(',') }}
 
 # restore the special permissions of the linux container executor
-fix-executor-group:
-  cmd.run:
-    - unless: test ! -f {{hadoop.alt_home}}/bin/container-executor
-    - user: root
-    - names:
-      - chown root {{hadoop.alt_home}}/bin/container-executor
-      - chgrp {{username}} {{hadoop.alt_home}}/bin/container-executor
-
 fix-executor-permissions:
-  cmd.run:
-    - unless: test ! -f {{hadoop.alt_home}}/bin/container-executor
+  file.managed:
+    - mode: 06050
     - user: root
-    - name: chmod 06050 {{hadoop.alt_home}}/bin/container-executor
-    - require:
-      - cmd: fix-executor-group
+    - group: {{username}}
+    - onlyif: test -f {{hadoop.alt_home}}/bin/container-executor
+    - name: {{hadoop.alt_home}}/bin/container-executor
 
 {{ hadoop.alt_config }}/yarn-site.xml:
   file.managed:

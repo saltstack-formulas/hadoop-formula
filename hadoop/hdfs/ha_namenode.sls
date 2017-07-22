@@ -8,7 +8,7 @@
 
 {%- if hdfs.is_primary_namenode or hdfs.is_secondary_namenode %}
 {%- if grains['os_family'] == 'RedHat' %}
-'nc':
+'nmap-ncat':
    pkg.installed
 {%- elif grains['os_family'] == 'Debian' %}
 'netcat-traditional':
