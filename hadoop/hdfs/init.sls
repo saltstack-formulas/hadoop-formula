@@ -133,7 +133,7 @@ systemd-hadoop-namenode:
     - context:
       service: hadoop-namenode
   cmd.run:
-    - name: systemctl enable hadoop-journalnode.service
+    - name: systemctl enable hadoop-namenode.service
     - unless: service hadoop-datanode status | grep loaded 
 {% endif %}
 
