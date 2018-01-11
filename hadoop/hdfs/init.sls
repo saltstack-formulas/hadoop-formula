@@ -122,8 +122,9 @@ format-namenode:
       hadoop_home: {{ hadoop.alt_home }}
 
 {% if grains['init'] == 'systemd' %}
-/etc/systemd/system/hadoop-namenode.service:
+systemd-hadoop-namenode:
   file.managed:
+    - name: /etc/systemd/system/hadoop-namenode.service
     - source: salt://hadoop/files/systemd.init.jinja
     - user: root
     - group: root
@@ -131,6 +132,9 @@ format-namenode:
     - template: jinja
     - context:
       service: hadoop-namenode
+  cmd.run:
+    - name: systemctl enable hadoop-journalnode.service
+    - unless: service hadoop-datanode status | grep "Loaded: loaded" 
 {% endif %}
 
 {%- if hdfs.namenode_count == 1 %}
@@ -148,8 +152,9 @@ format-namenode:
       hadoop_home: {{ hadoop.alt_home }}
 
 {% if grains['init'] == 'systemd' %}
-/etc/systemd/system/hadoop-secondarynamenode.service:
+systemd-hadoop-secondarynamenode:
   file.managed:
+    - name: /etc/systemd/system/hadoop-secondarynamenode.service
     - source: salt://hadoop/files/systemd.init.jinja
     - user: root
     - group: root
@@ -157,6 +162,9 @@ format-namenode:
     - template: jinja
     - context:
       service: hadoop-secondarynamenode
+  cmd.run:
+    - name: systemctl enable hadoop-secondarynamenode.service
+    - unless: service hadoop-secondarynamenode status | grep "Loaded: loaded" 
 {% endif %}
 {%- else %}
 /etc/init.d/hadoop-zkfc:
@@ -173,8 +181,9 @@ format-namenode:
       hadoop_home: {{ hadoop.alt_home }}
 
 {% if grains['init'] == 'systemd' %}
-/etc/systemd/system/hadoop-zkfc.service:
+systemd-hadoop-zkfc:
   file.managed:
+    - name: /etc/systemd/system/hadoop-zkfc.service
     - source: salt://hadoop/files/systemd.init.jinja
     - user: root
     - group: root
@@ -182,6 +191,9 @@ format-namenode:
     - template: jinja
     - context:
       service: hadoop-zkfc
+  cmd.run:
+    - name: systemctl enable hadoop-zkfc.service
+    - unless: service hadoop-zkfc status | grep "Loaded: loaded" 
 {% endif %}
 {% endif %}
 {% endif %}
@@ -201,8 +213,9 @@ format-namenode:
       hadoop_home: {{ hadoop.alt_home }}
 
 {% if grains['init'] == 'systemd' %}
-/etc/systemd/system/hadoop-datanode.service:
+systemd-hadoop-datanode:
   file.managed:
+    - name: /etc/systemd/system/hadoop-datanode.service
     - source: salt://hadoop/files/systemd.init.jinja
     - user: root
     - group: root
@@ -210,6 +223,9 @@ format-namenode:
     - template: jinja
     - context:
       service: hadoop-datanode
+  cmd.run:
+    - name: systemctl enable hadoop-datanode.service
+    - unless: service hadoop-datanode status | grep "Loaded: loaded" 
 {% endif %}
 {% endif %}
 
@@ -228,8 +244,9 @@ format-namenode:
       hadoop_home: {{ hadoop.alt_home }}
 
 {% if grains['init'] == 'systemd' %}
-/etc/systemd/system/hadoop-journalnode.service:
+systemd-hadoop-journalnode:
   file.managed:
+    - name: /etc/systemd/system/hadoop-journalnode.service
     - source: salt://hadoop/files/systemd.init.jinja
     - user: root
     - group: root
@@ -237,6 +254,9 @@ format-namenode:
     - template: jinja
     - context:
       service: hadoop-journalnode
+  cmd.run:
+    - name: systemctl enable hadoop-journalnode.service
+    - unless: service hadoop-journalnode status | grep "Loaded: loaded" 
 {% endif %}
 {% endif %}
 
