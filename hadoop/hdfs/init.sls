@@ -121,6 +121,18 @@ format-namenode:
       hadoop_major: {{ hadoop.major_version }}
       hadoop_home: {{ hadoop.alt_home }}
 
+{% if grains['init'] == 'systemd' %}
+/etc/systemd/system/hadoop-namenode.service:
+  file.managed:
+    - source: salt://hadoop/files/systemd.init.jinja
+    - user: root
+    - group: root
+    - mode: '644'
+    - template: jinja
+    - context:
+      service: hadoop-namenode
+{% endif %}
+
 {%- if hdfs.namenode_count == 1 %}
 /etc/init.d/hadoop-secondarynamenode:
   file.managed:
@@ -134,6 +146,18 @@ format-namenode:
       hadoop_user: hdfs
       hadoop_major: {{ hadoop.major_version }}
       hadoop_home: {{ hadoop.alt_home }}
+
+{% if grains['init'] == 'systemd' %}
+/etc/systemd/system/hadoop-secondarynamenode.service:
+  file.managed:
+    - source: salt://hadoop/files/systemd.init.jinja
+    - user: root
+    - group: root
+    - mode: '644'
+    - template: jinja
+    - context:
+      service: hadoop-secondarynamenode
+{% endif %}
 {%- else %}
 /etc/init.d/hadoop-zkfc:
   file.managed:
@@ -147,6 +171,18 @@ format-namenode:
       hadoop_user: hdfs
       hadoop_major: {{ hadoop.major_version }}
       hadoop_home: {{ hadoop.alt_home }}
+
+{% if grains['init'] == 'systemd' %}
+/etc/systemd/system/hadoop-zkfc.service:
+  file.managed:
+    - source: salt://hadoop/files/systemd.init.jinja
+    - user: root
+    - group: root
+    - mode: '644'
+    - template: jinja
+    - context:
+      service: hadoop-zkfc
+{% endif %}
 {% endif %}
 {% endif %}
 
@@ -163,6 +199,18 @@ format-namenode:
       hadoop_user: hdfs
       hadoop_major: {{ hadoop.major_version }}
       hadoop_home: {{ hadoop.alt_home }}
+
+{% if grains['init'] == 'systemd' %}
+/etc/systemd/system/hadoop-datanode.service:
+  file.managed:
+    - source: salt://hadoop/files/systemd.init.jinja
+    - user: root
+    - group: root
+    - mode: '644'
+    - template: jinja
+    - context:
+      service: hadoop-datanode
+{% endif %}
 {% endif %}
 
 {% if hdfs.is_journalnode %}
@@ -178,6 +226,18 @@ format-namenode:
       hadoop_user: hdfs
       hadoop_major: {{ hadoop.major_version }}
       hadoop_home: {{ hadoop.alt_home }}
+
+{% if grains['init'] == 'systemd' %}
+/etc/systemd/system/hadoop-journalnode.service:
+  file.managed:
+    - source: salt://hadoop/files/systemd.init.jinja
+    - user: root
+    - group: root
+    - mode: '644'
+    - template: jinja
+    - context:
+      service: hadoop-journalnode
+{% endif %}
 {% endif %}
 
 {% if hdfs.is_namenode and hdfs.namenode_count == 1 %}
