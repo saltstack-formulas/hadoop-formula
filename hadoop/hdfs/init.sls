@@ -134,7 +134,7 @@ systemd-hadoop-namenode:
       service: hadoop-namenode
   cmd.run:
     - name: systemctl enable hadoop-journalnode.service
-    - unless: service hadoop-datanode status | grep "Loaded: loaded" 
+    - unless: service hadoop-datanode status | grep loaded 
 {% endif %}
 
 {%- if hdfs.namenode_count == 1 %}
@@ -164,7 +164,7 @@ systemd-hadoop-secondarynamenode:
       service: hadoop-secondarynamenode
   cmd.run:
     - name: systemctl enable hadoop-secondarynamenode.service
-    - unless: service hadoop-secondarynamenode status | grep "Loaded: loaded" 
+    - unless: service hadoop-secondarynamenode status | grep loaded 
 {% endif %}
 {%- else %}
 /etc/init.d/hadoop-zkfc:
@@ -193,7 +193,7 @@ systemd-hadoop-zkfc:
       service: hadoop-zkfc
   cmd.run:
     - name: systemctl enable hadoop-zkfc.service
-    - unless: service hadoop-zkfc status | grep "Loaded: loaded" 
+    - unless: service hadoop-zkfc status | grep loaded
 {% endif %}
 {% endif %}
 {% endif %}
@@ -225,7 +225,7 @@ systemd-hadoop-datanode:
       service: hadoop-datanode
   cmd.run:
     - name: systemctl enable hadoop-datanode.service
-    - unless: service hadoop-datanode status | grep "Loaded: loaded" 
+    - unless: service hadoop-datanode status | grep loaded 
 {% endif %}
 {% endif %}
 
@@ -256,7 +256,7 @@ systemd-hadoop-journalnode:
       service: hadoop-journalnode
   cmd.run:
     - name: systemctl enable hadoop-journalnode.service
-    - unless: service hadoop-journalnode status | grep "Loaded: loaded" 
+    - unless: service hadoop-journalnode status | grep loaded
 {% endif %}
 {% endif %}
 
