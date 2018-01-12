@@ -125,7 +125,7 @@ format-namenode:
 systemd-hadoop-namenode:
   file.managed:
     - name: /etc/systemd/system/hadoop-namenode.service
-    - source: salt://hadoop/files/{{ hadoop.systemd_initscript }}
+    - source: salt://hadoop/files/{{ hadoop.initscript_systemd }}
     - user: root
     - group: root
     - mode: '644'
@@ -183,7 +183,7 @@ systemd-hadoop-secondarynamenode:
 systemd-hadoop-zkfc:
   file.managed:
     - name: /etc/systemd/system/hadoop-zkfc.service
-    - source: salt://hadoop/files/{{ hadoop.systemd_initscript }}
+    - source: salt://hadoop/files/{{ hadoop.initscript_systemd }}
     - user: root
     - group: root
     - mode: '644'
@@ -215,7 +215,7 @@ systemd-hadoop-zkfc:
 systemd-hadoop-datanode:
   file.managed:
     - name: /etc/systemd/system/hadoop-datanode.service
-    - source: salt://hadoop/files/{{ hadoop.systemd_initscript }}
+    - source: salt://hadoop/files/{{ hadoop.initscript_systemd }}
     - user: root
     - group: root
     - mode: '644'
@@ -246,7 +246,7 @@ systemd-hadoop-datanode:
 systemd-hadoop-journalnode:
   file.managed:
     - name: /etc/systemd/system/hadoop-journalnode.service
-    - source: salt://hadoop/files/{{ hadoop.systemd_initscript }}
+    - source: salt://hadoop/files/{{ hadoop.initscript_systemd }}
     - user: root
     - group: root
     - mode: '644'
