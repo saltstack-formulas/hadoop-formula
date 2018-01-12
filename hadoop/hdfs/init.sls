@@ -293,6 +293,6 @@ hdfs-services:
 
 {% if grains['init'] == 'systemd' %}
 systemd-reload:
-  cmd.run:
+  cmd.wait:
     - name: systemctl daemon-reload 
 {% endif %}
