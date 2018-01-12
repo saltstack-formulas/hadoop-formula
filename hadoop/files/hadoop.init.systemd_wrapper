@@ -1,0 +1,8 @@
+[Unit]
+Description=Wrapper script for {{ service }}
+SourcePath=/etc/init.d/{{ service }}
+
+[Service]
+ExecStart=/etc/init.d/{{ service }} start
+ExecStop=/etc/init.d/{{ service }} stop
+

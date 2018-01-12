@@ -55,6 +55,12 @@
                                         'source_hash'   : g.get('source_hash', p.get('source_hash', 'c728a090b68d009070085367695ed507')),
                                         'major_version' : '2',
                                       },
+                     'apache-2.8.3' : { 'version'       : '2.8.3',
+                                        'version_name'  : 'hadoop-2.8.3',
+                                        'source_url'    : g.get('source_url', p.get('source_url', 'http://apache.osuosl.org/hadoop/common/hadoop-2.8.3/hadoop-2.8.3.tar.gz')),
+                                        'source_hash'   : g.get('source_hash', p.get('source_hash', '9015454F5071A6FCC4B8840D9CB63107')),
+                                        'major_version' : '2',
+                                      },  
                      'hdp-2.7.1'    : { 'version'       : '2.7.1.2.3.4.0-3485',
                                         'version_name'  : 'hadoop-2.7.1.2.3.4.0-3485',
                                         'source_url'    : g.get('source_url', p.get('source_url', 'http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.3.4.0/tars/hadoop-2.7.1.2.3.4.0-3485.tar.gz')),
@@ -149,6 +155,7 @@
 {%- set default_log_root = '/var/log/hadoop' %}
 {%- set log_root         = gc.get('log_root', pc.get('log_root', default_log_root)) %}
 {%- set initscript       = 'hadoop.init' %}
+{%- set initscript_systemd  = 'hadoop.init.systemd' %}
 {%- set targeting_method = g.get('targeting_method', p.get('targeting_method', 'grain')) %}
 
 {%- if version_info['major_version'] == '1' %}
@@ -182,6 +189,7 @@
                           'real_config'      : real_config,
                           'real_config_dist' : real_config_dist,
                           'initscript'       : initscript,
+                          'initscript_systemd'       : initscript_systemd,
                           'dfs_cmd'          : dfs_cmd,
                           'dfsadmin_cmd'     : dfsadmin_cmd,
                           'java_home'        : java_home,

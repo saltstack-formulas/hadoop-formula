@@ -1,0 +1,21 @@
+[Unit]
+Description=Hadoop {{ service }}
+Requires=network.target remote-fs.target
+After=network.target remote-fs.target
+
+[Service]
+Type=simple
+PIDFile=/var/run/hadoop/hadoop-{{ service }}.pid
+User={{ user }}
+Group={{ user }}
+
+Environment="JAVA_OPTS=-Djava.awt.headless=true"
+EnvironmentFile=-/etc/default/hadoop-systemd
+
+ExecStart=/usr/bin/hdfs {{ service }}
+Restart=on-failure
+SyslogIdentifier=hadoop-{{ service }}
+
+[Install]
+WantedBy=multi-user.target
+
