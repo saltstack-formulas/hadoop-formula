@@ -132,7 +132,7 @@ systemd-hadoop-namenode:
     - template: jinja
     - context:
       service: namenode
-      user: hdfs
+      user: root
     - watch_in:
       - cmd: systemd-reload
 {% endif %}
