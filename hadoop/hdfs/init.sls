@@ -125,13 +125,14 @@ format-namenode:
 systemd-hadoop-namenode:
   file.managed:
     - name: /etc/systemd/system/hadoop-namenode.service
-    - source: salt://hadoop/files/systemd.init.jinja
+    - source: salt://hadoop/files/init.systemd
     - user: root
     - group: root
     - mode: '644'
     - template: jinja
     - context:
-      service: hadoop-namenode
+      service: namenode
+      user: hdfs
     - watch_in:
       - cmd: systemd-reload
 {% endif %}
@@ -213,13 +214,14 @@ systemd-hadoop-zkfc:
 systemd-hadoop-datanode:
   file.managed:
     - name: /etc/systemd/system/hadoop-datanode.service
-    - source: salt://hadoop/files/systemd.init.jinja
+    - source: salt://hadoop/files/init.systemd
     - user: root
     - group: root
     - mode: '644'
     - template: jinja
     - context:
-      service: hadoop-datanode
+      service: datanode
+      user: hdfs
     - watch_in:
       - cmd: systemd-reload
 {% endif %}
@@ -243,11 +245,14 @@ systemd-hadoop-datanode:
 systemd-hadoop-journalnode:
   file.managed:
     - name: /etc/systemd/system/hadoop-journalnode.service
-    - source: salt://hadoop/files/journal.systemd
+    - source: salt://hadoop/files/init.systemd
     - user: root
     - group: root
     - mode: '644'
     - template: jinja
+    - context:
+      service: journalnode
+      user: hdfs
     - watch_in:
       - cmd: systemd-reload
 {% endif %}
