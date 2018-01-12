@@ -1,0 +1,21 @@
+[Unit]
+Description=Hadoop Journal Node
+Requires=network.target remote-fs.target
+After=network.target remote-fs.target
+
+[Service]
+Type=simple
+PIDFile=/var/run/hadoop/hadoop-journalnode.pid
+User=root
+Group=root
+
+Environment="JAVA_OPTS=-Djava.awt.headless=true"
+EnvironmentFile=-/etc/default/hadoop-systemd
+
+ExecStart=/usr/bin/hdfs journalnode
+Restart=on-failure
+SyslogIdentifier=hadoop-journalnode
+
+[Install]
+WantedBy=multi-user.target
+

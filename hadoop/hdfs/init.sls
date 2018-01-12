@@ -132,9 +132,8 @@ systemd-hadoop-namenode:
     - template: jinja
     - context:
       service: hadoop-namenode
-  cmd.run:
-    - name: systemctl enable hadoop-namenode.service
-    - unless: service hadoop-datanode status | grep loaded 
+    - watch_in:
+      - cmd: systemd-reload
 {% endif %}
 
 {%- if hdfs.namenode_count == 1 %}
@@ -162,9 +161,8 @@ systemd-hadoop-secondarynamenode:
     - template: jinja
     - context:
       service: hadoop-secondarynamenode
-  cmd.run:
-    - name: systemctl enable hadoop-secondarynamenode.service
-    - unless: service hadoop-secondarynamenode status | grep loaded 
+    - watch_in:
+      - cmd: systemd-reload
 {% endif %}
 {%- else %}
 /etc/init.d/hadoop-zkfc:
@@ -191,9 +189,8 @@ systemd-hadoop-zkfc:
     - template: jinja
     - context:
       service: hadoop-zkfc
-  cmd.run:
-    - name: systemctl enable hadoop-zkfc.service
-    - unless: service hadoop-zkfc status | grep loaded
+    - watch_in:
+      - cmd: systemd-reload
 {% endif %}
 {% endif %}
 {% endif %}
@@ -223,9 +220,8 @@ systemd-hadoop-datanode:
     - template: jinja
     - context:
       service: hadoop-datanode
-  cmd.run:
-    - name: systemctl enable hadoop-datanode.service
-    - unless: service hadoop-datanode status | grep loaded 
+    - watch_in:
+      - cmd: systemd-reload
 {% endif %}
 {% endif %}
 
@@ -247,16 +243,13 @@ systemd-hadoop-datanode:
 systemd-hadoop-journalnode:
   file.managed:
     - name: /etc/systemd/system/hadoop-journalnode.service
-    - source: salt://hadoop/files/systemd.init.jinja
+    - source: salt://hadoop/files/journal.systemd
     - user: root
     - group: root
     - mode: '644'
     - template: jinja
-    - context:
-      service: hadoop-journalnode
-  cmd.run:
-    - name: systemctl enable hadoop-journalnode.service
-    - unless: service hadoop-journalnode status | grep loaded
+    - watch_in:
+      - cmd: systemd-reload
 {% endif %}
 {% endif %}
 
@@ -291,3 +284,9 @@ hdfs-services:
       - file: {{ hadoop.alt_config }}/hdfs-site.xml
 {%- endif %}
 {%- endif %}
+
+{% if grains['init'] == 'systemd' %}
+systemd-reload:
+  cmd.run:
+    - name: systemctl daemon-reload 
+{% endif %}
