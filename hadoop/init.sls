@@ -243,7 +243,7 @@ hadoop-conf-link:
       hadoop_config: {{ hadoop.alt_config }}
 /etc/default/hadoop-systemd:
   file.managed:
-    - source: salt://hadoop/files/hadoop-systemd.jinja
+    - source: salt://hadoop/files/hadoop_env_systemd.jinja
     - mode: '644'
     - template: jinja
     - user: root
