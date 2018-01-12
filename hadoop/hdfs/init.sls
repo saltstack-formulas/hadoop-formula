@@ -183,13 +183,14 @@ systemd-hadoop-secondarynamenode:
 systemd-hadoop-zkfc:
   file.managed:
     - name: /etc/systemd/system/hadoop-zkfc.service
-    - source: salt://hadoop/files/systemd.init.jinja
+    - source: salt://hadoop/files/init.systemd
     - user: root
     - group: root
     - mode: '644'
     - template: jinja
     - context:
-      service: hadoop-zkfc
+      service: zkfc
+      user: root
     - watch_in:
       - cmd: systemd-reload
 {% endif %}
