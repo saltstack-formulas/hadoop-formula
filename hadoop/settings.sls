@@ -155,7 +155,7 @@
 {%- set default_log_root = '/var/log/hadoop' %}
 {%- set log_root         = gc.get('log_root', pc.get('log_root', default_log_root)) %}
 {%- set initscript       = 'hadoop.init' %}
-{%- set initscript_systemd  = 'hadoop.systemd_init' %}
+{%- set initscript_systemd  = 'hadoop.init.systemd' %}
 {%- set targeting_method = g.get('targeting_method', p.get('targeting_method', 'grain')) %}
 
 {%- if version_info['major_version'] == '1' %}
