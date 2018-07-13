@@ -130,8 +130,10 @@ hadoop-namenode-service:
     - name: service.systemctl_reload
     - watch:
       - file: hadoop-namenode-service
+{% if hdfs.is_datanode or hdfs.is_journalnode %}
     - watch_in:
       - service: hdfs-services
+{% endif %}
 {% endif %}
 
 {%- if hdfs.namenode_count == 1 %}
