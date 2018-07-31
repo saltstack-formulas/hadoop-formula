@@ -57,6 +57,26 @@ Which services end up running on a given host will again depend on the role(s) a
 - hadoop_master will run the hadoop-resourcemanager service
 - hadoop_slave will run the hadoop-nodemanager service
 
+``hadoop.hdfs.uninstall``
+---------------
+
+Stops the hdfs services and uninstalls the hdfs service configuration. Removes hdfs data from local disks.
+
+``hadoop.mapred.uninstall``
+---------------
+
+Uninstalls the mapreduce service scripts and configuration. Removes mapred data from local disks.
+
+``hadoop.yarn.uninstall``
+---------------
+
+Uninstalls the yarn daemon scripts and configuration. Removes yarn data from local disks.
+
+``hadoop.uninstall``
+---------------
+
+Uninstalls all Hadoop services and configurations.
+
 Formula Dependencies
 ====================
 

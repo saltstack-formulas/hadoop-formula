@@ -4,7 +4,7 @@
 {%- from "hadoop/user_macro.sls" import hadoop_user with context %}
 {%- from 'hadoop/hdfs_mkdir_macro.sls' import hdfs_mkdir with context %}
 
-{%- if hadoop.major_version|string() == '2' %}
+{%- if hadoop.major_version|string() != '1' %}
 
 {% set username = 'yarn' %}
 {% set yarn_home_directory = '/user/' + username %}
@@ -87,8 +87,13 @@ fix-executor-permissions:
 {{ hdfs_mkdir(yarn_home_directory, username, username, 700, hadoop.dfs_cmd) }}
 {{ hdfs_mkdir(rald, username, 'hadoop', 1777, hadoop.dfs_cmd) }}
 
-/etc/init.d/hadoop-historyserver:
+hadoop-historyserver-service:
   file.managed:
+{%- if grains.get('systemd') %}
+    - name: /etc/systemd/system/hadoop-historyserver.service
+{% else %}
+    - name: /etc/init.d/hadoop-historyserver
+{% endif %}
     - source: salt://hadoop/files/{{ hadoop.initscript }}
     - user: root
     - group: root
@@ -99,13 +104,26 @@ fix-executor-permissions:
       hadoop_user: hdfs
       hadoop_major: {{ hadoop.major_version }}
       hadoop_home: {{ hadoop.alt_home }}
+{%- if grains.get('systemd') %}
+  module.wait:
+    - name: service.systemctl_reload
+    - watch:
+      - file: hadoop-historyserver-service
+    - watch_in:
+      - service: hadoop-historyserver
+{% endif %}
 
 hadoop-historyserver:
   service.running:
     - enable: True
 
-/etc/init.d/hadoop-resourcemanager:
+hadoop-resourcemanager-service:
   file.managed:
+{%- if grains.get('systemd') %}
+    - name: /etc/systemd/system/hadoop-resourcemanager.service
+{% else %}
+    - name: /etc/init.d/hadoop-resourcemanager
+{% endif %}
     - source: salt://hadoop/files/{{ hadoop.initscript }}
     - user: root
     - group: root
@@ -116,6 +134,14 @@ hadoop-historyserver:
       hadoop_user: yarn
       hadoop_major: {{ hadoop.major_version }}
       hadoop_home: {{ hadoop.alt_home }}
+{%- if grains.get('systemd') %}
+  module.wait:
+    - name: service.systemctl_reload
+    - watch:
+      - file: hadoop-resourcemanager-service
+    - watch_in:
+      - service: hadoop-resourcemanager
+{% endif %}
 
 hadoop-resourcemanager:
   service.running:
@@ -124,8 +150,13 @@ hadoop-resourcemanager:
 
 {% if yarn.is_nodemanager %}
 
-/etc/init.d/hadoop-nodemanager:
+hadoop-nodemanager-service:
   file.managed:
+{%- if grains.get('systemd') %}
+    - name: /etc/systemd/system/hadoop-nodemanager.service
+{% else %}
+    - name: /etc/init.d/hadoop-nodemanager
+{% endif %}
     - source: salt://hadoop/files/{{ hadoop.initscript }}
     - user: root
     - group: root
@@ -136,6 +167,14 @@ hadoop-resourcemanager:
       hadoop_user: yarn
       hadoop_major: {{ hadoop.major_version }}
       hadoop_home: {{ hadoop.alt_home }}
+{%- if grains.get('systemd') %}
+  module.wait:
+    - name: service.systemctl_reload
+    - watch:
+      - file: hadoop-nodemanager-service
+    - watch_in:
+      - service: hadoop-nodemanager
+{% endif %}
 
 hadoop-nodemanager:
   service.running:

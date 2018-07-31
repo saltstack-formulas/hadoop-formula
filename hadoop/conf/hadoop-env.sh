@@ -3,6 +3,8 @@ export HADOOP_PREFIX={{ hadoop_home }}
 export HADOOP_CONF_DIR={{ hadoop_config }}
 export PATH=$HADOOP_PREFIX/bin:$HADOOP_PREFIX/sbin:${JAVA_HOME}/bin:$PATH
 
+# export HADOOP_COMMON_LIB_NATIVE_DIR=/usr/lib/hadoop/lib/native/
+
 export HADOOP_HEAPSIZE=1024
 
 export JMX_OPTS=" -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote -Djava.rmi.server.hostname=127.0.0.1"

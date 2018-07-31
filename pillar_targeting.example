@@ -1,0 +1,41 @@
+# Except default targeting methods with `_target` suffix, it's possible to specify nodes directly in a pillar file.
+# When you use direct nodes specification with prefix `host` or `hosts` then other targeting methods are omitted.
+# You can substitute and targeting method with direct specification
+
+# An example of using a direct specification in pillar:
+
+hdfs:
+  primary_namenode_host: 192.168.0.101
+  namenode_hosts:
+    - 192.168.0.101
+    - 192.168.0.102
+  journalnode_hosts:
+    - 192.168.0.101
+    - 192.168.0.102
+    - 192.168.0.103
+  datanode_hosts:
+    - 192.168.0.101
+    - 192.168.0.102
+    - 192.168.0.103
+# Other options ...
+
+mapred:
+  jobtracker_host: 192.168.0.101
+  tasktracker_hosts:
+    - 192.168.0.101
+    - 192.168.0.102
+    - 192.168.0.103
+  tasktrackers_on_datanodes: False # By setting this option to True you extend the `tasktracker_hosts` list with the list from `hdfs.datanode_hosts`. By default, this option is False
+# Other options ...
+
+yarn:
+  resourcemanager_hosts:
+    - 192.168.0.101
+    - 192.168.0.102
+  nodemanager_hosts:
+    - 192.168.0.101
+    - 192.168.0.102
+    - 192.168.0.103
+  resourcemanager_on_namenode: False # By setting this option to True you extend the `resourcemanager_hosts` list with the list from `hdfs.namenode_hosts`. By default, this option is False
+  nodemanagers_on_datanodes: False # By setting this option to True you extend the `nodemanager_hosts` list with the list from `hdfs.datanode_hosts`. By default, this option is False
+# Other options ...

@@ -50,8 +50,13 @@
 {%- if hadoop['major_version'] == '1' %}
 
 {% if mapred.is_jobtracker %}
-/etc/init.d/hadoop-jobtracker:
+hadoop-jobtracker-service:
   file.managed:
+{%- if grains.get('systemd') %}
+    - name: /etc/systemd/system/hadoop-jobtracker.service
+{% else %}
+    - name: /etc/init.d/hadoop-jobtracker
+{% endif %}
     - source: salt://hadoop/files/{{ hadoop.initscript }}
     - user: root
     - group: root
@@ -62,15 +67,28 @@
       hadoop_user: mapred
       hadoop_major: {{ hadoop.major_version }}
       hadoop_home: {{ hadoop.alt_home }}
-
+{%- if grains.get('systemd') %}
+  module.wait:
+    - name: service.systemctl_reload
+    - watch:
+      - file: hadoop-jobtracker-service
+    - watch_in:
+      - service: hadoop-jobtracker
+{% endif %}
+      
 hadoop-jobtracker:
   service.running:
     - enable: True
 {%- endif %}
 
 {% if mapred.is_tasktracker %}
-/etc/init.d/hadoop-tasktracker:
+hadoop-tasktracker-service:
   file.managed:
+{%- if grains.get('systemd') %}
+    - name: /etc/systemd/system/hadoop-tasktracker.service
+{% else %}
+    - name: /etc/init.d/hadoop-tasktracker
+{% endif %}
     - source: salt://hadoop/files/{{ hadoop.initscript }}
     - user: root
     - group: root
@@ -81,6 +99,14 @@ hadoop-jobtracker:
       hadoop_user: mapred
       hadoop_major: {{ hadoop.major_version }}
       hadoop_home: {{ hadoop.alt_home }}
+{%- if grains.get('systemd') %}
+  module.wait:
+    - name: service.systemctl_reload
+    - watch:
+      - file: hadoop-tasktracker-service
+    - watch_in:
+      - service: hadoop-tasktracker
+{% endif %}
 
 hadoop-tasktracker:
   service.running:

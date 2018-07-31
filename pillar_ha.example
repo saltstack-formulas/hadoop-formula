@@ -1,11 +1,10 @@
 # a pillar example of aspects specific to HDFS Namenode High Availability
 # if HA is configured like below, there will be no secondary namenode
-# On each namenode you have to have a match of the namenode_target **and** either primary or secondary NN target
+# On each namenode you have to have a match of the namenode_target **and** primary NN target for one of your namenodes
 
 hdfs:
   namenode_target: "roles:hadoop_master" # Specify compound matching string to match both your namenodes
   primarynamenode_target: "roles:hdfs_namenode1" # this node will do the NN format, init zookeeper and run a zkfc
-  secondarynamenode_target: "roles:hdfs_namenode2" # will run the standby namenode and the other zkfc
   journalnode_target: "roles:hdfs_journalnode"
   datanode_target: "roles:hadoop_slave" # Specify compound matching string to match all your datanodes e.g. if you were to use pillar I@datanode:true
   config:
@@ -13,10 +12,9 @@ hdfs:
     namenode_http_port: 50070
     # the rest of hdfs config as usual
 
-# the yarn Resourcemanager needs specific targeting in a HA cluster - it cannot be
-# targeted with the default "hadoop_master" role here because then you would end up
-# with two RM processes - one on each namenode.
+# A pillar example of aspects specific to Resourcemanager High Availability
+# to use several Resourcemanager nodes you need to target it with `resourcemanager_target` option
 
 yarn:
-  resourcemanager_target: "roles:yarn_master"
+  resourcemanager_target: "roles:yarn_resourcemanager"
   # ... the rest goes as usual

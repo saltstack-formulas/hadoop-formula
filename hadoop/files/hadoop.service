@@ -1,0 +1,43 @@
+{%- if hadoop_major == 1 %}
+  {%- set bindir='bin' %}
+{%- else %}
+  {%- set bindir='sbin' %}
+{%- endif %}
+
+{%- set piddir="/var/run/hadoop" %}
+{%- set conf_dir="/etc/hadoop/conf" %}
+
+{%- if hadoop_svc == 'historyserver' %}
+  {%- set pidfile=piddir+"/mapred-"+hadoop_user+"-"+hadoop_svc+".pid" %}
+  {%- set exec_path=hadoop_home+"/"+bindir+"/mr-jobhistory-daemon.sh" %}
+{%- elif hadoop_user == 'yarn' %}
+  {%- set pidfile=piddir+"/yarn-"+hadoop_user+"-"+hadoop_svc+".pid" %}
+  {%- set exec_path=hadoop_home+"/"+bindir+"/yarn-daemon.sh" %}
+{%- else %}
+  {%- set pidfile=piddir+"/hadoop-"+hadoop_user+"-"+hadoop_svc+".pid" %}
+  {%- set exec_path=hadoop_home+"/"+bindir+"/hadoop-daemon.sh" %}
+{%- endif %}
+
+{%- if hadoop_major > 2 %}
+  {%- set pidfile=piddir+"/hadoop-"+hadoop_user+"-"+hadoop_svc+".pid" %}
+{%- endif %}
+
+[Unit]
+Description=Hadoop DFS {{ hadoop_svc }}
+After=syslog.target network.target remote-fs.target nss-lookup.target network-online.target
+Requires=network-online.target
+
+[Service]
+User={{ hadoop_user }}
+Group=hadoop
+Type=forking
+RuntimeDirectory=hadoop
+RuntimeDirectoryMode=775
+ExecStart={{ exec_path }} --config {{ conf_dir }} start {{ hadoop_svc }}
+ExecStop={{ exec_path }} --config {{ conf_dir }} stop {{ hadoop_svc }}
+TimeoutStartSec=2min
+Restart=on-failure
+PIDFile={{ pidfile }}
+
+[Install]
+WantedBy=multi-user.target

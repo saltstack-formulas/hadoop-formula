@@ -44,6 +44,10 @@ if [ -f /etc/default/hadoop ]; then
   . /etc/default/hadoop
 fi
 
+if [ -f /etc/init.d/functions ]; then
+  . /etc/init.d/functions
+fi
+
 if [ -f /etc/default/mapred-{{ hadoop_user }}-{{ hadoop_svc }} ] ; then
   . /etc/default/mapred-{{ hadoop_user }}-{{ hadoop_svc }}
 fi
@@ -64,9 +68,9 @@ SLEEP_TIME=5
 PROC_NAME="java"
 
 {%- if hadoop_major == 1 %}
-{%- set bindir='bin' %}
+  {%- set bindir='bin' %}
 {%- else %}
-{%- set bindir='sbin' %}
+  {%- set bindir='sbin' %}
 {%- endif %}
 
 DAEMON="hadoop-{{ hadoop_user }}-{{ hadoop_svc }}"
@@ -90,6 +94,10 @@ EXEC_PATH="{{ hadoop_home }}/{{ bindir }}/yarn-daemon.sh"
 {%- else %}
 PIDFILE="${PIDDIR}/hadoop-{{ hadoop_user }}-{{ hadoop_svc }}.pid"
 EXEC_PATH="{{ hadoop_home }}/{{ bindir }}/hadoop-daemon.sh"
+{%- endif %}
+
+{%- if hadoop_major > 2 %}
+PIDFILE="${PIDDIR}/hadoop-{{ hadoop_user }}-{{ hadoop_svc }}.pid"
 {%- endif %}
 
 start() {
