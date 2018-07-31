@@ -43,7 +43,7 @@ unpack-hadoop-dist:
     - name: /usr/lib/
     - source: {{ hadoop.source_url }}
 {%- if hadoop.source_hash %}
-    - source_hash: md5={{ hadoop.source_hash }}
+    - source_hash: {{ hadoop.source_hash }}
 {%- else %}
     - skip_verify: True
 {%- endif %}
